@@ -1,0 +1,25 @@
+name: Sync from SharePoint
+
+on:
+  repository_dispatch:
+    types: [sync-data]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Download calllog_data.json from SharePoint
+        run: |
+          curl -L -o calllog_data.json \
+          -H "Authorization: Bearer ${{ secrets.SP_TOKEN }}" \
+          "${{ secrets.SP_JSON_URL }}"
+          
+      - name: Commit and push
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add calllog_data.json
+          git diff --staged --quiet || git commit -m "Auto-sync from SharePoint"
+          git push
