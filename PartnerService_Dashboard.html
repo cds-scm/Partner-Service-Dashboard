@@ -4490,7 +4490,7 @@ function showErr(msg){document.getElementById('err-area').innerHTML=`<div class=
 const GITHUB_USER = 'ckhwanrudi';
 const GITHUB_REPO = 'Partner-Service-Dashboard';
 const JSON_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/calllog_data.json`;
-const CX_URL   = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/3cx_Report.xlsx`;
+const CX_URL   = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/3cx_Report.csv`;
 
 // (compat aliases — ไม่ใช้แล้วแต่เผื่อมีโค้ดเรียก)
 const SP_SITE='https://centralgroup.sharepoint.com/sites/CDSSCMPartnerService';
@@ -4524,8 +4524,9 @@ async function autoLoad(){
         try{
           const cxRes=await fetch(url);
           if(cxRes.ok){
-            const buf=await cxRes.arrayBuffer();
-            const wb=XLSX.read(buf,{type:'array'});
+            const text=await cxRes.text();
+            const isCsv=url.endsWith('.csv');
+            const wb=XLSX.read(text,{type:isCsv?'string':'binary'});
             const ws=wb.Sheets[wb.SheetNames[0]];
             const cxData=XLSX.utils.sheet_to_json(ws,{defval:''});
             if(cxData.length&&Object.keys(cxData[0]).includes('Direction')){processCXData(cxData);break;}
