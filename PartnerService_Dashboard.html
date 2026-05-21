@@ -4486,13 +4486,16 @@ function showErr(msg){document.getElementById('err-area').innerHTML=`<div class=
 // ══════════════════════════════════════════════════════
 // AUTO LOAD จาก SharePoint
 // ══════════════════════════════════════════════════════
-const SP_SITE='https://centralgroup.sharepoint.com/sites/CDSSCMPartnerService';
-const JSON_URL=SP_SITE+'/Shared%20Documents/Dashboard/calllog_data.json';
-const CX_URL  =SP_SITE+'/Shared%20Documents/Dashboard/3cx_Report.xlsx';
+// ── CONFIG: GitHub Raw URLs ──
+const GITHUB_USER = 'ckhwanrudi';
+const GITHUB_REPO = 'Partner-Service-Dashboard';
+const JSON_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/calllog_data.json`;
+const CX_URL   = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/3cx_Report.xlsx`;
 
-// SharePoint REST API URL (ใช้แทน direct fetch)
-const SP_REST_JSON=SP_SITE+"/_api/web/GetFileByServerRelativePath(decodedurl='/sites/CDSSCMPartnerService/Shared Documents/Dashboard/calllog_data.json')/$value";
-const SP_REST_CX  =SP_SITE+"/_api/web/GetFileByServerRelativePath(decodedurl='/sites/CDSSCMPartnerService/Shared Documents/Dashboard/3cx_Report.xlsx')/$value";
+// (compat aliases — ไม่ใช้แล้วแต่เผื่อมีโค้ดเรียก)
+const SP_SITE='https://centralgroup.sharepoint.com/sites/CDSSCMPartnerService';
+const SP_REST_JSON=JSON_URL;
+const SP_REST_CX  =CX_URL;
 
 async function autoLoad(){
   // แสดง loading overlay (ไม่ซ่อน upload-zone ก่อน fetch สำเร็จ)
