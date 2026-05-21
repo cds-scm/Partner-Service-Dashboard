@@ -4504,21 +4504,13 @@ async function autoLoad(){
   const hideLoading=()=>{const el=document.getElementById('sp-loading');if(el)el.remove();};
   try{
     let data=null;
-    const urls=[SP_REST_JSON, JSON_URL];
-    for(const url of urls){
-      try{
-        const res=await fetch(url,{
-          credentials:'include',
-          headers:{'Accept':'application/json;odata=nometadata'}
-        });
-        if(res.ok){
-          const text=await res.text();
-          data=JSON.parse(text);
-          if(Array.isArray(data)&&data.length) break;
-          if(data?.value&&Array.isArray(data.value)&&data.value.length){data=data.value;break;}
-          data=null;
-        }
-      }catch(e){console.warn('fetch attempt failed:',url,e.message);}
+    // GitHub raw ไม่ต้องใช้ credentials
+    const res=await fetch(JSON_URL);
+    if(res.ok){
+      const text=await res.text();
+      data=JSON.parse(text);
+      if(data?.value&&Array.isArray(data.value)) data=data.value;
+      if(!Array.isArray(data)||!data.length) data=null;
     }
     hideLoading();
     if(!data||!Array.isArray(data)||!data.length) throw new Error('ดึงข้อมูลไม่ได้');
@@ -4527,10 +4519,10 @@ async function autoLoad(){
     document.getElementById('d-badge').textContent=`📊 ${RAW.length.toLocaleString()} รายการ (Auto-Sync)`;
     // โหลด 3CX
     try{
-      const cxUrls=[SP_REST_CX, CX_URL];
+      const cxUrls=[CX_URL];
       for(const url of cxUrls){
         try{
-          const cxRes=await fetch(url,{credentials:'include'});
+          const cxRes=await fetch(url);
           if(cxRes.ok){
             const buf=await cxRes.arrayBuffer();
             const wb=XLSX.read(buf,{type:'array'});
