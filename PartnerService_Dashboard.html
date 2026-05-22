@@ -2604,7 +2604,7 @@ function makeAreaBarCombo(elId, all12, dataMonths, fcrData, nfcrData, areaColor,
     // bar
     svg+=`<rect x="${x.toFixed(1)}" y="${(yBase-h).toFixed(1)}"
       width="${BAR_W}" height="${h.toFixed(1)}"
-      fill="${barColor}" opacity="0.75" rx="4 4 0 0"/>`;
+      fill="${barColor}" opacity="0.75" rx="4"/>`;
     // label บน bar
     const lbl=Math.round(p.nfcr)+'%';
     svg+=`<text x="${p.x.toFixed(1)}" y="${Math.max(PT+11,(yBase-h-5)).toFixed(1)}"
@@ -3270,7 +3270,7 @@ function renderTop10Issue(type){
     // Shadow
     svg+=`<rect x="${x+2}" y="${(yTop+2).toFixed(1)}" width="${BAR_W}" height="${h.toFixed(1)}" rx="4" fill="#00000010"/>`;
     // Bar
-    svg+=`<rect x="${x}" y="${yTop.toFixed(1)}" width="${BAR_W}" height="${h.toFixed(1)}" fill="url(#g${uid}${gi})" rx="4 4 0 0"/>`;
+    svg+=`<rect x="${x}" y="${yTop.toFixed(1)}" width="${BAR_W}" height="${h.toFixed(1)}" fill="url(#g${uid}${gi})" rx="4"/>`;
     // Count label — ใส่เหนือ bar เสมอ (ไม่ทับสีอ่อน)
     svg+=`<text x="${cx.toFixed(1)}" y="${Math.max(PT+14,(yTop-8)).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="800" fill="${i<3?(type==='call'?'#0E8F8A':'#4A3AB0'):(type==='call'?'#29C6C0':'#6C5CE7')}">${n2}</text>`;
     // X label
@@ -5122,8 +5122,9 @@ async function doExportPPTX(){
       pendSrc.forEach(r=>{const d=r.typeDept||'(ไม่ระบุ)';byDept[d]=(byDept[d]||0)+1;});
       const deptPend=Object.entries(byDept).sort((a,b)=>b[1]-a[1]);
 
-      const avgPt=pendSrc.length?+(avg(pendSrc.map(r=>r.pendingTime).filter(x=>x!==null)).toFixed(1)):null;
-      const maxPt=pendSrc.length?Math.max(...pendSrc.map(r=>r.pendingTime).filter(x=>x!==null)):null;
+      const _ptVals=pendSrc.map(r=>r.pendingTime).filter(x=>x!==null&&x>=0);
+      const avgPt=_ptVals.length?+(avg(_ptVals).toFixed(1)):null;
+      const maxPt=_ptVals.length?Math.max(..._ptVals):null;
 
       // KPI boxes
       const pkpis=[
@@ -5934,7 +5935,7 @@ function renderTop10Issue(type){
     // Shadow
     svg+=`<rect x="${x+2}" y="${(yTop+2).toFixed(1)}" width="${BAR_W}" height="${h.toFixed(1)}" rx="4" fill="#00000010"/>`;
     // Bar
-    svg+=`<rect x="${x}" y="${yTop.toFixed(1)}" width="${BAR_W}" height="${h.toFixed(1)}" fill="url(#g${uid}${gi})" rx="4 4 0 0"/>`;
+    svg+=`<rect x="${x}" y="${yTop.toFixed(1)}" width="${BAR_W}" height="${h.toFixed(1)}" fill="url(#g${uid}${gi})" rx="4"/>`;
     // Count label — ใส่เหนือ bar เสมอ (ไม่ทับสีอ่อน)
     svg+=`<text x="${cx.toFixed(1)}" y="${Math.max(PT+14,(yTop-8)).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="800" fill="${i<3?(type==='call'?'#0E8F8A':'#4A3AB0'):(type==='call'?'#29C6C0':'#6C5CE7')}">${n2}</text>`;
     // X label
