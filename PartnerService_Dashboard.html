@@ -317,11 +317,6 @@ input[type=file]{display:none}
 .m-legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px}
 .m-legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--gray)}
 .m-legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.m-month-placeholder{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
-.m-month-pill{padding:4px 13px;border-radius:99px;font-size:11px;font-weight:500;border:1.5px dashed #d1d5db;background:#f9fafb;color:#9ca3af;cursor:default}
-.m-month-pill.has-data{border:1.5px solid var(--primary);background:var(--primary-l);color:var(--primary);font-weight:700;cursor:default}
-.m-month-note{font-size:11px;color:var(--gray);display:flex;align-items:center;gap:4px}
-.m-month-pills-container{}
 .pareto-wrap{position:relative;width:100%;overflow-x:auto}
 .pareto-chart{display:flex;align-items:flex-end;gap:6px;height:180px;padding:25px 0 0;border-bottom:2px solid var(--border);margin-bottom:6px}
 .pareto-bar-wrap{display:flex;flex-direction:column;align-items:center;flex:1;min-width:55px}
@@ -648,7 +643,6 @@ input[type=file]{display:none}
   </div>
   <!-- CALL -->
   <div id="mv-call">
-    <div class="m-month-pills-container"></div>
     <div class="m-kpi-row" id="m-call-kpi"></div>
     <div class="m-sec"><div class="dot" style="background:#0D9488"></div>Case Level ตามแผนก รายเดือน — Call</div>
     <div class="m-card" style="padding:14px 16px"><div id="m-call-level-chart"></div></div>
@@ -821,7 +815,7 @@ input[type=file]{display:none}
 // ══════════════════════════════════════════════════════
 // DATA LAYER
 // ══════════════════════════════════════════════════════
-let RAW=[], FILTERED=[], MODE='all', SEL_DAY='';
+let RAW=[], FILTERED=[], MODE='all', SEL_DAY='', MONTHLY_SEL_M='';
 let CX={loaded:false,total:{reach_pct:null,sla_pct:null,reach_ans:0,reach_abn:0,
          sla_ok:0,sla_total:0,avg_talk_sec:null},daily:{}};
 
@@ -2652,9 +2646,15 @@ function makeAreaBarCombo(elId, all12, dataMonths, fcrData, nfcrData, areaColor,
 
   // x-axis labels
   pts.forEach(p=>{
+    const mLabel=months[pts.indexOf(p)];
+    const isSelM=MONTHLY_SEL_M&&mLabel===MONTHLY_SEL_M&&p.has;
+    if(isSelM){
+      svg+=`<rect x="${(p.x-16).toFixed(1)}" y="${(yBase+6).toFixed(1)}" width="32" height="18" rx="9"
+        fill="var(--primary)" opacity="0.15"/>`;
+    }
     svg+=`<text x="${p.x.toFixed(1)}" y="${(yBase+20).toFixed(1)}"
-      text-anchor="middle" font-size="10.5" font-weight="500"
-      fill="${p.has?'#4B5563':'#D1D5DB'}">${months[pts.indexOf(p)]}</text>`;
+      text-anchor="middle" font-size="10.5" font-weight="${isSelM?'800':'500'}"
+      fill="${isSelM?'var(--primary)':p.has?'#4B5563':'#D1D5DB'}">${mLabel}</text>`;
   });
 
   svg+=`<line x1="${PL}" y1="${yBase}" x2="${SVG_W-PR}" y2="${yBase}"
@@ -2773,9 +2773,15 @@ function makeCleanBarChart(elId, months, dataMonths, series, yMax, unit){
 
   // x-axis labels
   pts.forEach((pt,i)=>{
+    const isSelM=MONTHLY_SEL_M&&pt.m===MONTHLY_SEL_M;
+    if(isSelM&&pt.has){
+      // highlight background
+      svg+=`<rect x="${(xPos[i]-16).toFixed(1)}" y="${(yBase+6).toFixed(1)}" width="32" height="18" rx="9"
+        fill="var(--primary)" opacity="0.15"/>`;
+    }
     svg+=`<text x="${xPos[i].toFixed(1)}" y="${(yBase+20).toFixed(1)}"
-      text-anchor="middle" font-size="10.5" font-weight="500"
-      fill="${pt.has?'#4B5563':'#D1D5DB'}">${pt.m}</text>`;
+      text-anchor="middle" font-size="10.5" font-weight="${isSelM&&pt.has?'800':'500'}"
+      fill="${isSelM&&pt.has?'var(--primary)':pt.has?'#4B5563':'#D1D5DB'}">${pt.m}</text>`;
   });
 
   // baseline
@@ -3702,7 +3708,7 @@ function lv2ClassName(){ return FCR_CH==='call'?'Call-Level 2':'Mail-Level 2'; }
 
 function renderFCR(){
   if(!RAW.length)return;
-  const allDepts=[...new Set(FILTERED.map(r=>r.typeDept).filter(Boolean))].sort();
+  const allDepts=[...new Set(ALL_FILTERED.map(r=>r.typeDept).filter(Boolean))].sort();
   const sel=document.getElementById('fcr-dept-sel');
   if(sel){const cur=sel.value;sel.innerHTML='<option value="">ทุกแผนก</option>'+allDepts.map(d=>`<option${d===cur?' selected':''}>${d}</option>`).join('');}
   // Init date range inputs min/max from data
@@ -5230,78 +5236,93 @@ function makeMonthTable(elId,months,filterFn,resFnOrColor,accentColor){
 function renderMonthly(){
   if(!RAW.length)return;
   const ALL12=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const months=sortMonths([...new Set(FILTERED.map(r=>r.logMonth).filter(Boolean))]);
+  // ใช้ RAW (ไม่ filter เดือน) เพื่อแสดงทุกเดือน แต่ยังคง filter dept/level/mode
+  const fm=document.getElementById('f-month')?.value||'';
+  const fd=document.getElementById('f-dept')?.value||'';
+  const fl=document.getElementById('f-level')?.value||'';
+  const dfrom=document.getElementById('f-from')?.value||'';
+  const dto=document.getElementById('f-to')?.value||'';
+  const ALL_FILTERED=RAW.filter(r=>{
+    if(fd&&r.typeDept!==fd)return false;
+    if(fl&&r.caseLevel!==fl)return false;
+    if(dfrom&&r.dateLog&&r.dateLog<dfrom)return false;
+    if(dto&&r.dateLog&&r.dateLog>dto)return false;
+    return true;
+  });
+  const months=sortMonths([...new Set(ALL_FILTERED.map(r=>r.logMonth).filter(Boolean))]);
   if(!months.length){document.getElementById('page-monthly-inner').innerHTML='<div style="text-align:center;padding:40px;color:#64748b">ไม่มีข้อมูล — กรุณาอัปโหลดไฟล์ก่อน</div>';return;}
-  const monthPillsHtml=()=>{const hasData=new Set(FILTERED.map(r=>r.logMonth).filter(Boolean));return`<div class="m-month-placeholder">${ALL12.map(m=>`<div class="m-month-pill${hasData.has(m)?' has-data':''}">${m}</div>`).join('')}<span class="m-month-note">● มีข้อมูล</span></div>`;};
-  document.querySelectorAll('.m-month-pills-container').forEach(el=>{el.innerHTML=monthPillsHtml();});
+  const SEL_M=fm; // เดือนที่เลือกใน filter bar
+  MONTHLY_SEL_M=SEL_M;
 
   // CALL
   const callFn=r=>isTotalCall(r);
   // Resolution Time monthly: ไม่นับ Transfer, ไม่นับ Call Back — นับ Abandon ด้วย (ตรงกับ Time Card)
   const resCallFn=r=>r.logType!=='Transfer'&&r.logType!=='Call Back'&&!r._referredMail&&r.logType!=='Mail';
-  const tc=m=>FILTERED.filter(r=>r.logMonth===m&&callFn(r)).length;
+  const tc=m=>ALL_FILTERED.filter(r=>r.logMonth===m&&callFn(r)).length;
   const MNUM={'Jan':0,'Feb':1,'Mar':2,'Apr':3,'May':4,'Jun':5,'Jul':6,'Aug':7,'Sep':8,'Oct':9,'Nov':10,'Dec':11};
   const rr=m=>{if(!CX||!CX.loaded||!CX.daily)return null;const mn=MNUM[m];if(mn===undefined)return null;const ents=Object.entries(CX.daily).filter(([d])=>new Date(d).getMonth()===mn);const ok=ents.reduce((s,[,v])=>s+(v.sla_ok||0),0);const tot=ents.reduce((s,[,v])=>s+(v.sla_total||0),0);return tot>0?Math.round(ok/tot*100):null;};
   const ab=m=>{if(!CX.loaded)return 0;const mn=MNUM[m];const ents=Object.entries(CX.daily).filter(([d])=>new Date(d).getMonth()===mn);return ents.reduce((s,[,v])=>s+(v.abn_3cx||0),0);};
-  const ar=m=>{const rts=FILTERED.filter(r=>r.logMonth===m&&resCallFn(r)&&r.resolutionTime!==null).map(r=>r.resolutionTime);return rts.length?Math.round(avg(rts)*10)/10:0;};
-  const lv1c=m=>FILTERED.filter(r=>r.logMonth===m&&callFn(r)&&r.caseLevel?.includes('Level 1')).length;
-  const totC=FILTERED.filter(callFn).length,totA=ab(months[0])||0;
+  const ar=m=>{const rts=ALL_FILTERED.filter(r=>r.logMonth===m&&resCallFn(r)&&r.resolutionTime!==null).map(r=>r.resolutionTime);return rts.length?Math.round(avg(rts)*10)/10:0;};
+  const lv1c=m=>ALL_FILTERED.filter(r=>r.logMonth===m&&callFn(r)&&r.caseLevel?.includes('Level 1')).length;
+  const mFiltered=SEL_M?ALL_FILTERED.filter(r=>r.logMonth===SEL_M):ALL_FILTERED;
+  const totC=mFiltered.filter(callFn).length;
   const rrAll=CX.loaded&&CX.total.sla_pct!==null?CX.total.sla_pct:null;
+  const abnVal=CX.loaded?Object.values(CX.daily).reduce((s,v)=>s+(v.abn_3cx||0),0):'—';
   const rCol=rrAll===null?'#94a3b8':rrAll>=90?'#4ade80':rrAll>=75?'#fcd34d':'#f87171';
-  const allRes=FILTERED.filter(r=>resCallFn(r)&&r.resolutionTime!==null).map(r=>r.resolutionTime);
+  const allRes=mFiltered.filter(r=>resCallFn(r)&&r.resolutionTime!==null).map(r=>r.resolutionTime);
   document.getElementById('m-call-kpi').innerHTML=`
     <div class="m-kpi mk-blue"><div class="mlabel">Total Call</div><div class="mval">${totC.toLocaleString()}</div><div class="msub"></div></div>
-    <div class="m-kpi mk-red"><div class="mlabel">Abandon (3CX)</div><div class="mval">${CX.loaded?Object.values(CX.daily).reduce((s,v)=>s+(v.abn_3cx||0),0):'—'}</div><div class="msub"></div></div>
-    <div class="m-kpi mk-green"><div class="mlabel">Avg Reach Rate</div><div class="mval" style="color:${rCol}">${rrAll!==null?rrAll+'%':'N/A'}</div><div class="msub">3CX Inbound Queue</div></div>
-    <div class="m-kpi mk-teal"><div class="mlabel">Call Level 1</div><div class="mval">${FILTERED.filter(r=>callFn(r)&&r.caseLevel?.includes('Level 1')).length}</div><div class="msub">${pct(FILTERED.filter(r=>callFn(r)&&r.caseLevel?.includes('Level 1')).length,totC)}%</div></div>
-    <div class="m-kpi mk-amber"><div class="mlabel">Call Level 2</div><div class="mval">${FILTERED.filter(r=>callFn(r)&&r.caseLevel?.includes('Level 2')&&!r._referredMail).length}</div><div class="msub">${pct(FILTERED.filter(r=>callFn(r)&&r.caseLevel?.includes('Level 2')&&!r._referredMail).length,totC)}%</div></div>
-    <div class="m-kpi mk-purple"><div class="mlabel">Avg Resolution</div><div class="mval">${nf(allRes.length?avg(allRes):null)}</div><div class="msub">${allRes.length?'วัน':''}</div></div>`;
-  // ── Call charts ──
+    <div class="m-kpi mk-red"><div class="mlabel">Abandon</div><div class="mval">${abnVal}</div><div class="msub"></div></div>
+    <div class="m-kpi mk-green"><div class="mlabel">Avg Reach Rate</div><div class="mval" style="color:${rCol}">${rrAll!==null?rrAll+'%':'N/A'}</div><div class="msub"></div></div>
+    <div class="m-kpi mk-teal"><div class="mlabel">1st Call Resolution</div><div class="mval">${mFiltered.filter(r=>callFn(r)&&r.caseLevel?.includes('Level 1')).length}</div><div class="msub">${pct(mFiltered.filter(r=>callFn(r)&&r.caseLevel?.includes('Level 1')).length,totC)}%</div></div>
+    <div class="m-kpi mk-amber"><div class="mlabel">Non FCR</div><div class="mval">${mFiltered.filter(r=>callFn(r)&&r.caseLevel?.includes('Level 2')&&!r._referredMail).length}</div><div class="msub">${pct(mFiltered.filter(r=>callFn(r)&&r.caseLevel?.includes('Level 2')&&!r._referredMail).length,totC)}%</div></div>
+    <div class="m-kpi mk-purple"><div class="mlabel">Avg. Resolution Time</div><div class="mval">${nf(allRes.length?avg(allRes):null)}</div><div class="msub">${allRes.length?'วัน':''}</div></div>`;
+  // ── Call charts ── (filter ตามเดือนที่เลือก)
+  const chartMonths=months;
   const fcrPctM=m=>{const t=tc(m),l1=lv1c(m);return t>0?Math.round(l1/t*100):null;};
   const abnPctM=m=>{const t=tc(m),a=ab(m);return t>0?Math.round(a/t*100):null;};
-  // combo: Area=FCR%, Bar=Non-FCR%
   const nfcrPctM=m=>{const t=tc(m),l1=lv1c(m);return t>0?Math.round((t-l1)/t*100):null;};
-  makeAreaBarCombo('m-call-chart', ALL12, months, months.map(nfcrPctM), months.map(fcrPctM), '#FF8FAB', '#29C6C0');
-  makeCleanBarChart('m-abn-chart', ALL12, months,
-    [{label:'Abandon % vs Total Call', data:months.map(abnPctM), color:'#EF7C6B'}], 100, '%');
-  makeCleanBarChart('m-reach-chart', ALL12, months,
-    [{label:'Call Reach Rate (%)', data:months.map(m=>rr(m)), color:'#0EA5E9'}], 100);
-  makeCleanBarChart('m-res-call-chart', ALL12, months,
-    [{label:'Avg Resolution Time', data:months.map(ar), color:'#FFA940'}], null, 'วัน');
-  makeDeptLevelChart('m-call-level-chart',months,callFn,'call');
-  makeDeptLevelTable('m-call-dept-level-tbl',months,callFn);
-  makeResDeptChart('m-call-res-dept-chart',months,callFn);
-  makeRespDeptChart('m-call-resp-dept-chart',months,callFn);
-  makeResDeptTable('m-call-res-dept-tbl',months,callFn);
-  makeMonthTable('m-call-tbl',months,callFn,resCallFn,'#29C6C0');
+  makeAreaBarCombo('m-call-chart', ALL12, chartMonths, chartMonths.map(nfcrPctM), chartMonths.map(fcrPctM), '#FF8FAB', '#29C6C0');
+  makeCleanBarChart('m-abn-chart', ALL12, chartMonths,
+    [{label:'Abandon % vs Total Call', data:chartMonths.map(abnPctM), color:'#EF7C6B'}], 100, '%');
+  makeCleanBarChart('m-reach-chart', ALL12, chartMonths,
+    [{label:'Call Reach Rate (%)', data:chartMonths.map(m=>rr(m)), color:'#0EA5E9'}], 100);
+  makeCleanBarChart('m-res-call-chart', ALL12, chartMonths,
+    [{label:'Avg Resolution Time', data:chartMonths.map(ar), color:'#FFA940'}], null, 'วัน');
+  makeDeptLevelChart('m-call-level-chart',chartMonths,callFn,'call');
+  makeDeptLevelTable('m-call-dept-level-tbl',chartMonths,callFn);
+  makeResDeptChart('m-call-res-dept-chart',chartMonths,callFn);
+  makeRespDeptChart('m-call-resp-dept-chart',chartMonths,callFn);
+  makeResDeptTable('m-call-res-dept-tbl',chartMonths,callFn);
+  makeMonthTable('m-call-tbl',chartMonths,callFn,resCallFn,'#29C6C0');
   const allDepts=[...new Set(FILTERED.map(r=>r.typeDept).filter(Boolean))].sort();
   ['m-call-dept-sel','m-mail-dept-sel'].forEach(id=>{const sel=document.getElementById(id);if(!sel)return;const cur=sel.value;sel.innerHTML='<option value="">ทุกแผนก</option>'+allDepts.map(d=>`<option${d===cur?' selected':''}>${d}</option>`).join('');});
   renderTop10Issue('call');
 
   // MAIL
   const mailFn=r=>isMail(r);
-  const totM=FILTERED.filter(mailFn).length;
-  const totMref=FILTERED.filter(r=>r.logType==='Mail'&&r._referredMail).length;
-  const allResM=FILTERED.filter(r=>mailFn(r)&&r.resolutionTime!==null).map(r=>r.resolutionTime);
-  const arM=m=>{const rts=FILTERED.filter(r=>r.logMonth===m&&mailFn(r)&&r.resolutionTime!==null).map(r=>r.resolutionTime);return rts.length?Math.round(avg(rts)*10)/10:0;};
-  const lv1m=m=>FILTERED.filter(r=>r.logMonth===m&&mailFn(r)&&r.caseLevel?.includes('Level 1')).length;
+  const mFilteredM=SEL_M?ALL_FILTERED.filter(r=>r.logMonth===SEL_M):ALL_FILTERED;
+  const totM=mFilteredM.filter(mailFn).length;
+  const totMref=mFilteredM.filter(r=>r.logType==='Mail'&&r._referredMail).length;
+  const allResM=mFilteredM.filter(r=>mailFn(r)&&r.resolutionTime!==null).map(r=>r.resolutionTime);
+  const arM=m=>{const rts=ALL_FILTERED.filter(r=>r.logMonth===m&&mailFn(r)&&r.resolutionTime!==null).map(r=>r.resolutionTime);return rts.length?Math.round(avg(rts)*10)/10:0;};
+  const lv1m=m=>ALL_FILTERED.filter(r=>r.logMonth===m&&mailFn(r)&&r.caseLevel?.includes('Level 1')).length;
   document.getElementById('m-mail-kpi').innerHTML=`
     <div class="m-kpi mk-purple"><div class="mlabel">Total Mail</div><div class="mval">${totM.toLocaleString()}</div><div class="msub"></div></div>
-    <div class="m-kpi mk-teal"><div class="mlabel">Mail Level 1</div><div class="mval">${FILTERED.filter(r=>mailFn(r)&&r.caseLevel?.includes('Level 1')).length}</div><div class="msub">${pct(FILTERED.filter(r=>mailFn(r)&&r.caseLevel?.includes('Level 1')).length,totM)}%</div></div>
-    <div class="m-kpi mk-amber"><div class="mlabel">Mail Level 2</div><div class="mval">${FILTERED.filter(r=>mailFn(r)&&r.caseLevel?.includes('Level 2')&&!r._referredMail).length}</div><div class="msub">${pct(FILTERED.filter(r=>mailFn(r)&&r.caseLevel?.includes('Level 2')&&!r._referredMail).length,totM)}%</div></div>
-    <div class="m-kpi mk-green"><div class="mlabel">Avg Resolution</div><div class="mval">${nf(allResM.length?avg(allResM):null)}</div><div class="msub">${allResM.length?'วัน':''}</div></div>`;
-  const fmrPctM=m=>{const t=FILTERED.filter(r=>r.logMonth===m&&mailFn(r)).length;const l1=lv1m(m);return t>0?Math.round(l1/t*100):null;};
-  // combo: Area=FCR%, Bar=Non-FCR%
-  const nfmrPctM=m=>{const t=FILTERED.filter(r=>r.logMonth===m&&mailFn(r)).length;const l1=lv1m(m);return t>0?Math.round((t-l1)/t*100):null;};
-  makeAreaBarCombo('m-mail-chart', ALL12, months, months.map(nfmrPctM), months.map(fmrPctM), '#FF8FAB', '#8B7CF8');
-  makeCleanBarChart('m-res-mail-chart', ALL12, months,
-    [{label:'Avg Resolution Time', data:months.map(arM), color:'#FFA940'}], null, 'วัน');
-  makeDeptLevelChart('m-mail-level-chart',months,mailFn,'mail');
-  makeDeptLevelTable('m-mail-dept-level-tbl',months,mailFn);
-  makeResDeptChart('m-mail-res-dept-chart',months,mailFn);
-  makeRespDeptChart('m-mail-resp-dept-chart',months,mailFn);
-  makeResDeptTable('m-mail-res-dept-tbl',months,mailFn);
-  makeMonthTable('m-mail-tbl',months,mailFn,'#6C5CE7');
+    <div class="m-kpi mk-teal"><div class="mlabel">1st Mail Resolution</div><div class="mval">${mFilteredM.filter(r=>mailFn(r)&&r.caseLevel?.includes('Level 1')).length}</div><div class="msub">${pct(mFilteredM.filter(r=>mailFn(r)&&r.caseLevel?.includes('Level 1')).length,totM)}%</div></div>
+    <div class="m-kpi mk-amber"><div class="mlabel">Non FCR</div><div class="mval">${mFilteredM.filter(r=>mailFn(r)&&r.caseLevel?.includes('Level 2')&&!r._referredMail).length}</div><div class="msub">${pct(mFilteredM.filter(r=>mailFn(r)&&r.caseLevel?.includes('Level 2')&&!r._referredMail).length,totM)}%</div></div>
+    <div class="m-kpi mk-green"><div class="mlabel">Avg. Resolution Time</div><div class="mval">${nf(allResM.length?avg(allResM):null)}</div><div class="msub">${allResM.length?'วัน':''}</div></div>`;
+  const fmrPctM=m=>{const t=ALL_FILTERED.filter(r=>r.logMonth===m&&mailFn(r)).length;const l1=lv1m(m);return t>0?Math.round(l1/t*100):null;};
+  const nfmrPctM=m=>{const t=ALL_FILTERED.filter(r=>r.logMonth===m&&mailFn(r)).length;const l1=lv1m(m);return t>0?Math.round((t-l1)/t*100):null;};
+  makeAreaBarCombo('m-mail-chart', ALL12, chartMonths, chartMonths.map(nfmrPctM), chartMonths.map(fmrPctM), '#FF8FAB', '#8B7CF8');
+  makeCleanBarChart('m-res-mail-chart', ALL12, chartMonths,
+    [{label:'Avg Resolution Time', data:chartMonths.map(arM), color:'#FFA940'}], null, 'วัน');
+  makeDeptLevelChart('m-mail-level-chart',chartMonths,mailFn,'mail');
+  makeDeptLevelTable('m-mail-dept-level-tbl',chartMonths,mailFn);
+  makeResDeptChart('m-mail-res-dept-chart',chartMonths,mailFn);
+  makeRespDeptChart('m-mail-resp-dept-chart',chartMonths,mailFn);
+  makeResDeptTable('m-mail-res-dept-tbl',chartMonths,mailFn);
+  makeMonthTable('m-mail-tbl',chartMonths,mailFn,'#6C5CE7');
   renderTop10Issue('mail');
 }
 
