@@ -2192,7 +2192,7 @@ function renderWkOverview(weeks,allWks){
   // Heatmap (Call per day per week)
   const hmH=makeWkHeatmap(weeks);
   // Dept breakdown bar
-  const deptH=makeWkDeptBars(stats);
+  const deptH=makeWkDeptBars(weeks);
 
   document.getElementById('wk-content').innerHTML=`
     <div class="card" style="margin-bottom:12px;overflow-x:auto">${tbl}</div>
