@@ -3708,7 +3708,7 @@ function lv2ClassName(){ return FCR_CH==='call'?'Call-Level 2':'Mail-Level 2'; }
 
 function renderFCR(){
   if(!RAW.length)return;
-  const allDepts=[...new Set(ALL_FILTERED.map(r=>r.typeDept).filter(Boolean))].sort();
+  const allDepts=[...new Set(FILTERED.map(r=>r.typeDept).filter(Boolean))].sort();
   const sel=document.getElementById('fcr-dept-sel');
   if(sel){const cur=sel.value;sel.innerHTML='<option value="">ทุกแผนก</option>'+allDepts.map(d=>`<option${d===cur?' selected':''}>${d}</option>`).join('');}
   // Init date range inputs min/max from data
