@@ -786,7 +786,7 @@ const isTotalCall= r => ['Call','Received'].includes(r.logType);
 const isForward  = r => r.logType==='Forword'||r.logType==='Forward';
 const isTransfer = r => r.logType==='Transfer';
 const isMail     = r => r.logType==='Mail' && !r._referredMail;
-const isAnyCall  = r => ['Call','Forword','Forward','Transfer','Received','Abandon'].includes(r.logType);
+const isAnyCall  = r => ['Call','Forword','Forward','Transfer','Received','Abandon','Call Back'].includes(r.logType);
 const modeFilter = r => MODE==='call'?isAnyCall(r):MODE==='mail'?isMail(r):true;
 
 const pct=(n,d)=>d?Math.round(n/d*100):0;
@@ -1739,7 +1739,7 @@ function renderDeptCaseTable(src,singleDept){
   if(!src.length){el.innerHTML='<div class="empty">ไม่มีข้อมูล</div>';return;}
 
   // KPI rows = ไม่นับ Transfer, ไม่นับ Call Back (สำหรับ FCR/status/resolution)
-  const isKpiRow=r=>r.logType!=='Transfer'&&r.logType!=='Call Back'&&!r._referredMail;
+  const isKpiRow=r=>(isTotalCall(r)||isMail(r))&&!r._referredMail;
   // Call KPI = Call+Transfer (ตรงกับ KPI Panel)
   const isCallKpi=r=>isKpiCall(r);
 
