@@ -431,17 +431,16 @@ input[type=file]{display:none}
 <!-- Tabs -->
 <div class="tabs" id="tab-bar" style="display:none">
   <button class="tab on" onclick="showTab('main')">📊 ภาพรวม</button>
+  <button class="tab" onclick="showTab('weekly')">📅 รายสัปดาห์</button>
+  <button class="tab" onclick="showTab('monthly')">📈 รายเดือน</button>
   <button class="tab" onclick="showTab('fcr')">🎯 FCR / Non-FCR</button>
   <button class="tab" onclick="showTab('mgmt')">🔺 Case Level 2</button>
   <button class="tab" onclick="showTab('pending')">⏳ Case ค้าง</button>
-  <button class="tab" onclick="showTab('weekly')">📅 รายสัปดาห์</button>
-  <button class="tab" onclick="showTab('monthly')">📈 รายเดือน</button>
   <button class="tab" onclick="showTab('topissue')">🔍 Top Issue</button>
 </div>
 
 <!-- ══════════════ PAGE: MAIN ══════════════ -->
 <div class="page on" id="page-main">
-  <div class="sec"><div class="dot" style="background:var(--indigo)"></div>ภาพรวม KPI</div>
   <div id="kpi-row"></div>
   <div id="kpi-hero" style="display:none"></div>
 
@@ -481,7 +480,7 @@ input[type=file]{display:none}
       <label style="font-size:12px;color:var(--gray);font-weight:600">ช่องทาง:</label>
       <div class="toggle">
         <button class="tbtn on" id="fcr-ch-call" onclick="setFcrCh('call')">📞 Call (FCR)</button>
-        <button class="tbtn"    id="fcr-ch-mail" onclick="setFcrCh('mail')">✉ Mail (FCR)</button>
+        <button class="tbtn"    id="fcr-ch-mail" onclick="setFcrCh('mail')">✉ Mail (ESCALATED)</button>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:5px">
@@ -609,8 +608,17 @@ input[type=file]{display:none}
     <div class="card"><div class="ctitle"><div class="dot" style="background:var(--amber)"></div>Case Level 2 ตามแผนกที่ส่งต่อ</div><div class="bars" id="mgmt-dept-bar"></div></div>
     <div class="card"><div class="ctitle"><div class="dot" style="background:var(--red)"></div>Avg Response Time ตามแผนก (วัน)</div><div class="bars" id="mgmt-resp-bar"></div></div>
   </div>
-  <div class="sec"><div class="dot" style="background:var(--amber)"></div>Case Level 2 ที่ยังค้างอยู่ — เรียงตามค้างนานสุด</div>
-  <div class="card" style="overflow-x:auto"><div id="mgmt-pending-tbl"></div></div>
+  <div class="sec" style="display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:6px"><div class="dot" style="background:var(--amber)"></div>Top Case Level 2 ตามแผนก</div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px">
+      <span style="color:var(--gray)">แสดง Issue ตาม:</span>
+      <select id="mgmt-issue-col" onchange="renderMgmt()" style="font-size:12px;padding:3px 8px;border-radius:6px;border:1px solid var(--border);color:var(--dark);background:#fff">
+        <option value="typeDetail">Type ByDetail</option>
+        <option value="issueDetail">Issue Detail</option>
+      </select>
+    </div>
+  </div>
+  <div class="card" style="overflow-x:auto"><div id="mgmt-top-dept-tbl"></div></div>
 </div>
 
 <!-- ══════════════ PAGE: PENDING ══════════════ -->
@@ -637,37 +645,33 @@ input[type=file]{display:none}
 <!-- ══════════════ PAGE: MONTHLY ══════════════ -->
 <div class="page" id="page-monthly">
 <div id="page-monthly-inner">
-  <div class="m-mode-toggle">
-    <button class="m-mode-btn on" id="mm-call" onclick="setMonthlyMode('call')">📞 Call</button>
-    <button class="m-mode-btn" id="mm-mail" onclick="setMonthlyMode('mail')">✉ Mail</button>
-  </div>
   <!-- CALL -->
   <div id="mv-call">
     <div class="m-kpi-row" id="m-call-kpi"></div>
-    <div class="m-sec"><div class="dot" style="background:#0D9488"></div>Case Level ตามแผนก รายเดือน — Call</div>
+    <div class="m-sec"><div class="dot" style="background:#0D9488"></div><span id="m-call-level-title">Case Level ตามแผนก รายเดือน — Call</span></div>
     <div class="m-card" style="padding:14px 16px"><div id="m-call-level-chart"></div></div>
     <div class="m-card" style="overflow-x:auto;margin-top:-8px"><div id="m-call-dept-level-tbl"></div></div>
     <div class="m-g2">
       <div class="m-card" style="padding:14px 0 10px">
         <div class="m-card-title" style="padding:0 14px">
-          <div class="dot" style="background:#3b82f6"></div>Total Call vs Level 1 รายเดือน
+          <div class="dot" style="background:#3b82f6"></div>1st Contact Resolution
         </div>
         <div id="m-call-chart" style="overflow-x:auto;padding-right:14px"></div>
       </div>
       <div class="m-card" style="padding:14px 0 10px">
         <div class="m-card-title" style="padding:0 14px">
-          <div class="dot" style="background:#ef4444"></div>Abandon (3CX) vs Total Call รายเดือน
+          <div class="dot" style="background:#ef4444"></div>Abandon
         </div>
         <div id="m-abn-chart" style="overflow-x:auto;padding-right:14px"></div>
       </div>
     </div>
     <div class="m-g2">
       <div class="m-card" style="padding:14px 0 10px">
-        <div class="m-card-title" style="padding:0 14px"><div class="dot" style="background:#22c55e"></div>Call Reach Rate รายเดือน (%)</div>
+        <div class="m-card-title" style="padding:0 14px"><div class="dot" style="background:#22c55e"></div>Call Reach Rate</div>
         <div id="m-reach-chart" style="overflow-x:auto;padding-right:14px"></div>
       </div>
       <div class="m-card" style="padding:14px 0 10px">
-        <div class="m-card-title" style="padding:0 14px"><div class="dot" style="background:#FFA940"></div>Avg Resolution Time รายเดือน (วัน)</div>
+        <div class="m-card-title" style="padding:0 14px"><div class="dot" style="background:#FFA940"></div>Avg. Resolution Time</div>
         <div id="m-res-call-chart" style="overflow-x:auto;padding-right:14px"></div>
       </div></div>
     <!-- end m-g2 reach+res row -->
@@ -679,28 +683,13 @@ input[type=file]{display:none}
           <div id="m-call-res-dept-chart" style="overflow-x:auto"></div>
         </div>
         <div>
-          <div style="font-size:10px;font-weight:700;color:#5B8DEF;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">📋 Response Time (Lv2-Close)</div>
+          <div style="font-size:10px;font-weight:700;color:#5B8DEF;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">📋 Resolution Time (Level 2-Close)</div>
           <div id="m-call-resp-dept-chart" style="overflow-x:auto"></div>
         </div>
       </div>
     </div>
-    <div class="m-card" style="overflow-x:auto;margin-top:-8px"><div id="m-call-res-dept-tbl"></div></div>
-    <div class="m-sec"><div class="dot" style="background:#a855f7"></div>ตารางเปรียบเทียบรายเดือน — Call</div>
+    <div class="m-sec"><div class="dot" style="background:#a855f7"></div><span id="m-call-tbl-title">ตารางเปรียบเทียบรายเดือน — Call</span></div>
     <div class="m-card" style="overflow-x:auto"><div id="m-call-tbl"></div></div>
-    <div class="m-sec"><div class="dot" style="background:var(--amber)"></div>Top 10 Issue ตามแผนก — Call</div>
-    <div class="m-card">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-        <label style="font-size:12px;color:var(--gray);font-weight:500">แผนก:</label>
-        <select id="m-call-dept-sel" onchange="renderTop10Issue('call')" style="font-size:12px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;font-family:'Inter',sans-serif;min-width:140px"><option value="">ทุกแผนก</option></select>
-        <label style="font-size:12px;color:var(--gray);font-weight:500">แสดงตาม:</label>
-        <select id="m-call-issue-col" onchange="renderTop10Issue('call')" style="font-size:12px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;font-family:'Inter',sans-serif">
-          <option value="typeDetail">Type ByDetail</option>
-          <option value="issueDetail">Issue Detail</option>
-        </select>
-      </div>
-      <div id="m-call-pareto" style="overflow-x:auto"></div>
-      <div style="margin-top:12px;overflow-x:auto"><div id="m-call-issue-tbl"></div></div>
-    </div>
   </div><!-- end mv-call -->
   <!-- MAIL -->
   <div id="mv-mail" style="display:none">
@@ -717,7 +706,7 @@ input[type=file]{display:none}
         <div id="m-mail-chart" style="overflow-x:auto;padding-right:14px"></div>
       </div>
       <div class="m-card" style="padding:14px 0 10px">
-        <div class="m-card-title" style="padding:0 14px"><div class="dot" style="background:#FFA940"></div>Avg Resolution Time รายเดือน (วัน)</div>
+        <div class="m-card-title" style="padding:0 14px"><div class="dot" style="background:#FFA940"></div>Avg. Resolution Time</div>
         <div id="m-res-mail-chart" style="overflow-x:auto;padding-right:14px"></div>
       </div>
     </div>
@@ -729,28 +718,13 @@ input[type=file]{display:none}
           <div id="m-mail-res-dept-chart" style="overflow-x:auto"></div>
         </div>
         <div>
-          <div style="font-size:10px;font-weight:700;color:#5B8DEF;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">📋 Response Time (Lv2-Close)</div>
+          <div style="font-size:10px;font-weight:700;color:#5B8DEF;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">📋 Resolution Time (Level 2-Close)</div>
           <div id="m-mail-resp-dept-chart" style="overflow-x:auto"></div>
         </div>
       </div>
     </div>
-    <div class="m-card" style="overflow-x:auto;margin-top:-8px"><div id="m-mail-res-dept-tbl"></div></div>
     <div class="m-sec"><div class="dot" style="background:#a855f7"></div>ตารางเปรียบเทียบรายเดือน — Mail</div>
     <div class="m-card" style="overflow-x:auto"><div id="m-mail-tbl"></div></div>
-    <div class="m-sec"><div class="dot" style="background:var(--purple)"></div>Top 10 Issue ตามแผนก — Mail</div>
-    <div class="m-card">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-        <label style="font-size:12px;color:var(--gray);font-weight:500">แผนก:</label>
-        <select id="m-mail-dept-sel" onchange="renderTop10Issue('mail')" style="font-size:12px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;font-family:'Inter',sans-serif;min-width:140px"><option value="">ทุกแผนก</option></select>
-        <label style="font-size:12px;color:var(--gray);font-weight:500">แสดงตาม:</label>
-        <select id="m-mail-issue-col" onchange="renderTop10Issue('mail')" style="font-size:12px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;font-family:'Inter',sans-serif">
-          <option value="typeDetail">Type ByDetail</option>
-          <option value="issueDetail">Issue Detail</option>
-        </select>
-      </div>
-      <div id="m-mail-pareto" style="overflow-x:auto"></div>
-      <div style="margin-top:12px;overflow-x:auto"><div id="m-mail-issue-tbl"></div></div>
-    </div>
   </div>
 </div>
 </div>
@@ -759,28 +733,8 @@ input[type=file]{display:none}
 <div class="page" id="page-topissue">
   <div class="card" style="margin-bottom:12px">
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-      <!-- Call / Mail toggle -->
-      <div style="display:flex;gap:6px">
-        <button id="ti-ch-all"  class="fcr-range-btn on" onclick="setTiCh('all')">📋 ทั้งหมด</button>
-        <button id="ti-ch-call" class="fcr-range-btn" onclick="setTiCh('call')">📞 Call</button>
-        <button id="ti-ch-mail" class="fcr-range-btn" onclick="setTiCh('mail')">✉ Mail</button>
-      </div>
-      <div style="width:1px;height:24px;background:var(--border)"></div>
-      <!-- Period buttons -->
-      <div style="display:flex;gap:6px;flex-wrap:wrap">
-        <button id="ti-range-7"   class="fcr-range-btn" onclick="setTiRange('7')">7 วัน</button>
-        <button id="ti-range-14"  class="fcr-range-btn" onclick="setTiRange('14')">14 วัน</button>
-        <button id="ti-range-30"  class="fcr-range-btn" onclick="setTiRange('30')">30 วัน</button>
-        <button id="ti-range-all" class="fcr-range-btn on" onclick="setTiRange('all')">ทั้งหมด</button>
-      </div>
-      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray)">
-        <span>กำหนดเอง:</span>
-        <input type="date" id="ti-from" onchange="setTiRange('custom')" style="font-size:11px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-family:'Inter',sans-serif">
-        <span>—</span>
-        <input type="date" id="ti-to" onchange="setTiRange('custom')" style="font-size:11px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-family:'Inter',sans-serif">
-      </div>
       <!-- Col selector -->
-      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray);margin-left:auto">
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray)">
         <span>แสดงตาม:</span>
         <select id="ti-col" onchange="renderTopIssuePage()" style="font-size:11px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;font-family:'Inter',sans-serif">
           <option value="typeDetail">Type ByDetail</option>
@@ -792,21 +746,14 @@ input[type=file]{display:none}
         </select>
       </div>
     </div>
-    <!-- Range indicator -->
-    <div id="ti-range-lbl" style="font-size:11px;color:var(--teal);margin-top:6px;font-weight:600"></div>
   </div>
   <!-- Pareto chart -->
   <div class="card" style="margin-bottom:12px">
-    <div class="sec-title"><div class="dot" style="background:var(--teal)"></div>Top 10 Issue — Pareto Chart</div>
+    <div class="sec-title"><div class="dot" style="background:var(--teal)"></div>Top 10 Issue</div>
     <div id="ti-pareto" style="overflow-x:auto"></div>
-  </div>
-  <!-- Summary row -->
-  <div class="card" style="margin-bottom:12px;overflow-x:auto">
-    <div id="ti-summary-row"></div>
   </div>
   <!-- Monthly breakdown table -->
   <div class="card" style="overflow-x:auto">
-    <div class="sec-title"><div class="dot" style="background:var(--teal)"></div>จำนวน Issue รายเดือน</div>
     <div id="ti-monthly-tbl"></div>
   </div>
 </div>
@@ -819,23 +766,23 @@ let RAW=[], FILTERED=[], MODE='all', SEL_DAY='', MONTHLY_SEL_M='';
 let CX={loaded:false,total:{reach_pct:null,sla_pct:null,reach_ans:0,reach_abn:0,
          sla_ok:0,sla_total:0,avg_talk_sec:null},daily:{}};
 
-// ─── Business Rules (ปรับใหม่) ───
+// ─── Business Rules ───
 // Call     = สายรับ → นับ Call ✓ งาน ✓ KPI ✓
 // Forward  = ผิดคิว → นับ Other (ไม่นับ KPI)
-// Transfer = ส่งต่อภายในคิว → นับ Call KPI ✓
-// Received = รับจาก Transfer → ไม่นับ
-// Abandon  = Log Type ใน CallLog → แสดงเป็น "Call Back" จำนวนที่ต้องโทรกลับ; ไม่นับ Call
+// Transfer = ส่งต่อภายในคิว → ไม่นับ KPI
+// Received = รับสาย → นับ Call KPI ✓
+// Abandon  = Log Type ใน CallLog → แสดงเป็น "Call Back"; ไม่นับ Call
 // Call Back = ซ่อน ไม่นับ ไม่แสดง
 // Mail     = ไม่นับ Log ID ที่ถูก Refer
-// Call KPI (ตัวหาร FCR) = Call + Transfer
+// Call KPI (ตัวหาร FCR) = Call + Received
 // FCR = Call-Level 1 / KPI Call
 // FMR = Mail-Level 1 / Mail จริง (ไม่ถูก Refer)
 // Avg Talk = Talking sec จาก 3CX Inbound Answered / จำนวนสาย
-// Abandon (KPI) = 3CX Inbound Queue + Unanswered
+// Abandon % = Abandon ของ CallLog / Abandon ของ 3CX
 // Call Back card = นับจาก Log Type = "Abandon" ใน Call Log เท่านั้น
 
-const isKpiCall  = r => ['Call','Transfer'].includes(r.logType);
-const isTotalCall= r => ['Call','Transfer'].includes(r.logType);
+const isKpiCall  = r => ['Call','Received'].includes(r.logType);
+const isTotalCall= r => ['Call','Received'].includes(r.logType);
 const isForward  = r => r.logType==='Forword'||r.logType==='Forward';
 const isTransfer = r => r.logType==='Transfer';
 const isMail     = r => r.logType==='Mail' && !r._referredMail;
@@ -844,7 +791,7 @@ const modeFilter = r => MODE==='call'?isAnyCall(r):MODE==='mail'?isMail(r):true;
 
 const pct=(n,d)=>d?Math.round(n/d*100):0;
 const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
-const nf=v=>v===null||v===undefined?'—':Number.isInteger(v)?v:parseFloat(v.toFixed(1));
+const nf=v=>v===null||v===undefined?'—':parseFloat(v).toFixed(1);
 const today=()=>new Date().toISOString().slice(0,10);
 const fmtDate=d=>{if(!d)return'—';const[y,m,dy]=d.split('-');return`${dy}/${m}/${y}`;};
 const diffDays=(a,b)=>{if(!a||!b)return 0;return Math.max(0,Math.round((new Date(b)-new Date(a))/86400000));};
@@ -1190,7 +1137,8 @@ function postLoad(){
 
 function processCX(file){
   readFile(file,data=>{
-    if(!data.length||!Object.keys(data[0]).includes('Direction')){
+    const keys=Object.keys(data[0]).map(k=>k.replace(/^\uFEFF/,'').trim());
+    if(!data.length||!keys.includes('Direction')){
       alert('ไม่ใช่ไฟล์ 3CX — ต้องมี Column: Direction, Status, Call Time, Talking');return;
     }
     processCXData(data);
@@ -1296,6 +1244,7 @@ function applyFilters(){
 function renderAll(){
   renderKPI();renderTimeCards();renderMVC();renderTop10();
   renderMgmt();renderPending();renderWeekly();renderMonthly();
+  renderTopIssuePage();
 }
 
 // ─── KPI HERO ───
@@ -1376,9 +1325,9 @@ function renderKPI(){
     const circ=2*Math.PI*R;
     const ap=Math.min(Math.max(arcPct||0,0),100);
     const dash=circ*(ap/100);
-    const dispStr=val!==null&&val!==undefined?String(val):'—';
+    const dispStr=val!==null&&val!==undefined?(suffix==='วัน'?(val%1===0?String(Math.round(val)):parseFloat(val).toFixed(1)):String(val)):'—';
     const sfx=suffix||'';
-    const fs=dispStr.length<=3?44:dispStr.length<=5?35:26;
+    const fs=dispStr.length<=4?44:dispStr.length<=6?35:26;
     const sfxFs=Math.round(fs*.44);
     let deltaHtml='';
     if(deltaVal!==null&&deltaVal!==undefined){
@@ -1418,7 +1367,7 @@ function renderKPI(){
     `<div style="font-size:16px;font-weight:700;color:${color};text-align:center;margin-top:8px;line-height:1.4">${text}</div>`;
 
   // ── SVG icons ──
-  const callIcon=`<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#29C6C0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  const callIcon=`<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#29C6C0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.9 1.18 2 2 0 012.88 0h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L7.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 14.92z"/></svg>`;
   const mailIcon=`<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#6C5CE7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <rect x="2" y="4" width="20" height="16" rx="2"/>
@@ -1438,15 +1387,14 @@ function renderKPI(){
       <div style="font-size:14px;font-weight:700;color:#29C6C0;text-transform:uppercase;letter-spacing:.14em;margin-bottom:8px">CALL</div>
       <div style="font-size:64px;font-weight:300;color:#1E1B3A;line-height:1;font-family:'Inter',sans-serif">${kpiCallN}</div>
       <div style="font-size:16px;font-weight:600;color:#9CA3AF;margin-top:6px">${callP}%</div>
-      <div style="margin-top:12px">${callIcon}</div>
-      <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(41,198,192,.2);width:100%">
+      <div style="margin-top:6px">${callIcon}</div>
+      <div style="margin-top:4px;padding-top:6px;border-top:1px solid rgba(41,198,192,.2);width:100%">
         <div style="font-size:10px;font-weight:600;color:#29C6C0;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">Avg. Talk Time</div>
-        <div style="font-size:20px;font-weight:300;color:#1E1B3A;font-family:'Inter',sans-serif;line-height:1">${atStr}</div>
-        <div style="font-size:10px;color:#9CA3AF;margin-top:2px">min</div>
+        <div style="font-size:16px;font-weight:300;color:#1E1B3A;font-family:'Inter',sans-serif;line-height:1">${atStr} <span style="font-size:10px;color:#9CA3AF">min</span></div>
       </div>
     </div>
 
-    <!-- CALL KPIs: single row + divider -->
+    <!-- CALL KPIs -->
     <div style="flex:1;min-width:0;padding:8px 16px 8px">
       <div style="font-size:11px;font-weight:700;color:#29C6C0;text-transform:uppercase;letter-spacing:.1em;
         margin-bottom:12px;display:flex;align-items:center;gap:6px">
@@ -1521,8 +1469,6 @@ function renderKPI(){
     </div>
   </div>
 
-
-
 </div>`;
 }
 
@@ -1539,7 +1485,7 @@ function renderTimeCards(){
     const mxS=Math.max(rs0,rs1,rs2,1);
     const resC=avgRes===null?'var(--gray)':avgRes<=0.5?'var(--green)':avgRes<=1?'var(--teal)':avgRes<=3?'var(--amber)':'var(--red)';
     return`<div class="tcard" style="flex:1;min-width:180px">
-      <div class="tcard-title"><div class="dot" style="background:${dotColor}"></div>Resolution Time</div>
+      <div class="tcard-title"><div class="dot" style="background:${dotColor}"></div>Resolution Time (All)</div>
       <div class="trow"><span class="key">Case มีข้อมูล</span><span class="val">${ress.length} case</span></div>
       <div class="trow"><span class="key">เฉลี่ย</span><span class="val" style="color:${resC}">${nf2(avgRes)} วัน</span></div>
       <div class="trow"><span class="key">สูงสุด</span><span class="val" style="color:var(--red)">${nf2(maxRes)} วัน</span></div>
@@ -1554,13 +1500,13 @@ function renderTimeCards(){
   const mkRespCard=(rows,dotColor)=>{
     const lv2=rows.filter(r=>r.caseLevel?.includes('Level 2'));
     const lv2closed=lv2.filter(r=>r.status==='Closed');
-    const rts=lv2closed.map(r=>r.responseTime).filter(x=>x!==null);
+    const rts=lv2closed.map(r=>r.resolutionTime).filter(x=>x!==null); // ใช้ resolutionTime แทน responseTime
     const avgRt=avg(rts); const maxRt=rts.length?Math.max(...rts):null;
     const rt0=rts.filter(x=>x===0).length, rt1=rts.filter(x=>x===1).length, rt2=rts.filter(x=>x>1).length;
     const mxR=Math.max(rt0,rt1,rt2,1);
     const rtC=avgRt===null?'var(--gray)':avgRt<=1?'var(--green)':avgRt<=3?'var(--amber)':'var(--red)';
     return`<div class="tcard" style="flex:1;min-width:180px">
-      <div class="tcard-title"><div class="dot" style="background:${dotColor}"></div>Response Time (L2 Closed)</div>
+      <div class="tcard-title"><div class="dot" style="background:${dotColor}"></div>Resolution Time (Level 2-Close)</div>
       <div class="trow"><span class="key">Level 2 ทั้งหมด</span><span class="val">${lv2.length} case</span></div>
       <div class="trow"><span class="key">Closed</span><span class="val" style="color:var(--green)">${lv2closed.length} case</span></div>
       <div class="trow"><span class="key">เฉลี่ย</span><span class="val" style="color:${rtC}">${nf2(avgRt)} วัน</span></div>
@@ -1628,7 +1574,7 @@ function renderTimeCards(){
 // ─── MVC ───
 function renderMVC(){
   const d=FILTERED;
-  const callItems=MODE==='mail'?[]:d.filter(r=>['Call','Transfer'].includes(r.logType));
+  const callItems=MODE==='mail'?[]:d.filter(r=>isKpiCall(r));
   const mailItems=MODE==='call'?[]:d.filter(r=>isMail(r));
   const dfrom=document.getElementById('f-from')?.value||'';
   const dto=document.getElementById('f-to')?.value||'';
@@ -1646,7 +1592,7 @@ function renderMVC(){
       return`<div class="brow"><div class="blbl" title="${l}">${l}</div>
         <div class="bwrap" onclick="drillToDept('${l}')" style="cursor:pointer" title="คลิกเพื่อกรองแผนก ${l}"><div class="bfill" style="width:${Math.round(n/mx*100)}%;background:${color};transition:.2s">${n>3?n:''}</div></div>
         <div class="bcnt" style="display:flex;flex-direction:column;align-items:flex-end;min-width:46px">
-          <span style="font-weight:700">${n}</span><span style="font-size:10px;color:var(--gray)">${p}%</span>
+          <span style="font-weight:700">${n}</span><span style="font-size:13px;font-weight:600;color:var(--gray)">${p}%</span>
         </div></div>`;
     }).join('')+'</div>';
   };
@@ -1803,9 +1749,9 @@ function renderDeptCaseTable(src,singleDept){
     const total=kpiSrc.length||1;
     let tbl=`<table class="tbl"><thead><tr>
       <th>แผนก</th><th>KPI รวม</th><th>%</th>
-      <th>📞 Call (KPI)</th><th>🚫 Abandon</th><th>✉ Mail</th>
-      <th>Open</th><th>Pending</th><th>Closed</th><th>Avg Pending</th>
-      <th style="color:var(--teal)">Avg Resolution</th>
+      <th>📞 Call</th><th>🚫 Abandon</th><th>✉ Mail</th>
+      <th>Open</th><th>Pending</th><th>Closed</th><th>Avg Pending Time</th>
+      <th style="color:var(--teal)">Avg. Resolution Time</th>
     </tr></thead><tbody>`;
     depts.forEach(dept=>{
       const di=kpiSrc.filter(r=>r.typeDept===dept);
@@ -1886,8 +1832,8 @@ function renderDeptCaseTable(src,singleDept){
     const typeEntries=Object.entries(typeMap).sort((a,b)=>b[1].rows.length-a[1].rows.length);
     let tbl=`<table class="tbl" id="issue-tbl"><thead><tr>
       <th>Type ByDetail / Issue Detail</th><th>KPI รวม</th><th>%</th>
-      <th>📞 Call (KPI)</th><th>🚫 Abandon</th><th>✉ Mail</th>
-      <th>Open</th><th>Pending</th><th>Closed</th><th>Avg Pending</th>
+      <th>📞 Call</th><th>🚫 Abandon</th><th>✉ Mail</th>
+      <th>Open</th><th>Pending</th><th>Closed</th><th>Avg Pending Time</th>
     </tr></thead><tbody>`;
     typeEntries.forEach(([td,{rows,issues}],idx)=>{
       const s=calcStats(rows);const gid=`grp-${idx}`;
@@ -1953,12 +1899,12 @@ function renderMgmt(){
   }).sort((a,b)=>b.total-a.total);
   const maxTotal=Math.max(...deptStats.map(d=>d.total),1);
   const maxAvgR=Math.max(...deptStats.map(d=>d.avgR||0),1);
-  let tbl=`<table class="tbl dept-perf-tbl"><thead><tr><th>แผนก</th><th>Case Level 2</th><th>ดำเนินการแล้ว</th><th>ยังค้างอยู่</th><th>Avg Response</th><th style="color:var(--teal)">Avg Resolution</th><th>Pending นานสุด</th><th>สถานะ</th></tr></thead><tbody>`;
+  let tbl=`<table class="tbl dept-perf-tbl"><thead><tr><th>แผนก</th><th>Case Level 2</th><th>ดำเนินการแล้ว</th><th>ยังค้างอยู่</th><th style="color:var(--teal)">Avg. Resolution Time</th><th>Pending นานสุด</th><th>สถานะ</th></tr></thead><tbody>`;
   deptStats.forEach(s=>{
     const rC=s.avgR===null?'#aaa':s.avgR<=3?'var(--green)':s.avgR<=7?'var(--amber)':'var(--red)';
     const resC=s.avgRes===null?'#aaa':s.avgRes<=1?'var(--green)':s.avgRes<=3?'var(--amber)':'var(--red)';
     const mC=s.maxPt>7?'var(--red)':s.maxPt>3?'var(--amber)':'var(--green)';
-    tbl+=`<tr class="td-row"><td><strong>${s.dept}</strong></td><td><strong>${s.total}</strong></td><td style="color:var(--green)">${s.done}</td><td style="color:${s.pending>0?'var(--red)':'var(--green)'}">${s.pending}</td><td><strong style="color:${rC}">${nf(s.avgR)} วัน</strong></td><td><strong style="color:${resC}">${s.avgRes!==null?nf(s.avgRes)+' วัน':'—'}</strong></td><td style="color:${mC};font-weight:600">${s.maxPt>0?s.maxPt+' วัน':'—'}</td><td>${s.pending===0?'<span class="badge b-ok">ครบ</span>':`<span class="badge b-slow">รอ ${s.pending} case</span>`}</td></tr>`;
+    tbl+=`<tr class="td-row"><td><strong>${s.dept}</strong></td><td><strong>${s.total}</strong></td><td style="color:var(--green)">${s.done}</td><td style="color:${s.pending>0?'var(--red)':'var(--green)'}">${s.pending}</td><td><strong style="color:${resC}">${s.avgRes!==null?nf(s.avgRes)+' วัน':'—'}</strong></td><td style="color:${mC};font-weight:600">${s.maxPt>0?s.maxPt+' วัน':'—'}</td><td>${s.pending===0?'<span class="badge b-ok">ครบ</span>':`<span class="badge b-slow">รอ ${s.pending} case</span>`}</td></tr>`;
   });
   tbl+=`</tbody></table>`;
   document.getElementById('dept-perf-table').innerHTML=tbl;
@@ -1968,10 +1914,81 @@ function renderMgmt(){
     const c=s.avgR<=3?'var(--green)':s.avgR<=7?'var(--amber)':'var(--red)';
     return`<div class="brow"><div class="blbl">${s.dept}</div><div class="bwrap"><div class="bfill" style="width:${Math.round(s.avgR/maxAvgR*100)}%;background:${c}">${s.avgR>0?nf(s.avgR):''}</div></div><div class="bcnt" style="color:${c}">${nf(s.avgR)}</div></div>`;
   }).join(''):'<div class="empty">ไม่มีข้อมูล</div>';
-  const pendRows=c2pend.map(r=>({...r,pd:r.pendingTime||(diffDays(r.dateLog,todayStr)||0)})).sort((a,b)=>b.pd-a.pd).slice(0,30);
-  if(!pendRows.length){document.getElementById('mgmt-pending-tbl').innerHTML='<div class="empty">ไม่มี Case Level 2 ค้างอยู่ 🎉</div>';return;}
-  const pdC=pd=>pd>=7?'b-slow':pd>=3?'b-warn':'b-ok';
-  document.getElementById('mgmt-pending-tbl').innerHTML=`<table class="tbl"><thead><tr><th>Log ID</th><th>Log Type</th><th>วันที่เปิด</th><th>Pending Time</th><th>สถานะ</th><th>แผนก</th><th>หัวข้อ</th><th>Issue Detail</th><th>Contact Dept</th></tr></thead><tbody>${pendRows.map(r=>`<tr class="td-row"><td><strong>${r.logId||'—'}</strong></td><td style="color:var(--blue)">${r.logType||'—'}</td><td>${fmtDate(r.dateLog)}</td><td><span class="badge ${pdC(r.pd)}">${r.pd} วัน${r.pd>=7?' ⚠':''}</span></td><td><span class="badge ${r.status==='Open'?'b-open':'b-pend'}">${r.status}</span></td><td>${r.typeDept||'—'}</td><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${getDetail(r)}</td><td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${getIssue(r)||'—'}</td><td>${r.contactDept||'—'}</td></tr>`).join('')}</tbody></table>`;
+  // Top Cases by Dept
+  const issueCol=document.getElementById('mgmt-issue-col')?.value||'typeDetail';
+  const getIssueVal=r=>{
+    const v=issueCol==='issueDetail'?getIssue(r):getDetail(r);
+    return v&&v.trim()?v.trim():'(ไม่ระบุ)';
+  };
+  const topDepts=deptStats.filter(s=>s.total>0).sort((a,b)=>b.total-a.total);
+  if(!topDepts.length){
+    document.getElementById('mgmt-top-dept-tbl').innerHTML='<div class="empty">ไม่มีข้อมูล Case Level 2</div>';
+    return;
+  }
+  let topTbl=`<table class="tbl"><thead><tr>
+    <th></th><th>อันดับ</th><th>แผนก</th><th>Case Level 2 ทั้งหมด</th>
+    <th>ดำเนินการแล้ว</th><th>ยังค้างอยู่</th>
+    <th>Top Issue</th><th>Avg. Resolution Time</th>
+  </tr></thead><tbody>`;
+  topDepts.forEach((s,i)=>{
+    const deptRows=c2.filter(r=>r.typeDept===s.dept);
+    const issueCt={};
+    deptRows.forEach(r=>{const v=getIssueVal(r);issueCt[v]=(issueCt[v]||0)+1;});
+    const issuesSorted=Object.entries(issueCt).sort((a,b)=>b[1]-a[1]);
+    const topIssue=issuesSorted[0];
+    const topIssueStr=topIssue?`${topIssue[0]} <span style="color:var(--gray);font-size:10px">(${topIssue[1]} case)</span>`:'—';
+    const resC=s.avgRes===null?'#aaa':s.avgRes<=1?'var(--green)':s.avgRes<=3?'var(--amber)':'var(--red)';
+    const rankColor=i===0?'var(--red)':i===1?'var(--amber)':i===2?'var(--teal)':'var(--gray)';
+    const deptId=`mgmt-drill-${i}`;
+    // Dept row (clickable)
+    topTbl+=`<tr class="td-row" onclick="(function(){const el=document.getElementById('${deptId}');el.style.display=el.style.display==='none'?'table-row-group':'none';this.querySelector('.drill-icon').textContent=el.style.display==='none'?'▶':'▼'}).call(this)" style="cursor:pointer">
+      <td style="width:24px;text-align:center"><span class="drill-icon" style="font-size:10px;color:var(--gray)">▶</span></td>
+      <td><strong style="color:${rankColor};font-size:16px">#${i+1}</strong></td>
+      <td><strong>${s.dept}</strong></td>
+      <td><strong style="color:var(--blue)">${s.total}</strong></td>
+      <td style="color:var(--green)">${s.done}</td>
+      <td style="color:${s.pending>0?'var(--red)':'var(--green)'}">${s.pending}</td>
+      <td style="max-width:200px">${topIssueStr}</td>
+      <td style="color:${resC};font-weight:600">${s.avgRes!==null?nf(s.avgRes)+' วัน':'—'}</td>
+    </tr>`;
+    // Drill-down rows (hidden by default)
+    topTbl+=`</tbody><tbody id="${deptId}" style="display:none;background:#f8fafc">`;
+    topTbl+=`<tr><td colspan="8" style="padding:0">
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:#f0f4ff">
+          <td style="padding:6px 12px 6px 40px;font-weight:700;color:var(--indigo);width:40%">Issue</td>
+          <td style="padding:6px 8px;font-weight:700;color:var(--indigo)">จำนวน</td>
+          <td style="padding:6px 8px;font-weight:700;color:var(--indigo)">%</td>
+          <td style="padding:6px 8px;font-weight:700;color:var(--indigo)">ดำเนินการแล้ว</td>
+          <td style="padding:6px 8px;font-weight:700;color:var(--indigo)">ยังค้าง</td>
+        </tr></thead><tbody>`;
+    issuesSorted.forEach(([issue,cnt],j)=>{
+      const issueRows=deptRows.filter(r=>getIssueVal(r)===issue);
+      const issueDone=issueRows.filter(r=>r.status==='Closed').length;
+      const issuePend=issueRows.filter(r=>r.status==='Open'||r.status==='Pending').length;
+      const pct2=s.total>0?Math.round(cnt/s.total*100):0;
+      const barW=Math.round(cnt/issuesSorted[0][1]*100);
+      const rowBg=j%2===0?'#fff':'#f8fafc';
+      topTbl+=`<tr style="background:${rowBg};border-bottom:1px solid #f0f2f5">
+        <td style="padding:7px 12px 7px 40px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="flex:1;max-width:200px;background:#e8eaf6;border-radius:3px;height:6px;overflow:hidden">
+              <div style="height:100%;width:${barW}%;background:var(--indigo);border-radius:3px"></div>
+            </div>
+            <span>${issue}</span>
+          </div>
+        </td>
+        <td style="padding:7px 8px;font-weight:700;color:var(--blue)">${cnt}</td>
+        <td style="padding:7px 8px;color:var(--gray)">${pct2}%</td>
+        <td style="padding:7px 8px;color:var(--green)">${issueDone}</td>
+        <td style="padding:7px 8px;color:${issuePend>0?'var(--red)':'var(--green)'}">${issuePend}</td>
+      </tr>`;
+    });
+    topTbl+=`</tbody></table></td></tr>`;
+    topTbl+=`</tbody><tbody>`;
+  });
+  topTbl+=`</tbody></table>`;
+  document.getElementById('mgmt-top-dept-tbl').innerHTML=topTbl;
 }
 
 // ─── PENDING ───
@@ -2009,6 +2026,9 @@ function renderPending(){
     if(dept&&r.typeDept!==dept) return false;
     if(level&&!r.caseLevel?.includes(level)) return false;
     if(fm&&r.logMonth!==fm) return false;
+    // กรองตาม MODE (Call/Mail/ทั้งหมด)
+    if(MODE==='call'&&!isKpiCall(r)) return false;
+    if(MODE==='mail'&&!isMail(r)) return false;
     return true;
   });
 
@@ -2134,11 +2154,11 @@ function renderWkOverview(weeks,allWks){
   // Overview table
   let tbl=`<table class="wk-overview-tbl"><thead><tr>
     <th>สัปดาห์</th>
-    <th>ช่วงวัน (ปีปฏิทิน)</th>
-    <th>Total Call</th><th>KPI Call</th>
+    <th>ช่วงวัน</th>
+    <th>Total Call</th>
     <th>FCR</th><th>Total Mail</th><th>FCR (Mail)</th>
-    <th>Abandon (3CX)</th><th>Avg. Talk Time</th>
-    <th>Case Lv2</th><th>Pending</th>
+    <th>Abandon</th><th>Avg. Talk Time</th>
+    <th>Case Level 2</th><th>Pending</th>
   </tr></thead><tbody>`;
   stats.forEach(({year,week,s,cx_wk},i)=>{
     const prev=i>0?stats[i-1].s:null;
@@ -2153,10 +2173,9 @@ function renderWkOverview(weeks,allWks){
       return`<span style="color:${good?'var(--green)':'var(--red)'};font-size:10px">${up?'▲':'▼'}${Math.abs(diff)}</span>`;
     };
     tbl+=`<tr onclick="setWkWeek('${year}-W${String(week).padStart(2,'0')}')" style="cursor:pointer">
-      <td style="font-weight:700;color:var(--blue)">W${week} <span style="font-size:10px;color:var(--gray);font-weight:400">${fmtWkDate(year,week)}</span></td>
+      <td style="font-weight:700;color:var(--blue)">W${week}</td>
       <td style="font-size:11px;color:var(--gray)">${fmtWkDate(year,week)}</td>
-      <td><strong>${s.totalCallN}</strong> ${mkArr(s.totalCallN,prev?.totalCallN,false)}</td>
-      <td style="color:var(--teal)">${s.kpiCallN}</td>
+      <td><strong>${s.kpiCallN}</strong> ${mkArr(s.kpiCallN,prev?.kpiCallN,false)}</td>
       <td><strong style="color:${fcrC}">${s.fcrPct}%</strong></td>
       <td>${s.mailN} ${mkArr(s.mailN,prev?.mailN,false)}</td>
       <td><strong style="color:${fmrC}">${s.fmrPct}%</strong></td>
@@ -2178,7 +2197,7 @@ function renderWkOverview(weeks,allWks){
   const gFcr=totKpiN>0?Math.round(totFcrN/totKpiN*100):0;
   const gFmr=totMailN>0?Math.round(totFmrN/totMailN*100):0;
   tbl+=`<tr class="wk-total"><td colspan="2">รวม / เฉลี่ย (${WK_MONTH==='ALL'?'ทุกเดือน':WK_MONTH})</td>
-    <td><strong>${totCallN}</strong></td><td style="color:var(--teal)">${totKpiN}</td>
+    <td><strong>${totKpiN}</strong></td>
     <td><strong style="color:${gFcr>=90?'var(--green)':gFcr>=75?'var(--amber)':'var(--red)'}">${gFcr}%</strong></td>
     <td>${totMailN}</td>
     <td><strong style="color:${gFmr>=85?'var(--purple)':gFmr>=70?'var(--amber)':'var(--red)'}">${gFmr}%</strong></td>
@@ -2191,6 +2210,8 @@ function renderWkOverview(weeks,allWks){
   const svgH=makeSVGMultiLine(stats);
   // Heatmap (Call per day per week)
   const hmH=makeWkHeatmap(weeks);
+  // Heatmap (Mail per day per week)
+  const hmMailH=makeWkMailHeatmap(weeks);
   // Dept breakdown bar
   const deptH=makeWkDeptBars(weeks);
 
@@ -2201,8 +2222,8 @@ function renderWkOverview(weeks,allWks){
         <div class="ctitle"><div class="dot" style="background:var(--blue)"></div>FCR รายสัปดาห์ (%)</div>
         <div class="trend-wrap">${svgH}</div>
         <div style="display:flex;gap:14px;margin-top:6px">
-          <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--gray)"><div style="width:14px;height:3px;background:var(--blue);border-radius:2px"></div>FCR %</div>
-          <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--gray)"><div style="width:14px;height:3px;background:var(--purple);border-radius:2px;border-top:2px dashed var(--purple)"></div>FMR %</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--gray)"><div style="width:14px;height:3px;background:var(--blue);border-radius:2px"></div>Call FCR%</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--gray)"><div style="width:14px;height:3px;background:var(--purple);border-radius:2px;border-top:2px dashed var(--purple)"></div>Mail FCR%</div>
         </div>
       </div>
       <div class="card">
@@ -2210,9 +2231,15 @@ function renderWkOverview(weeks,allWks){
         ${makeWkCallBar(stats)}
       </div>
     </div>
-    <div class="card" style="margin-bottom:12px">
-      <div class="ctitle"><div class="dot" style="background:var(--teal)"></div>ปริมาณ Call รายวัน (Heatmap)</div>
-      ${hmH}
+    <div class="g2" style="margin-bottom:12px">
+      <div class="card">
+        <div class="ctitle"><div class="dot" style="background:var(--teal)"></div>ปริมาณ Call รายวัน</div>
+        ${hmH}
+      </div>
+      <div class="card">
+        <div class="ctitle"><div class="dot" style="background:var(--violet)"></div>ปริมาณ Mail รายวัน</div>
+        ${hmMailH}
+      </div>
     </div>
     <div class="card" style="margin-bottom:12px">
       <div class="ctitle"><div class="dot" style="background:var(--indigo)"></div>Case ตามแผนก รายสัปดาห์</div>
@@ -2313,34 +2340,88 @@ function makeWkHeatmap(weeks){
   return grid;
 }
 
-function makeWkDeptBars(stats){
-  const depts=[...new Set(FILTERED.map(r=>r.typeDept).filter(Boolean))].sort();
-  const DEPT_COLORS={'ASN/EDI':'#7C6FB5','FAST':'#5BA3A0','MDS':'#7c3aed','GR':'#E65100','DC':'#C62828','Other':'#455A64'};
-  if(!depts.length||!stats.length)return'<div class="empty">ไม่มีข้อมูล</div>';
-  const wkData=stats.map(({week,rows})=>{
-    const ct={};depts.forEach(d=>{ct[d]=rows.filter(r=>r.typeDept===d&&isTotalCall(r)).length;});
+function makeWkMailHeatmap(weeks){
+  const DAYS=['จ','อ','พ','พฤ','ศ','ส','อา'];
+  const wkDayCt=weeks.map(({year,week,rows})=>{
+    const ct=new Array(7).fill(0);
+    rows.filter(isMail).forEach(r=>{
+      if(!r.dateLog)return;
+      const d=new Date(r.dateLog+'T00:00:00');
+      const dow=(d.getDay()+6)%7;
+      ct[dow]++;
+    });
     return{week,ct};
   });
-  const mx=Math.max(...wkData.flatMap(w=>Object.values(w.ct)),1);
-  let out=`<div style="display:grid;grid-template-columns:60px repeat(${stats.length},1fr);gap:4px;align-items:end">`;
-  // Header
-  out+=`<div></div>`;stats.forEach(({week})=>out+=`<div style="text-align:center;font-size:10px;color:var(--gray);font-weight:600">W${week}</div>`);
-  // Rows per dept
-  depts.forEach(d=>{
-    out+=`<div style="font-size:11px;color:#444;text-align:right;padding-right:6px;font-weight:500">${d}</div>`;
-    stats.forEach(({week},i)=>{
-      const n=wkData[i].ct[d]||0;const pct2=Math.round(n/mx*100);
-      const c=DEPT_COLORS[d]||'#757575';
-      out+=`<div style="display:flex;flex-direction:column;align-items:center;gap:2px">
-        <span style="font-size:10px;font-weight:700;color:#444">${n||''}</span>
-        <div style="width:100%;background:#f0f2f5;border-radius:3px;height:${n?Math.max(8,Math.round(pct2*0.6)):4}px;background:${n?c:'#f0f2f5'}"></div>
-      </div>`;
+  const maxV=Math.max(...wkDayCt.flatMap(w=>w.ct),1);
+  const heatColor=n=>{
+    if(n===0)return'#f3f4f6';
+    const alpha=0.15+(n/maxV)*0.85;
+    return`rgba(108,92,231,${alpha.toFixed(2)})`;
+  };
+  const cols=7;
+  let grid=`<div class="heatmap-wrap"><div class="heatmap" style="grid-template-columns:56px repeat(${cols},40px)">`;
+  grid+=`<div class="hm-head" style="grid-column:1"></div>`;
+  DAYS.forEach(d=>{grid+=`<div class="hm-head">${d}</div>`;});
+  wkDayCt.forEach(({week,ct})=>{
+    grid+=`<div class="hm-label">W${week}</div>`;
+    ct.forEach(n=>{
+      const c=heatColor(n);
+      const textC=n>maxV*0.6?'#fff':'#333';
+      grid+=`<div class="hm-cell" style="background:${c};color:${textC}">${n||''}</div>`;
     });
   });
+  grid+=`</div></div>`;
+  return grid;
+}
+
+function makeWkDeptBars(stats){
+  const depts=[...new Set(FILTERED.filter(r=>r.caseLevel?.includes('Level 2')).map(r=>r.typeDept).filter(Boolean))].sort();
+  const DEPT_COLORS={'ASN/EDI':'#7C3AED','FAST':'#A78BFA','MDS':'#4C1D95','GR':'#DDD6FE','DC':'#C4B5FD','Other':'#EDE9FE'};
+  if(!depts.length||!stats.length)return'<div class="empty">ไม่มีข้อมูล</div>';
+
+  const wkData=stats.map(({week,rows})=>{
+    const lv2=rows.filter(r=>r.caseLevel?.includes('Level 2'));
+    const ct={};depts.forEach(d=>{ct[d]=lv2.filter(r=>r.typeDept===d).length;});
+    return{week,ct,total:lv2.length};
+  });
+
+  const maxTotal=Math.max(...wkData.map(w=>w.total),1);
+
+  let out=`<div style="display:flex;flex-direction:column;gap:8px;padding:4px 0">`;
+
+  wkData.forEach(({week,ct,total})=>{
+    out+=`<div style="display:flex;align-items:center;gap:10px">`;
+    // Label สัปดาห์
+    out+=`<div style="width:32px;font-size:11px;font-weight:700;color:var(--indigo);text-align:right;flex-shrink:0">W${week}</div>`;
+    // Stacked bar
+    out+=`<div style="flex:1;display:flex;border-radius:6px;overflow:hidden;height:28px;background:#f0f2f5">`;
+    depts.forEach(d=>{
+      const n=ct[d]||0;
+      if(!n)return;
+      const pct=Math.round(n/maxTotal*100);
+      const color=DEPT_COLORS[d]||'#757575';
+      out+=`<div title="${d}: ${n}" style="width:${pct}%;background:${color};display:flex;align-items:center;justify-content:center;transition:width .4s;min-width:${n>0?16:0}px">
+        <span style="font-size:10px;font-weight:700;color:#fff;white-space:nowrap">${n}</span>
+      </div>`;
+    });
+    out+=`</div>`;
+    // Total
+    out+=`<div style="width:32px;font-size:12px;font-weight:800;color:var(--indigo);flex-shrink:0">${total}</div>`;
+    out+=`</div>`;
+  });
+
   out+=`</div>`;
+
   // Legend
-  out+=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">`;
-  depts.forEach(d=>{const c=DEPT_COLORS[d]||'#757575';out+=`<div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--gray)"><div style="width:10px;height:10px;border-radius:2px;background:${c}"></div>${d}</div>`;});
+  out+=`<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;padding-top:8px;border-top:1px solid var(--border)">`;
+  depts.forEach(d=>{
+    const color=DEPT_COLORS[d]||'#757575';
+    const total=wkData.reduce((s,w)=>s+(w.ct[d]||0),0);
+    out+=`<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#444">
+      <div style="width:12px;height:12px;border-radius:3px;background:${color}"></div>
+      <span>${d}</span><span style="color:var(--gray);font-size:10px">(${total})</span>
+    </div>`;
+  });
   out+=`</div>`;
   return out;
 }
@@ -2453,13 +2534,13 @@ function renderWkDetail(wkData,allWeeks){
 // ══════════════════════════════════════════════════════
 const MONTH_ORDER={'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'Jun':6,'Jul':7,'Aug':8,'Sep':9,'Oct':10,'Nov':11,'Dec':12};
 const sortMonths=ms=>[...ms].sort((a,b)=>(MONTH_ORDER[a]||99)-(MONTH_ORDER[b]||99));
-let MONTHLY_MODE='call';
+let MONTHLY_MODE='all';
 
 function setMonthlyMode(m){
   MONTHLY_MODE=m;
-  ['call','mail'].forEach(x=>document.getElementById('mm-'+x).classList.toggle('on',x===m));
-  document.getElementById('mv-call').style.display=m==='call'?'':'none';
-  document.getElementById('mv-mail').style.display=m==='mail'?'':'none';
+  document.getElementById('mv-call').style.display=(m==='call'||m==='all')?'':'none';
+  document.getElementById('mv-mail').style.display=(m==='mail'||m==='all')?'':'none';
+  renderMonthly();
 }
 
 // ─── Monthly Grouped Bar Chart (2 แท่งคู่กัน เช่น Abandon vs Total Call) ───
@@ -3162,8 +3243,8 @@ function makeDeptLevelTable(elId, months, filterFn){
         <th colspan="4" style="text-align:center;color:#1e40af;border-left:2px solid #e2e8f0">รวมทั้งปี</th>
       </tr>
       <tr>
-        ${months.map(()=>`<th style="color:${C1};border-left:2px solid #e2e8f0">Level 1</th><th style="color:#94a3b8">%Lv1</th><th style="color:${C2}">Level 2</th><th style="color:#94a3b8">%Lv2</th>`).join('')}
-        <th style="color:#1e40af;border-left:2px solid #e2e8f0">Level 1</th><th style="color:#94a3b8">%Lv1</th><th style="color:${C2}">Level 2</th><th style="color:#94a3b8">%Lv2</th>
+        ${months.map(()=>`<th style="color:${C1};border-left:2px solid #e2e8f0">Level 1</th><th style="color:#94a3b8">%Level 1</th><th style="color:${C2}">Level 2</th><th style="color:#94a3b8">%Level 2</th>`).join('')}
+        <th style="color:#1e40af;border-left:2px solid #e2e8f0">Level 1</th><th style="color:#94a3b8">%Level 1</th><th style="color:${C2}">Level 2</th><th style="color:#94a3b8">%Level 2</th>
       </tr>
     </thead><tbody>`;
 
@@ -3365,7 +3446,7 @@ function renderTop10Issue(type){
 // ══════════════════════════════════════════════════════
 // TABS
 // ══════════════════════════════════════════════════════
-const ALL_TABS=['main','fcr','mgmt','pending','weekly','monthly','topissue'];
+const ALL_TABS=['main','weekly','monthly','fcr','mgmt','pending','topissue'];
 function showTab(t){
   ALL_TABS.forEach(x=>document.getElementById('page-'+x).classList.toggle('on',x===t));
   document.querySelectorAll('.tab').forEach((btn,i)=>btn.classList.toggle('on',ALL_TABS[i]===t));
@@ -3412,18 +3493,11 @@ function getTiDateRange(){
 function renderTopIssuePage(){
   if(!RAW.length)return;
 
-  // Date range filter
-  const{from,to}=getTiDateRange();
-  const lbl=document.getElementById('ti-range-lbl');
-  if(lbl)lbl.textContent=from&&to?`ช่วงวันที่: ${from} — ${to}`:(TI_RANGE==='all'?'แสดงข้อมูลทั้งหมด':'');
-
-  // Source filter
+  // Source filter — ใช้ MODE จาก filter bar ด้านบน
   let src=FILTERED.filter(r=>!r._referredMail&&r.logType!=='Call Back');
-  if(TI_CH==='call') src=src.filter(r=>isKpiCall(r)||r.logType==='Abandon');
-  else if(TI_CH==='mail') src=src.filter(isMail);
-  // TI_CH==='all' → ไม่ filter เพิ่ม
-  if(from) src=src.filter(r=>r.dateLog>=from);
-  if(to)   src=src.filter(r=>r.dateLog<=to);
+  if(MODE==='call') src=src.filter(r=>isKpiCall(r));
+  else if(MODE==='mail') src=src.filter(isMail);
+  else src=src.filter(r=>isKpiCall(r)||isMail(r));
 
   // Dept filter + populate dept select
   const depts=[...new Set(FILTERED.map(r=>r.typeDept).filter(Boolean))].sort();
@@ -3457,26 +3531,59 @@ function renderTopIssuePage(){
     <td style="font-weight:600;color:var(--gray)">จำนวน</td>
     ${top10.map(([,n])=>`<td style="text-align:center;font-weight:700;color:var(--teal)">${n}</td>`).join('')}
     </tr></tbody></table></div>`;
-  document.getElementById('ti-summary-row').innerHTML=sumH;
+  if(document.getElementById('ti-summary-row')) document.getElementById('ti-summary-row').innerHTML=sumH;
 
   // ── Monthly breakdown ──
   const months=[...new Set(src.map(r=>r.logMonth).filter(Boolean))];
   const MONTH_ORDER={Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
   months.sort((a,b)=>(MONTH_ORDER[a]||99)-(MONTH_ORDER[b]||99));
   let cumPct=0;
+  const isTypeDetail=col==='typeDetail';
+
   const rows=top10.map(([label,n],i)=>{
     const rowPct=Math.round(n/total*100);cumPct+=rowPct;
     const rowSrc=src.filter(r=>(getV(r)||'(ไม่ระบุ)')===label);
     const bg=i%2===0?'#fff':'#F0EEF9';
-    return`<tr style="background:${bg}">
-      <td style="font-weight:500;padding:8px 12px;border-bottom:1px solid #e2e8f0">${i+1}. ${label}</td>
+    const drillId=`ti-drill-${i}`;
+
+    // หา Issue Detail ของ Type นี้ (เฉพาะตอน Type ByDetail)
+    let drillRows='';
+    if(isTypeDetail){
+      const issueCt={};
+      rowSrc.forEach(r=>{const v=getIssue(r)||'(ไม่ระบุ)';issueCt[v]=(issueCt[v]||0)+1;});
+      const issuesSorted=Object.entries(issueCt).sort((a,b)=>b[1]-a[1]);
+      if(issuesSorted.length>0){
+        drillRows=issuesSorted.map(([issue,cnt],j)=>{
+          const issueSrc=rowSrc.filter(r=>(getIssue(r)||'(ไม่ระบุ)')===issue);
+          const issueBg=j%2===0?'#f0fdf9':'#e6f7f4';
+          return`<tr style="background:${issueBg}">
+            <td style="padding:6px 12px 6px 32px;border-bottom:1px solid #d1fae5;font-size:10.5px;color:#374151">
+              <span style="color:#94a3b8;margin-right:6px">└</span>${issue}
+            </td>
+            ${months.map(m=>{
+              const mc=issueSrc.filter(r=>r.logMonth===m).length;
+              return`<td style="text-align:center;padding:6px 10px;border-bottom:1px solid #d1fae5;font-size:10.5px;${mc>0?'color:#0f766e;font-weight:700':'color:#94a3b8'}">${mc||'—'}</td>`;
+            }).join('')}
+            <td style="text-align:center;padding:6px 10px;font-weight:700;color:#0f766e;border-bottom:1px solid #d1fae5;border-left:1px solid #e2e8f0;font-size:10.5px">${cnt}</td>
+            <td style="text-align:right;padding:6px 10px;font-size:10px;color:#64748b;border-bottom:1px solid #d1fae5">${Math.round(cnt/n*100)}%</td>
+          </tr>`;
+        }).join('');
+      }
+    }
+
+    const hasDrill=isTypeDetail&&drillRows;
+    const clickAttr=hasDrill?`onclick="(function(){const el=document.getElementById('${drillId}');el.style.display=el.style.display==='none'?'table-row-group':'none';this.querySelector('.ti-drill-icon').textContent=el.style.display==='none'?'▶':'▼'}).call(this)" style="cursor:pointer"`:'';
+    const drillIcon=hasDrill?`<span class="ti-drill-icon" style="font-size:9px;color:#94a3b8;margin-right:6px">▶</span>`:'<span style="display:inline-block;width:15px"></span>';
+
+    return`<tr ${clickAttr} style="background:${bg}">
+      <td style="font-weight:500;padding:8px 12px;border-bottom:1px solid #e2e8f0">${drillIcon}${i+1}. ${label}</td>
       ${months.map(m=>{
         const mc=rowSrc.filter(r=>r.logMonth===m).length;
         return`<td style="text-align:center;padding:8px 10px;border-bottom:1px solid #e2e8f0;${mc>0?'background:#ccfbf1;color:#0f766e;font-weight:700':'color:#94a3b8'}">${mc||'—'}</td>`;
       }).join('')}
       <td style="text-align:center;font-weight:700;color:var(--teal);padding:8px 10px;border-bottom:1px solid #e2e8f0;border-left:1px solid #e2e8f0">${n}</td>
       <td style="text-align:right;font-size:10.5px;color:#475569;padding:8px 10px;border-bottom:1px solid #e2e8f0;white-space:nowrap">${rowPct}%<br><span style="color:#94a3b8;font-size:9px">cum ${cumPct}%</span></td>
-    </tr>`;
+    </tr>${hasDrill?`<tbody id="${drillId}" style="display:none">${drillRows}</tbody><tbody>`:''}`;
   }).join('');
 
   // Total row
@@ -3509,21 +3616,21 @@ function renderParetoInEl(el, top10, total, colLabel){
 
   const maxV=top10[0][1]||1;
   const BADGE_R=15;
-  const W=700, PL=48, PR=16, PT=BADGE_R*2+44, PB=32;
-  const BAR_ZONE=130;
+  const W=1100, PL=48, PR=16, PT=BADGE_R*2+44, PB=16;
+  const BAR_ZONE=160;
   const H=PT+BAR_ZONE+PB;
   const CHART_W=W-PL-PR;
   const gap=Math.floor(CHART_W/n);
-  const BAR_W=Math.max(24,Math.min(54,gap*0.55));
+  const BAR_W=Math.max(20,Math.min(44,gap*0.42)); // ผอมลง
   const yBase=PT+BAR_ZONE;
 
   const uid='p'+Math.random().toString(36).slice(2,6);
-  let svg=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:${H}px;overflow:visible" font-family="Inter,sans-serif">`;
+  let svg=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;overflow:visible" font-family="Inter,sans-serif">`;
 
   svg+=`<defs>
     <linearGradient id="pg${uid}" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="${barCol}" stop-opacity="0.9"/>
-      <stop offset="100%" stop-color="${barCol}" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="${barCol}" stop-opacity="0.6"/>
     </linearGradient>
   </defs>`;
 
@@ -3535,7 +3642,7 @@ function renderParetoInEl(el, top10, total, colLabel){
     svg+=`<text x="${PL-6}" y="${+y+4}" text-anchor="end" font-size="9" fill="#94A3B8">${Math.round(maxV*t)}</text>`;
   });
 
-  // คำนวณตำแหน่ง badge ก่อน
+  // คำนวณตำแหน่ง
   let cum=0;
   const items=top10.map(([label,n2],i)=>{
     cum+=n2;
@@ -3543,37 +3650,38 @@ function renderParetoInEl(el, top10, total, colLabel){
     const cx=PL+i*gap+gap/2;
     const bh=Math.max((n2/maxV)*BAR_ZONE,4);
     const barTop=yBase-bh;
-    // badge อยู่เหนือ bar เสมอ (zone บน = PT area)
     const badgeY=PT-BADGE_R-2;
     return{label,n2,cx,bh,barTop,badgeY,pct};
   });
 
-  // เส้น dashed เชื่อม badge แนวนอน
+  // เส้น dashed เชื่อม badge
   if(items.length>1){
     let path=`M${items[0].cx.toFixed(1)},${items[0].badgeY.toFixed(1)}`;
     items.slice(1).forEach(p=>path+=` L${p.cx.toFixed(1)},${p.badgeY.toFixed(1)}`);
-    svg+=`<path d="${path}" fill="none" stroke="${cumCol}" stroke-width="1.5"
-      stroke-dasharray="5,4" opacity="0.4"/>`;
+    svg+=`<path d="${path}" fill="none" stroke="${cumCol}" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.4"/>`;
   }
 
-  // วาด bars + เส้นแนวตั้งจาก badge → bar top
-  items.forEach(({label,cx,bh,barTop,badgeY,n2})=>{
+  // วาด bars — ตัวเลขอยู่ในแท่ง สีขาว
+  items.forEach(({label,cx,bh,barTop,badgeY,n2},i)=>{
     const bx=cx-BAR_W/2;
     svg+=`<line x1="${cx.toFixed(1)}" y1="${(badgeY+BADGE_R).toFixed(1)}"
       x2="${cx.toFixed(1)}" y2="${barTop.toFixed(1)}"
       stroke="${cumCol}" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.35"/>`;
     svg+=`<rect x="${(+bx+2).toFixed(1)}" y="${(+barTop+3).toFixed(1)}"
-      width="${BAR_W}" height="${bh.toFixed(1)}" rx="5" fill="rgba(0,0,0,0.07)"/>`;
+      width="${BAR_W}" height="${bh.toFixed(1)}" rx="4" fill="rgba(0,0,0,0.07)"/>`;
     svg+=`<rect x="${bx.toFixed(1)}" y="${barTop.toFixed(1)}"
-      width="${BAR_W}" height="${bh.toFixed(1)}" rx="5 5 0 0" fill="url(#pg${uid})"
+      width="${BAR_W}" height="${bh.toFixed(1)}" rx="4 4 0 0" fill="url(#pg${uid})"
       style="cursor:pointer"
-      onmouseover="document.getElementById('tip_${uid}_${n2}_${bx.toFixed(0)}').style.display='block'"
-      onmouseout="document.getElementById('tip_${uid}_${n2}_${bx.toFixed(0)}').style.display='none'"/>`;
-    svg+=`<text x="${cx.toFixed(1)}" y="${(yBase+14).toFixed(1)}"
-      text-anchor="middle" font-size="10" font-weight="800" fill="${barCol}">${n2}</text>`;
+      onmouseover="document.getElementById('tip_${uid}_${i}').style.display='block'"
+      onmouseout="document.getElementById('tip_${uid}_${i}').style.display='none'"/>`;
+    // ตัวเลขในแท่ง สีขาว — วางตรงกลางแท่ง ถ้าแท่งสูงพอ
+    const numY=bh>22?barTop+bh/2+5:barTop-6;
+    const numFill=bh>22?'#fff':barCol;
+    svg+=`<text x="${cx.toFixed(1)}" y="${numY.toFixed(1)}"
+      text-anchor="middle" font-size="11" font-weight="800" fill="${numFill}">${n2}</text>`;
   });
 
-  // badges
+  // badges %cumulative
   items.forEach(({cx,badgeY,pct})=>{
     svg+=`<circle cx="${cx.toFixed(1)}" cy="${badgeY.toFixed(1)}" r="${BADGE_R+2}" fill="${cumCol}" opacity="0.15"/>`;
     svg+=`<circle cx="${cx.toFixed(1)}" cy="${badgeY.toFixed(1)}" r="${BADGE_R}" fill="${cumCol}"/>`;
@@ -3581,21 +3689,15 @@ function renderParetoInEl(el, top10, total, colLabel){
       text-anchor="middle" font-size="10" font-weight="800" fill="#fff">${pct}%</text>`;
   });
 
-  // tooltips — วาดสุดท้าย เป็น layer บนสุด
-  items.forEach(({label,cx,bh,barTop,n2})=>{
-    const bx=cx-BAR_W/2;
-    const tipId=`tip_${uid}_${n2}_${bx.toFixed(0)}`;
+  // tooltips
+  items.forEach(({label,cx,barTop,n2},i)=>{
     const tipW=Math.min(label.length*8.5+28, 320);
-    // จำกัดไม่ให้เกินขอบ SVG
     const tipX=Math.max(PL, Math.min(cx-tipW/2, W-PR-tipW));
     const tipY=Math.max(4, barTop-42);
-    // arrow ชี้ลง — clamp ให้อยู่ใน tooltip
     const arrowX=Math.max(tipX+8, Math.min(cx, tipX+tipW-8));
-    svg+=`<g id="${tipId}" style="display:none" pointer-events="none">
-      <rect x="${tipX.toFixed(1)}" y="${tipY.toFixed(1)}" width="${tipW.toFixed(0)}" height="28"
-        rx="7" fill="#1E1B3A"/>
-      <polygon points="${arrowX.toFixed(1)},${(tipY+30).toFixed(1)} ${(arrowX-5).toFixed(1)},${(tipY+27).toFixed(1)} ${(arrowX+5).toFixed(1)},${(tipY+27).toFixed(1)}"
-        fill="#1E1B3A"/>
+    svg+=`<g id="tip_${uid}_${i}" style="display:none" pointer-events="none">
+      <rect x="${tipX.toFixed(1)}" y="${tipY.toFixed(1)}" width="${tipW.toFixed(0)}" height="28" rx="7" fill="#1E1B3A"/>
+      <polygon points="${arrowX.toFixed(1)},${(tipY+30).toFixed(1)} ${(arrowX-5).toFixed(1)},${(tipY+27).toFixed(1)} ${(arrowX+5).toFixed(1)},${(tipY+27).toFixed(1)}" fill="#1E1B3A"/>
       <text x="${(+tipX+tipW/2).toFixed(1)}" y="${(+tipY+18).toFixed(1)}"
         text-anchor="middle" font-size="10.5" font-weight="700" fill="#fff">${label}: ${n2}</text>
     </g>`;
@@ -3603,20 +3705,33 @@ function renderParetoInEl(el, top10, total, colLabel){
 
   svg+=`</svg>`;
 
-  svg+=`<div style="display:flex;gap:16px;margin-top:8px;flex-wrap:wrap">
-    <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#374151">
-      <div style="width:14px;height:10px;background:${barCol};border-radius:3px"></div>#Issue (จำนวน)
-    </div>
-    <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#374151">
-      <div style="width:20px;height:20px;border-radius:50%;background:${cumCol};
-        display:flex;align-items:center;justify-content:center">
-        <span style="font-size:8px;font-weight:800;color:#fff">%</span>
-      </div>%Cumulative
-    </div>
-  </div>`;
+  // ── ตาราง Label ใต้กราฟ — align กับแต่ละแท่ง ──
+  // คำนวณ % width ของแต่ละ column ให้ตรงกับตำแหน่ง cx ใน SVG
+  const colWidths=items.map(({cx},i)=>{
+    const nextCx=i<items.length-1?items[i+1].cx:W-PR;
+    const prevCx=i>0?items[i-1].cx:PL;
+    return((nextCx-prevCx)/2+(i===0?cx-PL:0)+(i===items.length-1?W-PR-cx:0));
+  });
+  const totalW=colWidths.reduce((a,b)=>a+b,0);
 
-  el.innerHTML=svg;
+  const labelTbl=`<table style="width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed">
+    <colgroup>
+      <col style="width:${((PL)/W*100).toFixed(1)}%"/>
+      ${items.map(()=>`<col style="width:${(gap/W*100).toFixed(1)}%"/>`).join('')}
+      <col/>
+    </colgroup>
+    <tbody>
+      <tr style="background:#f8fafc">
+        <td style="border:1px solid #e2e8f0;background:#fff"></td>
+        ${top10.map(([l])=>`<td style="padding:5px 6px;text-align:center;border:1px solid #e2e8f0;word-break:break-word;font-size:10.5px;color:#1e1b3a;vertical-align:middle;line-height:1.3">${l}</td>`).join('')}
+        <td style="border:1px solid #e2e8f0"></td>
+      </tr>
+    </tbody>
+  </table>`;
+
+  el.innerHTML=svg+labelTbl;
 }
+
 // ══════════════════════════════════════════════════════
 let FCR_CH='call', FCR_SHOW='all', FCR_TREND='day', FCR_TOP_TYPE='fcr', FCR_RANGE='all';
 
@@ -4080,8 +4195,8 @@ function renderFCRSummary(){
           <div style="font-size:10px;color:#94a3b8">${mailLv2} mail</div>
         </div>
         <div style="background:rgba(255,255,255,.7);border-radius:8px;padding:6px 10px;min-width:70px">
-          <div style="font-size:9px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:2px">Total Mail</div>
-          <div style="font-size:16px;font-weight:700;color:#6366f1">${mailTotal}</div>
+          <div style="font-size:9px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:2px">ESCALATED</div>
+          <div style="font-size:16px;font-weight:700;color:#6366f1">${mailLv2}</div>
           <div style="font-size:10px;color:#94a3b8">mail</div>
         </div>
         <div style="background:rgba(255,255,255,.7);border-radius:8px;padding:6px 10px;min-width:70px">
@@ -4255,8 +4370,7 @@ function renderFCRDrillTbl(){
     <th>Type ByDetail</th><th>รวม</th><th>%</th>
     <th style="color:#2E7D32">FCR (Lv1)</th><th>%FCR</th>
     <th style="color:#7c3aed">Non-FCR (Lv2)</th><th>%Non-FCR</th>
-    <th style="color:var(--teal)">Avg Resolution</th>
-    <th>Escalated</th><th>Contact Dept</th>
+    <th style="color:var(--teal)">Avg. Resolution Time</th>
   </tr></thead><tbody>`;
 
   visibleEntries.forEach(([td,v],idx)=>{
@@ -4505,7 +4619,7 @@ const SP_REST_CX  =CX_URL;
 
 async function autoLoad(){
   // แสดง loading overlay (ไม่ซ่อน upload-zone ก่อน fetch สำเร็จ)
-  const loadingHtml='<div id="sp-loading" style="position:fixed;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--gray);background:rgba(244,245,247,0.88);z-index:9999"><div style="width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite"></div><div style="font-size:13px;font-weight:600">กำลังดึงข้อมูลจาก SharePoint...</div></div>';
+  const loadingHtml='<div id="sp-loading" style="position:fixed;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--gray);background:rgba(244,245,247,0.88);z-index:9999"><div style="width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite"></div><div style="font-size:13px;font-weight:600">กำลังดึงข้อมูลจาก GitHub...</div></div>';
   document.body.insertAdjacentHTML('beforeend',loadingHtml);
   const hideLoading=()=>{const el=document.getElementById('sp-loading');if(el)el.remove();};
   try{
@@ -4544,6 +4658,7 @@ async function autoLoad(){
     hideLoading();
     // fetch ล้มเหลว — upload-zone ยังแสดงอยู่ กด Demo / Upload ได้ตามปกติ
     console.warn('Auto-load failed, manual upload available:',err.message);
+    showErr('ดึงข้อมูลอัตโนมัติจาก GitHub ไม่สำเร็จ — กรุณาอัปโหลดไฟล์ด้วยตนเอง หรือกด Demo เพื่อดูตัวอย่าง');
   }
 }
 
@@ -4587,26 +4702,65 @@ function processLogData(data){
 
 function processCXData(data){
   const TARGET_QUEUE='Q_Partner Service_TH (8196)';
+  // normalize key names (strip BOM and whitespace)
+  const normData=data.map(row=>{
+    const nr={};
+    for(const[k,v] of Object.entries(row)){
+      nr[k.replace(/^\uFEFF/,'').trim()]=v;
+    }
+    return nr;
+  });
+  // === Pass 1: Group rows by Call ID ===
+  const callMap={};
+  normData.forEach(row=>{
+    const id=String(row['Call ID']||'').trim();
+    if(!id)return;
+    if(!callMap[id])callMap[id]=[];
+    callMap[id].push(row);
+  });
+
   const daily={};let rAns=0,rAbn=0,sOk=0,sTotal=0,talkSec=0,talkCnt=0,totalAbn=0;
-  data.forEach(row=>{
-    const dir=String(row['Direction']||'').trim();
-    const status=String(row['Status']||'').trim();
-    const to=String(row['To']||'').trim();
-    const date=String(row['Call Time']||'').slice(0,10);
-    const talk=toSec(row['Talking']);
+
+  // === Pass 2: วิเคราะห์แต่ละ Call ID ===
+  Object.values(callMap).forEach(rows=>{
+    // หา row ที่เข้า TARGET_QUEUE
+    const qRow=rows.find(r=>String(r['Direction']||'').trim()==='Inbound Queue'&&String(r['To']||'').trim()===TARGET_QUEUE);
+    if(!qRow)return;
+
+    const date=String(qRow['Call Time']||'').slice(0,10);
     if(!date||date.length<10)return;
     if(!daily[date])daily[date]={reach_ans:0,reach_abn:0,sla_ok:0,sla_total:0,talk_sec:0,talk_cnt:0,abn_3cx:0};
 
-    // Inbound Queue → นับ Abandon (KPI)
-    if(dir==='Inbound Queue'&&to===TARGET_QUEUE){
-      daily[date].sla_total++;sTotal++;
-      if(status==='Unanswered'){daily[date].abn_3cx++;totalAbn++;daily[date].reach_abn++;rAbn++;}
-      else if(status==='Waiting'){daily[date].reach_ans++;rAns++;daily[date].sla_ok++;sOk++;}
-    }
-    // Inbound Answered → คำนวณ Avg Talk Time (เวลาพนักงานรับสายจริง)
-    if(dir==='Inbound'&&status==='Answered'&&talk!==null&&talk>0){
-      daily[date].talk_sec+=talk;daily[date].talk_cnt++;
-      talkSec+=talk;talkCnt++;
+    daily[date].sla_total++;sTotal++;
+
+    // ตรวจว่า Call ID นี้มี Inbound Answered ที่ Talking > 0 จาก Agent จริง (ไม่ใช่ PleaseHold/Queue)
+    const hasRealTalk=rows.some(r=>{
+      const dir=String(r['Direction']||'').trim();
+      const st=String(r['Status']||'').trim();
+      const to=String(r['To']||'').trim();
+      const talk=toSec(r['Talking']);
+      const isHold=to.toLowerCase().includes('pleasehold')||to.toLowerCase().includes('hold')||to.toLowerCase().includes('greeting')||to.toLowerCase().includes('notconnect');
+      return dir==='Inbound'&&st==='Answered'&&talk!==null&&talk>0&&!isHold;
+    });
+
+    if(hasRealTalk){
+      // คุยสำเร็จ → นับ Answered
+      daily[date].reach_ans++;rAns++;daily[date].sla_ok++;sOk++;
+      // คำนวณ Avg Talk Time จาก agent row ที่ talk > 0 (ไม่รวม PleaseHold)
+      rows.forEach(r=>{
+        const dir=String(r['Direction']||'').trim();
+        const st=String(r['Status']||'').trim();
+        const to=String(r['To']||'').trim();
+        const talk=toSec(r['Talking']);
+        const isHold=to.toLowerCase().includes('pleasehold')||to.toLowerCase().includes('hold')||to.toLowerCase().includes('greeting')||to.toLowerCase().includes('notconnect');
+        if(dir==='Inbound'&&st==='Answered'&&talk!==null&&talk>0&&!isHold){
+          daily[date].talk_sec+=talk;daily[date].talk_cnt++;
+          talkSec+=talk;talkCnt++;
+        }
+      });
+    } else {
+      // ไม่มีการคุยจริง → Abandon (เหมือน 3CX Panel)
+      daily[date].abn_3cx++;totalAbn++;daily[date].reach_abn++;rAbn++;
     }
   });
   const rt=rAns+rAbn;
@@ -4943,7 +5097,7 @@ async function doExportPPTX(){
       const fcrC=fcrPct>=90?C.teal:fcrPct>=75?C.amber:C.red;
       const fmrC=fmrPct>=90?C.teal:fmrPct>=75?C.amber:C.red;
       [[fcrPct,fcrN,kpiCallN,'FCR','Call+Transfer',fcrC,0.28],
-       [fmrPct,fmrN,mailN,'FCR (Mail)','Total Mail',fmrC,5.22]].forEach(([pct,n,tot,lbl,sublbl,ac,x])=>{
+       [fmrPct,fmrN,mailN,'FCR (Mail)','ESCALATED',fmrC,5.22]].forEach(([pct,n,tot,lbl,sublbl,ac,x])=>{
         s.addShape(pptx.shapes.RECTANGLE,{x,y:0.95,w:4.5,h:4.28,fill:{color:C.white},
           line:{color:C.grayL,width:1},shadow:{type:'outer',blur:8,offset:3,angle:135,color:'000000',opacity:0.07}});
         s.addShape(pptx.shapes.RECTANGLE,{x,y:0.95,w:4.5,h:0.06,fill:{color:ac}});
@@ -5079,7 +5233,7 @@ async function doExportPPTX(){
       const resSrc=src.filter(r=>r.resolutionTime!==null&&r.logType!=='Call Back'&&r.logType!=='Transfer');
       const deptRes=depts.map(dept=>{
         const di=resSrc.filter(r=>r.typeDept===dept);
-        return{dept,avgRes:di.length?+(avg(di.map(r=>r.resolutionTime)).toFixed(2)):null,n:di.length};
+        return{dept,avgRes:di.length?+(avg(di.map(r=>r.resolutionTime)).toFixed(1)):null,n:di.length};
       }).filter(d=>d.n>0).sort((a,b)=>(b.avgRes||0)-(a.avgRes||0));
       const maxRes=Math.max(...deptRes.map(d=>d.avgRes||0),1);
       const colorRes=v=>v<=0.5?C.teal:v<=1?C.green:v<=3?C.amber:C.red;
@@ -5176,7 +5330,7 @@ async function doExportPPTX(){
 // Legacy wrapper (ไม่ใช้แล้ว แต่ไว้ไม่ให้ error)
 async function exportPPTX(){ openExportModal(); }
 
-const REFRESH_INTERVAL = 15 * 60; // 15 นาที
+const REFRESH_INTERVAL = 3 * 60 * 60; // 3 ชั่วโมง (ตรงกับ Power Automate Flow)
 let refreshTimer = null;
 let countdownTimer = null;
 let secondsLeft = REFRESH_INTERVAL;
@@ -5201,9 +5355,10 @@ function startAutoRefresh(){
 function updateCountdown(){
   const el = document.getElementById('refresh-countdown');
   if(!el) return;
-  const m = Math.floor(secondsLeft / 60);
+  const h = Math.floor(secondsLeft / 3600);
+  const m = Math.floor((secondsLeft % 3600) / 60);
   const s = secondsLeft % 60;
-  el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 }
 
 function manualRefresh(){
@@ -5222,7 +5377,7 @@ function makeMonthTable(elId,months,filterFn,resFnOrColor,accentColor){
   const lv1m=m=>FILTERED.filter(r=>r.logMonth===m&&filterFn(r)&&r.caseLevel?.includes('Level 1')).length;
   const lv2m=m=>FILTERED.filter(r=>r.logMonth===m&&filterFn(r)&&r.caseLevel?.includes('Level 2')&&!r._referredMail).length;
   const avgResM=m=>{const rts=FILTERED.filter(r=>r.logMonth===m&&resFn(r)&&r.resolutionTime!==null).map(r=>r.resolutionTime);return rts.length?avg(rts):null;};
-  let tbl=`<table class="m-tbl"><thead><tr><th>เดือน</th><th>รวม</th><th>Lv 1</th><th>%Lv 1</th><th>Lv 2</th><th>%Lv 2</th><th>Avg Resolve</th>${depts.map(d=>`<th>${d}</th>`).join('')}</tr></thead><tbody>`;
+  let tbl=`<table class="m-tbl"><thead><tr><th>เดือน</th><th>รวม</th><th>Level 1</th><th>%Level 1</th><th>Level 2</th><th>%Level 2</th><th>Avg. Resolution Time</th>${depts.map(d=>`<th>${d}</th>`).join('')}</tr></thead><tbody>`;
   months.forEach((m,i)=>{
     const tc=totals[i],l1=lv1m(m),l2=lv2m(m);const ar=avgResM(m);
     const prev=i>0?totals[i-1]:null;const arr=prev===null?'':tc>prev?'▲':tc<prev?'▼':'';
@@ -5236,6 +5391,15 @@ function makeMonthTable(elId,months,filterFn,resFnOrColor,accentColor){
 
 function renderMonthly(){
   if(!RAW.length)return;
+  // Sync กับ MODE จาก filter bar ด้านบน
+  MONTHLY_MODE = MODE;
+  const el_call=document.getElementById('mv-call');
+  const el_mail=document.getElementById('mv-mail');
+  // all → แสดงเฉพาะ Call section (รวม Call+Mail ใน section เดียว)
+  // call → Call section เท่านั้น
+  // mail → Mail section เท่านั้น
+  if(el_call) el_call.style.display=(MONTHLY_MODE==='call'||MONTHLY_MODE==='all')?'':'none';
+  if(el_mail) el_mail.style.display=(MONTHLY_MODE==='mail')?'':'none';
   const ALL12=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   // ใช้ RAW (ไม่ filter เดือน) เพื่อแสดงทุกเดือน แต่ยังคง filter dept/level/mode
   const fm=document.getElementById('f-month')?.value||'';
@@ -5265,21 +5429,45 @@ function renderMonthly(){
   const ab=m=>{if(!CX.loaded)return 0;const mn=MNUM[m];const ents=Object.entries(CX.daily).filter(([d])=>new Date(d).getMonth()===mn);return ents.reduce((s,[,v])=>s+(v.abn_3cx||0),0);};
   const ar=m=>{const rts=ALL_FILTERED.filter(r=>r.logMonth===m&&resCallFn(r)&&r.resolutionTime!==null).map(r=>r.resolutionTime);return rts.length?Math.round(avg(rts)*10)/10:0;};
   const lv1c=m=>ALL_FILTERED.filter(r=>r.logMonth===m&&callFn(r)&&r.caseLevel?.includes('Level 1')).length;
-  const mFiltered=SEL_M?ALL_FILTERED.filter(r=>r.logMonth===SEL_M):ALL_FILTERED;
+  const mFiltered=ALL_FILTERED; // แสดงภาพรวมทุกเดือนเสมอ
   const totC=mFiltered.filter(callFn).length;
+  const isAll=MONTHLY_MODE==='all';
   const rrAll=CX.loaded&&CX.total.sla_pct!==null?CX.total.sla_pct:null;
   const abnVal=CX.loaded?Object.values(CX.daily).reduce((s,v)=>s+(v.abn_3cx||0),0):'—';
   const rCol=rrAll===null?'#94a3b8':rrAll>=90?'#4ade80':rrAll>=75?'#fcd34d':'#f87171';
   const allRes=mFiltered.filter(r=>resCallFn(r)&&r.resolutionTime!==null).map(r=>r.resolutionTime);
-  document.getElementById('m-call-kpi').innerHTML=`
-    <div class="m-kpi mk-blue"><div class="mlabel">Total Call</div><div class="mval">${totC.toLocaleString()}</div><div class="msub"></div></div>
-    <div class="m-kpi mk-red"><div class="mlabel">Abandon</div><div class="mval">${abnVal}</div><div class="msub"></div></div>
-    <div class="m-kpi mk-green"><div class="mlabel">Avg Reach Rate</div><div class="mval" style="color:${rCol}">${rrAll!==null?rrAll+'%':'N/A'}</div><div class="msub"></div></div>
-    <div class="m-kpi mk-teal"><div class="mlabel">1st Call Resolution</div><div class="mval">${mFiltered.filter(r=>callFn(r)&&r.caseLevel?.includes('Level 1')).length}</div><div class="msub">${pct(mFiltered.filter(r=>callFn(r)&&r.caseLevel?.includes('Level 1')).length,totC)}%</div></div>
-    <div class="m-kpi mk-amber"><div class="mlabel">Non FCR</div><div class="mval">${mFiltered.filter(r=>callFn(r)&&r.caseLevel?.includes('Level 2')&&!r._referredMail).length}</div><div class="msub">${pct(mFiltered.filter(r=>callFn(r)&&r.caseLevel?.includes('Level 2')&&!r._referredMail).length,totC)}%</div></div>
-    <div class="m-kpi mk-purple"><div class="mlabel">Avg. Resolution Time</div><div class="mval">${nf(allRes.length?avg(allRes):null)}</div><div class="msub">${allRes.length?'วัน':''}</div></div>`;
-  // ── Call charts ── (filter ตามเดือนที่เลือก)
+
+  // เมื่อ mode=all ให้รวม Call+Mail ใน KPI section เดียว
+  if(isAll){
+    const allFn=r=>isKpiCall(r)||isMail(r);
+    const totAll=mFiltered.filter(allFn).length;
+    const totCallA=mFiltered.filter(callFn).length;
+    const totMailA=mFiltered.filter(isMail).length;
+    const allResAll=mFiltered.filter(r=>allFn(r)&&r.resolutionTime!==null).map(r=>r.resolutionTime);
+    document.getElementById('m-call-kpi').innerHTML=`
+      <div class="m-kpi mk-blue"><div class="mlabel">Total Call</div><div class="mval">${totCallA.toLocaleString()}</div><div class="msub"></div></div>
+      <div class="m-kpi mk-purple"><div class="mlabel">Total Mail</div><div class="mval">${totMailA.toLocaleString()}</div><div class="msub"></div></div>
+      <div class="m-kpi mk-red"><div class="mlabel">Abandon</div><div class="mval">${abnVal}</div><div class="msub"></div></div>
+      <div class="m-kpi mk-green"><div class="mlabel">Avg Reach Rate</div><div class="mval" style="color:${rCol}">${rrAll!==null?rrAll+'%':'N/A'}</div><div class="msub"></div></div>
+      <div class="m-kpi mk-teal"><div class="mlabel">1st Contact Resolution</div><div class="mval">${mFiltered.filter(r=>allFn(r)&&r.caseLevel?.includes('Level 1')).length}</div><div class="msub">${pct(mFiltered.filter(r=>allFn(r)&&r.caseLevel?.includes('Level 1')).length,totAll)}%</div></div>
+      <div class="m-kpi mk-amber"><div class="mlabel">Avg. Resolution Time</div><div class="mval">${nf(allResAll.length?avg(allResAll):null)}</div><div class="msub">${allResAll.length?'วัน':''}</div></div>`;
+  } else {
+    document.getElementById('m-call-kpi').innerHTML=`
+      <div class="m-kpi mk-blue"><div class="mlabel">Total Call</div><div class="mval">${totC.toLocaleString()}</div><div class="msub"></div></div>
+      <div class="m-kpi mk-red"><div class="mlabel">Abandon</div><div class="mval">${abnVal}</div><div class="msub"></div></div>
+      <div class="m-kpi mk-green"><div class="mlabel">Avg Reach Rate</div><div class="mval" style="color:${rCol}">${rrAll!==null?rrAll+'%':'N/A'}</div><div class="msub"></div></div>
+      <div class="m-kpi mk-teal"><div class="mlabel">1st Call Resolution</div><div class="mval">${mFiltered.filter(r=>callFn(r)&&r.caseLevel?.includes('Level 1')).length}</div><div class="msub">${pct(mFiltered.filter(r=>callFn(r)&&r.caseLevel?.includes('Level 1')).length,totC)}%</div></div>
+      <div class="m-kpi mk-amber"><div class="mlabel">Non FCR</div><div class="mval">${mFiltered.filter(r=>callFn(r)&&r.caseLevel?.includes('Level 2')&&!r._referredMail).length}</div><div class="msub">${pct(mFiltered.filter(r=>callFn(r)&&r.caseLevel?.includes('Level 2')&&!r._referredMail).length,totC)}%</div></div>
+      <div class="m-kpi mk-purple"><div class="mlabel">Avg. Resolution Time</div><div class="mval">${nf(allRes.length?avg(allRes):null)}</div><div class="msub">${allRes.length?'วัน':''}</div></div>`;
+  }
+  // ── Call/All charts ──
   const chartMonths=months;
+  const activeFn=isAll?(r=>isKpiCall(r)||isMail(r)):callFn;
+  const modeLabel=isAll?'Call + Mail':'Call';
+  const el_title1=document.getElementById('m-call-level-title');
+  const el_title2=document.getElementById('m-call-tbl-title');
+  if(el_title1) el_title1.textContent=`Case Level ตามแผนก รายเดือน — ${modeLabel}`;
+  if(el_title2) el_title2.textContent=`ตารางเปรียบเทียบรายเดือน — ${modeLabel}`;
   const fcrPctM=m=>{const t=tc(m),l1=lv1c(m);return t>0?Math.round(l1/t*100):null;};
   const abnPctM=m=>{const t=tc(m),a=ab(m);return t>0?Math.round(a/t*100):null;};
   const nfcrPctM=m=>{const t=tc(m),l1=lv1c(m);return t>0?Math.round((t-l1)/t*100):null;};
@@ -5290,19 +5478,18 @@ function renderMonthly(){
     [{label:'Call Reach Rate (%)', data:chartMonths.map(m=>rr(m)), color:'#0EA5E9'}], 100);
   makeCleanBarChart('m-res-call-chart', ALL12, chartMonths,
     [{label:'Avg Resolution Time', data:chartMonths.map(ar), color:'#FFA940'}], null, 'วัน');
-  makeDeptLevelChart('m-call-level-chart',chartMonths,callFn,'call');
-  makeDeptLevelTable('m-call-dept-level-tbl',chartMonths,callFn);
-  makeResDeptChart('m-call-res-dept-chart',chartMonths,callFn);
-  makeRespDeptChart('m-call-resp-dept-chart',chartMonths,callFn);
-  makeResDeptTable('m-call-res-dept-tbl',chartMonths,callFn);
-  makeMonthTable('m-call-tbl',chartMonths,callFn,resCallFn,'#29C6C0');
+  makeDeptLevelChart('m-call-level-chart',chartMonths,activeFn,'call');
+  makeDeptLevelTable('m-call-dept-level-tbl',chartMonths,activeFn);
+  makeResDeptChart('m-call-res-dept-chart',chartMonths,activeFn);
+  makeRespDeptChart('m-call-resp-dept-chart',chartMonths,activeFn);
+  makeMonthTable('m-call-tbl',chartMonths,activeFn,resCallFn,'#29C6C0');
   const allDepts=[...new Set(FILTERED.map(r=>r.typeDept).filter(Boolean))].sort();
   ['m-call-dept-sel','m-mail-dept-sel'].forEach(id=>{const sel=document.getElementById(id);if(!sel)return;const cur=sel.value;sel.innerHTML='<option value="">ทุกแผนก</option>'+allDepts.map(d=>`<option${d===cur?' selected':''}>${d}</option>`).join('');});
   renderTop10Issue('call');
 
   // MAIL
   const mailFn=r=>isMail(r);
-  const mFilteredM=SEL_M?ALL_FILTERED.filter(r=>r.logMonth===SEL_M):ALL_FILTERED;
+  const mFilteredM=ALL_FILTERED; // แสดงภาพรวมทุกเดือนเสมอ
   const totM=mFilteredM.filter(mailFn).length;
   const totMref=mFilteredM.filter(r=>r.logType==='Mail'&&r._referredMail).length;
   const allResM=mFilteredM.filter(r=>mailFn(r)&&r.resolutionTime!==null).map(r=>r.resolutionTime);
@@ -5580,9 +5767,9 @@ function makeRespDeptChart(elId, months, filterFn){
   const isCall=filterFn!==isMail;
   const accentColor='#5B8DEF';
 
-  const respFn=r=>filterFn(r)&&r.caseLevel?.includes('Level 2')&&r.status==='Closed'&&r.responseTime!==null;
+  const respFn=r=>filterFn(r)&&r.caseLevel?.includes('Level 2')&&r.status==='Closed'&&r.resolutionTime!==null;
   const avgRespOf=rows=>{
-    const v=rows.filter(respFn).map(r=>r.responseTime);
+    const v=rows.filter(respFn).map(r=>r.resolutionTime);
     return v.length?+(avg(v).toFixed(1)):null;
   };
   const cntLv2Of=rows=>rows.filter(r=>filterFn(r)&&r.caseLevel?.includes('Level 2')).length;
@@ -5827,8 +6014,8 @@ function makeDeptLevelTable(elId, months, filterFn){
         <th colspan="4" style="text-align:center;color:#1e40af;border-left:2px solid #e2e8f0">รวมทั้งปี</th>
       </tr>
       <tr>
-        ${months.map(()=>`<th style="color:${C1};border-left:2px solid #e2e8f0">Level 1</th><th style="color:#94a3b8">%Lv1</th><th style="color:${C2}">Level 2</th><th style="color:#94a3b8">%Lv2</th>`).join('')}
-        <th style="color:#1e40af;border-left:2px solid #e2e8f0">Level 1</th><th style="color:#94a3b8">%Lv1</th><th style="color:${C2}">Level 2</th><th style="color:#94a3b8">%Lv2</th>
+        ${months.map(()=>`<th style="color:${C1};border-left:2px solid #e2e8f0">Level 1</th><th style="color:#94a3b8">%Level 1</th><th style="color:${C2}">Level 2</th><th style="color:#94a3b8">%Level 2</th>`).join('')}
+        <th style="color:#1e40af;border-left:2px solid #e2e8f0">Level 1</th><th style="color:#94a3b8">%Level 1</th><th style="color:${C2}">Level 2</th><th style="color:#94a3b8">%Level 2</th>
       </tr>
     </thead><tbody>`;
 
