@@ -1,4 +1,12 @@
 StartTime,Direction,TalkingDuration,Answered,CallType
+2026-05-29T08:59:25.963179+07:00,Internal,PT3.52898S,True,System
+2026-05-29T08:25:28.848567+07:00,Internal,PT3.52928S,True,System
+2026-05-28T22:24:33.52721+07:00,Inbound,PT12.659289S,True,Digital Receptionist
+2026-05-28T22:24:33.42404+07:00,Inbound,PT0S,False,Digital Receptionist
+2026-05-28T20:08:26.959448+07:00,Inbound,PT15.164964S,True,Digital Receptionist
+2026-05-28T20:08:26.886869+07:00,Inbound,PT0S,False,Digital Receptionist
+2026-05-28T18:18:34.89181+07:00,Inbound,PT12.910024S,True,Digital Receptionist
+2026-05-28T18:18:34.84441+07:00,Inbound,PT0S,False,Digital Receptionist
 2026-05-28T17:00:20.118828+07:00,Internal,PT3.122572S,True,System
 2026-05-28T17:00:13.952399+07:00,Internal,PT3.127554S,True,System
 2026-05-28T17:00:12.366406+07:00,Internal,PT3.125537S,True,System
