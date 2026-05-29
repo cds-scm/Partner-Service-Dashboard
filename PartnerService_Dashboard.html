@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Call Log Dashboard — CDS SCM Partner Service</title>
+<title>Partner Service Dashboard — CDS SCM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -366,7 +366,7 @@ input[type=file]{display:none}
       </svg>
     </div>
     <div>
-      <div class="h-title">Call Log Dashboard</div>
+      <div class="h-title">Partner Service Dashboard</div>
       <div class="h-sub" id="h-sub">CDS SCM Partner Service</div>
     </div>
   </div>
@@ -906,8 +906,42 @@ function loadLog(inp){if(inp.files[0])processLog(inp.files[0]);inp.value='';}
 function loadCX(inp){if(inp.files[0])processCX(inp.files[0]);inp.value='';}
 
 function markReferredMail(){
-  const referSet=new Set(RAW.map(r=>String(r.logRefer||'').trim()).filter(v=>v&&v!=='undefined'&&v!=='null'));
-  RAW.forEach(r=>{r._referredMail=(r.logType==='Mail'&&referSet.has(String(r.logId||'').trim()));});
+  // normalize: ตัด prefix LOG-, trim, lowercase, strip leading zeros
+  const norm=v=>{
+    const s=String(v||'').trim().toLowerCase()
+      .replace(/^log-0*/,'')   // ตัด "LOG-" และ leading zeros → "log-00655" → "655"
+      .replace(/^0+(?=\d)/,''); // strip leading zeros อีกชั้น → "00655" → "655"
+    return s;
+  };
+  // referSet = set ของ logRefer (normalized) จากทุก record
+  const referSet=new Set(
+    RAW.map(r=>norm(r.logRefer)).filter(v=>v&&v!=='undefined'&&v!=='null'&&v!=='0'&&v!=='')
+  );
+  RAW.forEach(r=>{
+    r._referredMail=(r.logType==='Mail'&&referSet.has(norm(r.logId)));
+  });
+  // log ข้อมูลจริงเพื่อ debug
+  console.log('[markReferredMail] referSet size:', referSet.size, '| sample:', [...referSet].slice(0,10));
+  const mailPend = RAW.filter(r=>r.logType==='Mail'&&(r.status==='Open'||r.status==='Pending'));
+  console.log('[markReferredMail] Mail pending total:', mailPend.length);
+  mailPend.forEach(r=>{
+    const nId=norm(r.logId);
+    const hit=referSet.has(nId);
+    console.log(`  logId="${r.logId}" → norm="${nId}" | inReferSet=${hit} | _referredMail=${r._referredMail}`);
+  });
+  const referred=RAW.filter(r=>r._referredMail);
+  console.debug('[markReferredMail] Mail referred='+referred.length+' | sample:',referred.slice(0,5).map(r=>r.logId));
+  // debug
+  const mailTotal = RAW.filter(r=>r.logType==='Mail').length;
+  const mailReferred = RAW.filter(r=>r._referredMail).length;
+  const mailPending = RAW.filter(r=>r.logType==='Mail'&&!r._referredMail&&(r.status==='Open'||r.status==='Pending')).length;
+  console.debug(`[markReferredMail] referSet.size=${referSet.size} | Mail total=${mailTotal} | referred=${mailReferred} | pending(not referred)=${mailPending}`);
+  // แสดง 5 ตัวอย่าง Mail ที่ยัง pending แต่ไม่ถูก mark
+  const sample=RAW.filter(r=>r.logType==='Mail'&&!r._referredMail&&(r.status==='Open'||r.status==='Pending')).slice(0,5);
+  sample.forEach(r=>console.debug(`  Mail logId="${r.logId}" norm="${norm(r.logId)}" | logRefer="${r.logRefer}"`));
+  // แสดง 5 ตัวอย่าง referSet
+  const refSample=[...referSet].slice(0,5);
+  console.debug(`  referSet sample:`, refSample);
 }
 
 function processLog(file){
@@ -1312,17 +1346,18 @@ function renderKPI(){
   const mailP  = grandN?Math.round(totalMailN/grandN*100):0;
   const fwdP   = 0; // ไม่ใช้แล้ว
 
-  // ถ้ากรองแผนก → 3CX ไม่มีข้อมูลแผนก ต้องใช้ Abandon จาก Log เท่านั้น
-  const abnVal  = (!hasDeptFilter && cx.abn_3cx!==null) ? cx.abn_3cx : abandonN;
+  // Abandon จาก 3CX (ถ้าโหลดแล้ว) ถ้าไม่มีหรือกรองแผนก → ใช้จาก Log
+  const abnVal  = (!hasDeptFilter && CX.loaded && cx.abn_3cx>0) ? cx.abn_3cx : abandonN;
   const abnPct  = kpiCallN>0?+(abnVal/kpiCallN*100).toFixed(1):0;
   const cbPct   = abnVal>0?+(abandonN/abnVal*100).toFixed(1):0;
 
   if(prevM){
     const prev2=RAW.filter(r=>r.logMonth===prevM);
+    const pKpiN2=prev2.filter(isKpiCall).length;
     const pAbn2=prev2.filter(r=>r.logType==='Abandon').length;
-    const curCb=abnVal>0?Math.round(abandonN/abnVal*100):0;
-    const prevCb=pAbn2>0?Math.round(pAbn2/pAbn2*100):0;
-    if(pAbn2>0) dCallBack=curCb-prevCb;
+    const curCb=kpiCallN>0?Math.round(abandonN/kpiCallN*100):0;
+    const prevCb=pKpiN2>0?Math.round(pAbn2/pKpiN2*100):0;
+    if(pKpiN2>0) dCallBack=curCb-prevCb;
   }
 
   // ── Donut ring (light theme) ──
@@ -4696,13 +4731,23 @@ async function autoLoad(){
         const wb=XLSX.read(text,{type:'string'});
         const ws=wb.Sheets[wb.SheetNames[0]];
         const cxData=XLSX.utils.sheet_to_json(ws,{defval:''});
-        syncLog(`3CX rows: ${cxData.length}, cols: ${cxData.length?Object.keys(cxData[0]).join(', '):'—'}`);
-        if(cxData.length&&Object.keys(cxData[0]).includes('Direction')){
-          processCXData(cxData);
+        // normalize column names ก่อน check (ลบ BOM + trim whitespace)
+        const normCxData=cxData.map(row=>{
+          const nr={};
+          for(const[k,v] of Object.entries(row)){
+            nr[k.replace(/^\uFEFF/,'').trim()]=v;
+          }
+          return nr;
+        });
+        const cxCols=normCxData.length?Object.keys(normCxData[0]):[];
+        syncLog(`3CX rows: ${normCxData.length}, cols: ${cxCols.join(', ')}`);
+        const hasValidCols=cxCols.some(c=>c.toLowerCase().includes('direction'))||
+                             cxCols.some(c=>c.toLowerCase().includes('starttime'));
+        if(normCxData.length&&hasValidCols){
+          processCXData(normCxData);
           syncLog(`processCXData เสร็จ ✓`,'ok');
         } else {
-          syncLog('3CX CSV ไม่มี column "Direction" — ตรวจสอบ header ของไฟล์','warn');
-          // re-render ด้วยข้อมูล calllog อย่างเดียว
+          syncLog(`3CX CSV — cols ที่พบ: ${cxCols.join(', ')||'(ไม่มี)'}`, 'warn');
           if(RAW.length) requestAnimationFrame(renderAll);
         }
       } else {
@@ -4761,68 +4806,91 @@ function processLogData(data){
 }
 
 function processCXData(data){
-  const TARGET_QUEUE='Q_Partner Service_TH (8196)';
-  // normalize key names (strip BOM and whitespace)
+  // normalize key names (strip BOM + whitespace)
   const normData=data.map(row=>{
     const nr={};
-    for(const[k,v] of Object.entries(row)){
+    for(const[k,v] of Object.entries(row))
       nr[k.replace(/^\uFEFF/,'').trim()]=v;
-    }
     return nr;
   });
-  // === Pass 1: Group rows by Call ID ===
-  const callMap={};
-  normData.forEach(row=>{
-    const id=String(row['Call ID']||'').trim();
-    if(!id)return;
-    if(!callMap[id])callMap[id]=[];
-    callMap[id].push(row);
-  });
 
+  // detect column names (case-insensitive)
+  const cols=normData.length?Object.keys(normData[0]):[];
+  const fc=name=>cols.find(k=>k.toLowerCase()===name.toLowerCase())||name;
+
+  // หา column names
+  const TIME_COL   = cols.find(c=>['starttime','call time','start time'].includes(c.toLowerCase()))||null;
+  const DIR_COL    = cols.find(c=>c.toLowerCase()==='direction')||null;
+  const STATUS_COL = cols.find(c=>c.toLowerCase()==='status')||null;
+  const TO_COL     = cols.find(c=>['to','dst','destinationdn'].includes(c.toLowerCase()))||null;
+  const TALK_COL   = cols.find(c=>['talking','talkingduration'].includes(c.toLowerCase()))||null;
+  const ANS_COL    = cols.find(c=>c.toLowerCase()==='answered')||null;
+
+  console.debug('[processCXData] cols:', cols.join(', '));
+  console.debug('[processCXData] TIME_COL:', TIME_COL, '| DIR_COL:', DIR_COL, '| STATUS_COL:', STATUS_COL, '| TO_COL:', TO_COL);
+
+  // parse ISO 8601 duration e.g. PT12.65S → seconds
+  const parseDur=v=>{
+    if(!v)return 0;
+    const s=String(v).trim().toUpperCase();
+    const m=s.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:([\d.]+)S)?/);
+    if(!m)return 0;
+    return (parseFloat(m[1]||0)*3600)+(parseFloat(m[2]||0)*60)+(parseFloat(m[3]||0));
+  };
+  const sampleTalk = TALK_COL?(normData.find(r=>r[TALK_COL])?.[TALK_COL]||''):'';
+  const USE_ISO    = String(sampleTalk).toUpperCase().startsWith('PT');
+  const getTalk    = v=>{
+    if(!v)return 0;
+    const s=String(v).trim();
+    if(USE_ISO)return parseDur(s);
+    const p=s.split(':');
+    if(p.length===3)return Math.round(+p[0]*3600+ +p[1]*60+ +p[2]);
+    return 0;
+  };
+
+  // ══ LOGIC หลัก: ใช้ Direction + Status + To=8196 ══
+  // Queue 8196 = Inbound Queue → To=8196
+  //   Status=Waiting    → สายที่รับได้ (Answered)
+  //   Status=Unanswered → สายที่วางสาย (Abandon)
+  const TARGET_TO = '8196';
   const daily={};let rAns=0,rAbn=0,sOk=0,sTotal=0,talkSec=0,talkCnt=0,totalAbn=0;
 
-  // === Pass 2: วิเคราะห์แต่ละ Call ID ===
-  Object.values(callMap).forEach(rows=>{
-    // หา row ที่เข้า TARGET_QUEUE
-    const qRow=rows.find(r=>String(r['Direction']||'').trim()==='Inbound Queue'&&String(r['To']||'').trim()===TARGET_QUEUE);
-    if(!qRow)return;
+  normData.forEach(row=>{
+    const dir = String(DIR_COL?row[DIR_COL]:'').trim();
+    const to  = String(TO_COL?row[TO_COL]:'').trim();
+    const st  = String(STATUS_COL?row[STATUS_COL]:'').trim();
+    const rawTime = String(TIME_COL?row[TIME_COL]:'').trim();
+    const date = rawTime.slice(0,10);
+    if(!date||date.length<10) return;
 
-    const date=String(qRow['Call Time']||'').slice(0,10);
-    if(!date||date.length<10)return;
-    if(!daily[date])daily[date]={reach_ans:0,reach_abn:0,sla_ok:0,sla_total:0,talk_sec:0,talk_cnt:0,abn_3cx:0};
+    if(dir==='Inbound Queue' && to===TARGET_TO){
+      if(!daily[date])daily[date]={reach_ans:0,reach_abn:0,sla_ok:0,sla_total:0,talk_sec:0,talk_cnt:0,abn_3cx:0};
+      sTotal++; daily[date].sla_total++;
 
-    daily[date].sla_total++;sTotal++;
-
-    // ตรวจว่า Call ID นี้มี Inbound Answered ที่ Talking > 0 จาก Agent จริง (ไม่ใช่ PleaseHold/Queue)
-    const hasRealTalk=rows.some(r=>{
-      const dir=String(r['Direction']||'').trim();
-      const st=String(r['Status']||'').trim();
-      const to=String(r['To']||'').trim();
-      const talk=toSec(r['Talking']);
-      const isHold=to.toLowerCase().includes('pleasehold')||to.toLowerCase().includes('hold')||to.toLowerCase().includes('greeting')||to.toLowerCase().includes('notconnect');
-      return dir==='Inbound'&&st==='Answered'&&talk!==null&&talk>0&&!isHold;
-    });
-
-    if(hasRealTalk){
-      // คุยสำเร็จ → นับ Answered
-      daily[date].reach_ans++;rAns++;daily[date].sla_ok++;sOk++;
-      // คำนวณ Avg Talk Time จาก agent row ที่ talk > 0 (ไม่รวม PleaseHold)
-      rows.forEach(r=>{
-        const dir=String(r['Direction']||'').trim();
-        const st=String(r['Status']||'').trim();
-        const to=String(r['To']||'').trim();
-        const talk=toSec(r['Talking']);
-        const isHold=to.toLowerCase().includes('pleasehold')||to.toLowerCase().includes('hold')||to.toLowerCase().includes('greeting')||to.toLowerCase().includes('notconnect');
-        if(dir==='Inbound'&&st==='Answered'&&talk!==null&&talk>0&&!isHold){
-          daily[date].talk_sec+=talk;daily[date].talk_cnt++;
-          talkSec+=talk;talkCnt++;
-        }
-      });
-    } else {
-      // ไม่มีการคุยจริง → Abandon (เหมือน 3CX Panel)
-      daily[date].abn_3cx++;totalAbn++;daily[date].reach_abn++;rAbn++;
+      if(st==='Waiting'){
+        // สายที่ผ่าน Queue → agent รับสาย (Waiting = กำลังรอ/รับแล้ว)
+        rAns++; sOk++;
+        daily[date].reach_ans++; daily[date].sla_ok++;
+      } else if(st==='Unanswered'){
+        // สายที่วางสายก่อน agent รับ = Abandon
+        rAbn++; totalAbn++;
+        daily[date].reach_abn++; daily[date].abn_3cx++;
+      }
+    }
+    // คำนวณ Avg Talk Time จาก Inbound Answered ของ agent (Extension)
+    if(dir==='Inbound' && st==='Answered'){
+      const toLow=to.toLowerCase();
+      const isIVR=toLow.includes('pleasehold')||toLow.includes('menu')||
+                  toLow.includes('greeting')||toLow.includes('8439');
+      if(!isIVR && TALK_COL){
+        const t=getTalk(row[TALK_COL]);
+        if(t>0){talkSec+=t;talkCnt++;}
+      }
     }
   });
+
+  console.debug(`[processCXData] Queue-8196 | Waiting(ans)=${rAns} Unanswered(abn)=${totalAbn} Total=${sTotal}`);
+
   const rt=rAns+rAbn;
   CX={loaded:true,
     total:{reach_ans:rAns,reach_abn:rAbn,reach_pct:rt>0?Math.round(rAns/rt*1000)/10:null,
@@ -4963,30 +5031,35 @@ async function doExportPPTX(){
     };
     const F={head:'CPN', body:'CPN'};
 
-    // ── Header builder (v3: white + purple left bar + yellow circle) ──
+    // ── Header builder (v5: fixed overlaps) ──
+    // Brand bar: y=0.00  h=0.42
+    // Title bar: y=0.44  h=0.50  → bottom=0.94
+    // Content zone starts at y=1.00
     function addHeader(s,num,title,accent){
       const ac=accent||C.primary;
       s.background={color:C.white};
-      // CDS SCM brand tag top-left
-      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:0,w:0.06,h:0.55,fill:{color:C.primary}});
-      s.addText('CDS SCM Partner Service',{x:0.12,y:0,w:2.8,h:0.55,fontSize:9,color:C.dark,bold:true,valign:'middle',margin:0,fontFace:F.head});
-      // Yellow circle top-right
-      s.addShape(pptx.shapes.OVAL,{x:9.1,y:0.05,w:0.45,h:0.45,fill:{color:C.yellow},line:{color:C.yellow}});
-      // Section title with left purple bar
-      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:0.65,w:0.05,h:0.5,fill:{color:ac}});
-      s.addText(title,{x:0.15,y:0.65,w:9.5,h:0.5,fontSize:20,color:C.dark,bold:true,valign:'middle',margin:0,fontFace:F.head});
-      // Dot grid decoration
-      for(let r=0;r<3;r++) for(let c=0;c<4;c++)
-        s.addShape(pptx.shapes.OVAL,{x:0.2+c*0.18,y:0.75+r*0.18,w:0.07,h:0.07,fill:{color:C.b5},line:{color:C.b5}});
+      // ── Brand bar (h=0.42) ──
+      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:0,w:10,h:0.42,fill:{color:'F9FAFB'}});
+      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:0,w:0.06,h:0.42,fill:{color:C.primary}});
+      s.addText('CDS SCM Partner Service',{x:0.14,y:0,w:5.0,h:0.42,fontSize:8.5,color:C.dark,bold:true,valign:'middle',margin:0,fontFace:F.head});
+      // Yellow circle — right end of brand bar (stays inside bar)
+      s.addShape(pptx.shapes.OVAL,{x:9.46,y:0.04,w:0.34,h:0.34,fill:{color:C.yellow},line:{color:C.yellow}});
+      // Dot grid — inside brand bar, before circle
+      for(let r=0;r<2;r++) for(let c=0;c<3;c++)
+        s.addShape(pptx.shapes.OVAL,{x:8.84+c*0.12,y:0.06+r*0.12,w:0.07,h:0.07,fill:{color:C.b4},line:{color:C.b4}});
+      // ── Title bar (y=0.44 h=0.50) ──
+      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:0.44,w:0.06,h:0.50,fill:{color:ac}});
+      s.addShape(pptx.shapes.RECTANGLE,{x:0.06,y:0.44,w:9.94,h:0.50,fill:{color:'FAFAFA'}});
+      s.addText(title,{x:0.16,y:0.44,w:9.6,h:0.50,fontSize:18,color:C.dark,bold:true,valign:'middle',margin:0,fontFace:F.head});
     }
 
-    // ── Footer (v3) ──
+    // ── Footer (v5) ──
     function addFooter(s){
       const today=new Date().toLocaleDateString('th-TH',{day:'2-digit',month:'long',year:'numeric'});
       s.addShape(pptx.shapes.RECTANGLE,{x:0,y:5.38,w:10,h:0.245,fill:{color:C.primary}});
       s.addText(`CDS SCM Partner Service  ·  ${today}  ·  ข้อมูล ${RAW.length.toLocaleString()} รายการ`,
-        {x:0.3,y:5.4,w:9.4,h:0.22,fontSize:8,color:C.white,margin:0,fontFace:'CPN'});
-      s.addShape(pptx.shapes.OVAL,{x:9.1,y:5.05,w:0.4,h:0.4,fill:{color:C.yellow},line:{color:C.yellow}});
+        {x:0.3,y:5.395,w:8.9,h:0.22,fontSize:8,color:C.white,margin:0,fontFace:'CPN'});
+      s.addShape(pptx.shapes.OVAL,{x:9.55,y:5.395,w:0.19,h:0.19,fill:{color:C.yellow},line:{color:C.yellow}});
     }
 
     // ── KPI box helper ──
@@ -5117,39 +5190,40 @@ async function doExportPPTX(){
           margin:0,fontFace:F.head});
       };
 
-      // CALL sidebar
-      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:0.75,w:1.3,h:2.42,
+      // Content zone: y=1.00..5.30
+      // CALL sidebar: y=1.00, h=2.06 → bottom=3.06
+      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:1.00,w:1.32,h:2.06,
         fill:{color:C.b1,transparency:88},line:{color:C.b2,transparency:60,width:0.5}});
-      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:0.75,w:0.05,h:2.42,fill:{color:C.b2}});
-      s.addText('CALL',{x:0,y:0.82,w:1.3,h:0.28,fontSize:11,bold:true,color:C.b2,
+      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:1.00,w:0.05,h:2.06,fill:{color:C.b2}});
+      s.addText('CALL',{x:0,y:1.06,w:1.32,h:0.26,fontSize:10,bold:true,color:C.b2,
         align:'center',margin:0,fontFace:F.head,charSpacing:2});
-      s.addText(String(_kpiN),{x:0,y:1.1,w:1.3,h:0.7,fontSize:36,bold:false,
+      s.addText(String(_kpiN),{x:0,y:1.34,w:1.32,h:0.56,fontSize:30,bold:false,
         color:C.dark,align:'center',valign:'middle',margin:0,fontFace:F.head});
-      s.addText(_callP+'%',{x:0,y:1.82,w:1.3,h:0.22,fontSize:12,color:C.gray,
+      s.addText(_callP+'%',{x:0,y:1.92,w:1.32,h:0.20,fontSize:10,color:C.gray,
         align:'center',margin:0,fontFace:F.body});
-      s.addText('📞',{x:0,y:2.06,w:1.3,h:0.36,fontSize:18,align:'center',margin:0});
-      s.addText(`Avg Talk: ${_atStr} min`,{x:0,y:2.5,w:1.3,h:0.22,fontSize:8,
+      s.addText('📞',{x:0,y:2.14,w:1.32,h:0.28,fontSize:15,align:'center',margin:0});
+      s.addText(`Avg Talk: ${_atStr} min`,{x:0,y:2.46,w:1.32,h:0.20,fontSize:7.5,
         color:C.b2,align:'center',margin:0,fontFace:F.body,italic:true});
 
-      // MAIL sidebar
-      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:3.27,w:1.3,h:2.1,
+      // MAIL sidebar: y=3.12, h=2.10 → bottom=5.22
+      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:3.12,w:1.32,h:2.10,
         fill:{color:C.purple,transparency:88},line:{color:C.purple,transparency:60,width:0.5}});
-      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:3.27,w:0.05,h:2.1,fill:{color:C.purple}});
-      s.addText('MAIL',{x:0,y:3.34,w:1.3,h:0.28,fontSize:11,bold:true,color:C.purple,
+      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:3.12,w:0.05,h:2.10,fill:{color:C.purple}});
+      s.addText('MAIL',{x:0,y:3.18,w:1.32,h:0.26,fontSize:10,bold:true,color:C.purple,
         align:'center',margin:0,fontFace:F.head,charSpacing:2});
-      s.addText(String(_mailN),{x:0,y:3.62,w:1.3,h:0.7,fontSize:36,bold:false,
+      s.addText(String(_mailN),{x:0,y:3.46,w:1.32,h:0.56,fontSize:30,bold:false,
         color:C.purple,align:'center',valign:'middle',margin:0,fontFace:F.head});
-      s.addText(_mailP+'%',{x:0,y:4.34,w:1.3,h:0.22,fontSize:12,color:C.gray,
+      s.addText(_mailP+'%',{x:0,y:4.04,w:1.32,h:0.20,fontSize:10,color:C.gray,
         align:'center',margin:0,fontFace:F.body});
-      s.addText('✉️',{x:0,y:4.58,w:1.3,h:0.36,fontSize:18,align:'center',margin:0});
+      s.addText('✉️',{x:0,y:4.26,w:1.32,h:0.28,fontSize:15,align:'center',margin:0});
 
-      // CALL KPIs section header
-      s.addShape(pptx.shapes.RECTANGLE,{x:1.38,y:0.75,w:8.62,h:2.42,
+      // CALL KPIs section header: y=1.00, h=2.06
+      s.addShape(pptx.shapes.RECTANGLE,{x:1.40,y:1.00,w:8.60,h:2.06,
         fill:{color:C.b1,transparency:95}});
-      s.addText('CALL KPIs',{x:1.48,y:0.8,w:3,h:0.28,fontSize:10,bold:true,
+      s.addText('CALL KPIs',{x:1.50,y:1.04,w:3,h:0.26,fontSize:10,bold:true,
         color:C.b2,margin:0,fontFace:F.head,charSpacing:1});
 
-      // CALL 5 cards
+      // CALL 5 cards: y=1.32, h=1.68 → bottom=3.00
       const callCards=[
         {l:'1st Contact Res.',v:_fcrP,sfx:'%',c:C.b3},
         {l:'Avg. Resolution Time',v:_avgRC!==null?_avgRC:'—',sfx:_avgRC!==null?' วัน':'',c:C.b2},
@@ -5157,24 +5231,24 @@ async function doExportPPTX(){
         {l:'Abandon',v:_abnPct,sfx:'%',c:C.red},
         {l:'Call Back',v:_cbPct,sfx:'%',c:C.teal},
       ];
-      const cW2=8.62/5;
+      const cW2=8.60/5;
       callCards.forEach((k,i)=>{
-        _nativeCard(s,1.38+i*cW2,1.1,cW2-0.06,2.0,k.l,k.v,k.sfx,k.c);
+        _nativeCard(s,1.40+i*cW2,1.32,cW2-0.06,1.68,k.l,k.v,k.sfx,k.c);
       });
 
-      // MAIL KPIs section header
-      s.addShape(pptx.shapes.RECTANGLE,{x:1.38,y:3.27,w:8.62,h:2.1,
+      // MAIL KPIs section header: y=3.12, h=2.10
+      s.addShape(pptx.shapes.RECTANGLE,{x:1.40,y:3.12,w:8.60,h:2.10,
         fill:{color:C.purple,transparency:95}});
-      s.addText('MAIL KPIs',{x:1.48,y:3.32,w:3,h:0.28,fontSize:10,bold:true,
+      s.addText('MAIL KPIs',{x:1.50,y:3.16,w:3,h:0.26,fontSize:10,bold:true,
         color:C.purple,margin:0,fontFace:F.head,charSpacing:1});
 
-      // MAIL 2 cards
+      // MAIL 2 cards: y=3.44, h=1.72 → bottom=5.16
       const mailCards=[
         {l:'1st Contact Res.',v:_fmrP,sfx:'%',c:C.purple},
         {l:'Avg. Resolution Time',v:_avgRM!==null?_avgRM:'—',sfx:_avgRM!==null?' วัน':'',c:'9C27B0'},
       ];
       mailCards.forEach((k,i)=>{
-        _nativeCard(s,1.38+i*cW2,3.62,cW2-0.06,1.7,k.l,k.v,k.sfx,k.c);
+        _nativeCard(s,1.40+i*cW2,3.44,cW2-0.06,1.72,k.l,k.v,k.sfx,k.c);
       });
     }
 
@@ -5189,22 +5263,23 @@ async function doExportPPTX(){
       // FCR card
       const fcrC=fcrPct>=90?C.teal:fcrPct>=75?C.amber:C.red;
       const fmrC=fmrPct>=90?C.teal:fmrPct>=75?C.amber:C.red;
+      // FCR cards: content y=1.00..5.25, card h=4.25
       [[fcrPct,fcrN,kpiCallN,'FCR','Call+Transfer',fcrC,0.28],
        [fmrPct,fmrN,mailN,'FCR (Mail)','ESCALATED',fmrC,5.22]].forEach(([pct,n,tot,lbl,sublbl,ac,x])=>{
-        s.addShape(pptx.shapes.RECTANGLE,{x,y:0.95,w:4.5,h:4.28,fill:{color:C.white},
+        s.addShape(pptx.shapes.RECTANGLE,{x,y:1.00,w:4.5,h:4.25,fill:{color:C.white},
           line:{color:C.grayL,width:1},shadow:{type:'outer',blur:8,offset:3,angle:135,color:'000000',opacity:0.07}});
-        s.addShape(pptx.shapes.RECTANGLE,{x,y:0.95,w:4.5,h:0.06,fill:{color:ac}});
-        s.addText(lbl,{x:x+0.2,y:1.1,w:4.1,h:0.36,fontSize:11,bold:true,
+        s.addShape(pptx.shapes.RECTANGLE,{x,y:1.00,w:4.5,h:0.06,fill:{color:ac}});
+        s.addText(lbl,{x:x+0.2,y:1.14,w:4.1,h:0.34,fontSize:11,bold:true,
           color:ac,margin:0,fontFace:'CPN',charSpacing:2});
-        s.addText(pct+'%',{x:x+0.2,y:1.52,w:4.1,h:1.5,fontSize:78,bold:true,
-          color:C.dark,align:'center',margin:0,fontFace:'CPN'});
-        s.addText(`Level 1: ${n} / ${tot} ${sublbl}`,{x:x+0.2,y:3.12,w:4.1,h:0.32,
+        s.addText(pct+'%',{x:x+0.2,y:1.54,w:4.1,h:1.52,fontSize:76,bold:true,
+          color:C.dark,align:'center',valign:'middle',margin:0,fontFace:'CPN'});
+        s.addText(`Level 1: ${n} / ${tot} ${sublbl}`,{x:x+0.2,y:3.16,w:4.1,h:0.30,
           fontSize:11,color:C.gray,align:'center',margin:0,fontFace:'CPN'});
         // progress bar
-        s.addShape(pptx.shapes.RECTANGLE,{x:x+0.3,y:3.52,w:3.9,h:0.14,fill:{color:C.grayL}});
-        s.addShape(pptx.shapes.RECTANGLE,{x:x+0.3,y:3.52,w:Math.min(3.9,3.9*pct/100),h:0.14,fill:{color:ac}});
+        s.addShape(pptx.shapes.RECTANGLE,{x:x+0.3,y:3.54,w:3.9,h:0.14,fill:{color:C.grayL}});
+        s.addShape(pptx.shapes.RECTANGLE,{x:x+0.3,y:3.54,w:Math.min(3.9,3.9*pct/100),h:0.14,fill:{color:ac}});
         const badge=pct>=90?'✅ ดีมาก':pct>=75?'⚠️ พอใช้':'🔴 ต่ำกว่าเกณฑ์';
-        s.addText(badge,{x:x+0.2,y:3.78,w:4.1,h:0.3,fontSize:11,bold:true,
+        s.addText(badge,{x:x+0.2,y:3.80,w:4.1,h:0.30,fontSize:11,bold:true,
           color:ac,align:'center',margin:0,fontFace:'CPN'});
       });
     }
@@ -5228,16 +5303,16 @@ async function doExportPPTX(){
         const fcrPctD=kc?Math.round(fcr1/kc*100):null;
         return{dept,n:di.length,pct:Math.round(di.length/total*100),calls,mails,fcrPct:fcrPctD};
       }).sort((a,b)=>b.n-a.n);
-      // Table header
-      s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:0.95,w:9.44,h:0.44,fill:{color:C.primary}});
+      // Table header — content starts at y=1.02
+      s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:1.02,w:9.44,h:0.44,fill:{color:C.primary}});
       const hdrs=[['แผนก',2.0],['Total',1.2],['%',0.8],['Call',1.2],['Mail',1.2],['FCR%',1.2]];
       let hx=0.35;
       hdrs.forEach(([h,w])=>{
-        s.addText(h,{x:hx,y:0.99,w:w,h:0.34,fontSize:10,bold:true,color:C.white,margin:0,fontFace:'CPN'});
+        s.addText(h,{x:hx,y:1.06,w:w,h:0.34,fontSize:10,bold:true,color:C.white,margin:0,fontFace:'CPN'});
         hx+=w;
       });
       deptData.slice(0,8).forEach((d,i)=>{
-        const ry=1.46+i*0.48;
+        const ry=1.54+i*0.48;
         const bg=i%2===0?C.white:'F4F5F7';
         s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:ry,w:9.44,h:0.44,fill:{color:bg}});
         const vals=[d.dept,d.n,d.pct+'%',d.calls,d.mails,d.fcrPct!==null?d.fcrPct+'%':'—'];
@@ -5261,11 +5336,11 @@ async function doExportPPTX(){
       addHeader(s,'04','FCR vs Non-FCR ตามแผนก',C.teal);
       addFooter(s);
       const fcrSrc=src.filter(r=>isKpiCall(r)&&r.logType!=='Call Back');
-      const BAR_MAX=7.8, BAR_H=0.36, startY=1.05;
+      const BAR_MAX=7.8, BAR_H=0.36, startY=1.08;
       const maxTotal=Math.max(...depts.map(d=>fcrSrc.filter(r=>r.typeDept===d).length),1);
       depts.forEach((dept,i)=>{
         const dy=startY+i*0.66;
-        if(dy>5.18)return;
+        if(dy>5.10)return;
         const di=fcrSrc.filter(r=>r.typeDept===dept);
         const tot=di.length, lv1=di.filter(r=>r.caseLevel?.includes('Level 1')).length;
         const lv2=di.filter(r=>r.caseLevel?.includes('Level 2')).length;
@@ -5276,14 +5351,14 @@ async function doExportPPTX(){
         s.addShape(pptx.shapes.RECTANGLE,{x:1.95,y:dy+0.03,w:BAR_MAX,h:BAR_H,fill:{color:'EDE9FF'}});
         if(lv1W>0) s.addShape(pptx.shapes.RECTANGLE,{x:1.95,y:dy+0.03,w:lv1W,h:BAR_H,fill:{color:C.teal}});
         if(lv2W>0) s.addShape(pptx.shapes.RECTANGLE,{x:1.95+lv1W,y:dy+0.03,w:lv2W,h:BAR_H,fill:{color:C.red}});
-        s.addText(`${lv1}/${tot}`,{x:9.85,y:dy+0.04,w:0.7,h:0.28,fontSize:9.5,color:C.dark,margin:0,fontFace:'CPN'});
-        s.addText(fPct+'%',{x:9.85,y:dy+0.04,w:0.7,h:0.28,fontSize:9.5,bold:true,
+        s.addText(`${lv1}/${tot}`,{x:9.82,y:dy+0.03,w:0.86,h:0.18,fontSize:8.5,color:C.dark,margin:0,fontFace:'CPN'});
+        s.addText(fPct+'%',{x:9.82,y:dy+0.18,w:0.86,h:0.20,fontSize:9,bold:true,
           color:fPct>=80?C.teal:C.red,align:'right',margin:0,fontFace:'CPN'});
       });
       [[C.teal,'FCR (Level 1)'],[C.red,'Non-FCR (Level 2)']].forEach(([c,l],i)=>{
-        const lx=0.28+i*2.2;
-        s.addShape(pptx.shapes.RECTANGLE,{x:lx,y:5.2,w:0.14,h:0.14,fill:{color:c}});
-        s.addText(l,{x:lx+0.2,y:5.18,w:1.9,h:0.2,fontSize:9,color:c,margin:0,fontFace:'CPN'});
+        const lx=0.28+i*2.4;
+        s.addShape(pptx.shapes.RECTANGLE,{x:lx,y:5.14,w:0.14,h:0.14,fill:{color:c}});
+        s.addText(l,{x:lx+0.2,y:5.12,w:2.1,h:0.22,fontSize:9,color:c,margin:0,fontFace:'CPN'});
       });
     }
 
@@ -5302,7 +5377,7 @@ async function doExportPPTX(){
       const grandTotal=issueSrc.length||1, maxN=top10[0]?.[1]||1;
       const BAR_W_MAX=5.5; let cumPct=0;
       top10.forEach(([label,n],i)=>{
-        const iy=1.0+i*0.43;
+        const iy=1.04+i*0.43;
         const p=Math.round(n/grandTotal*100); cumPct+=p;
         const bw=(n/maxN)*BAR_W_MAX;
         const ac=i===0?C.primary:i<3?C.teal:C.blue;
@@ -5310,7 +5385,11 @@ async function doExportPPTX(){
         if(bw>0) s.addShape(pptx.shapes.RECTANGLE,{x:2.8,y:iy,w:bw,h:0.31,fill:{color:ac}});
         s.addText(`${i+1}.`,{x:0.28,y:iy+0.02,w:0.35,h:0.26,fontSize:9.5,color:C.gray,margin:0,fontFace:'CPN'});
         s.addText(label,{x:0.62,y:iy+0.02,w:2.12,h:0.26,fontSize:9.5,bold:i===0,color:C.dark,margin:0,fontFace:'CPN'});
-        s.addText(`${n}`,{x:2.85,y:iy+0.03,w:bw>0.6?bw-0.1:0.6,h:0.24,fontSize:9.5,bold:true,color:C.white,align:'right',margin:0,fontFace:'CPN'});
+        if(bw>=0.7){
+          s.addText(`${n}`,{x:2.85,y:iy+0.03,w:bw-0.1,h:0.24,fontSize:9.5,bold:true,color:C.white,align:'right',margin:0,fontFace:'CPN'});
+        }else{
+          s.addText(`${n}`,{x:2.85+bw,y:iy+0.03,w:0.55,h:0.24,fontSize:9.5,bold:true,color:C.dark,align:'left',margin:0,fontFace:'CPN'});
+        }
         s.addText(`${p}% (cum ${cumPct}%)`,{x:8.45,y:iy+0.03,w:1.3,h:0.24,fontSize:8,color:C.gray,margin:0,fontFace:'CPN'});
       });
     }
@@ -5332,7 +5411,7 @@ async function doExportPPTX(){
       const colorRes=v=>v<=0.5?C.teal:v<=1?C.green:v<=3?C.amber:C.red;
       const BAR_W_MAX=6.5;
       deptRes.forEach((d,i)=>{
-        const dy=1.05+i*0.68; if(dy>5.1)return;
+        const dy=1.08+i*0.68; if(dy>5.10)return;
         const bw=(d.avgRes/maxRes)*BAR_W_MAX;
         const ac=colorRes(d.avgRes);
         s.addText(d.dept,{x:0.28,y:dy+0.06,w:1.6,h:0.34,fontSize:10.5,bold:true,color:C.dark,margin:0,fontFace:'CPN'});
@@ -5345,8 +5424,8 @@ async function doExportPPTX(){
       const legs=[{c:C.teal,l:'≤ 0.5 วัน'},{c:C.green,l:'≤ 1 วัน'},{c:C.amber,l:'≤ 3 วัน'},{c:C.red,l:'> 3 วัน'}];
       legs.forEach((l,i)=>{
         const lx=0.28+i*2.35;
-        s.addShape(pptx.shapes.RECTANGLE,{x:lx,y:5.2,w:0.14,h:0.14,fill:{color:l.c}});
-        s.addText(l.l,{x:lx+0.2,y:5.18,w:2.0,h:0.2,fontSize:9,color:l.c,margin:0,fontFace:'CPN'});
+        s.addShape(pptx.shapes.RECTANGLE,{x:lx,y:5.14,w:0.14,h:0.14,fill:{color:l.c}});
+        s.addText(l.l,{x:lx+0.2,y:5.12,w:2.2,h:0.22,fontSize:9,color:l.c,margin:0,fontFace:'CPN'});
       });
     }
 
@@ -5380,19 +5459,19 @@ async function doExportPPTX(){
         {l:'MAX PENDING TIME',  v:maxPt!==null?maxPt+' วัน':'—', sub:'นานสุด',    c:C.red},
       ];
       pkpis.forEach((k,i)=>{
-        addKpiBox(s, 0.28+i*3.22, 0.95, 3.08, 1.5, k.l, k.v, k.sub, k.c);
+        addKpiBox(s, 0.28+i*3.22, 1.02, 3.08, 1.48, k.l, k.v, k.sub, k.c);
       });
 
-      // Table: top pending by dept
+      // Table: top pending by dept — starts at y=2.64
       if(deptPend.length){
-        s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:2.6,w:9.44,h:0.4,fill:{color:C.amber}});
+        s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:2.64,w:9.44,h:0.40,fill:{color:C.amber}});
         [['แผนก',3.5],['จำนวน Case ค้าง',2.2],['% ของทั้งหมด',1.8],['สถานะ',1.9]].reduce((x,[h,w])=>{
-          s.addText(h,{x:x+0.08,y:2.66,w:w,h:0.28,fontSize:10,bold:true,color:C.white,margin:0,fontFace:'CPN'});
+          s.addText(h,{x:x+0.08,y:2.70,w:w,h:0.26,fontSize:10,bold:true,color:C.white,margin:0,fontFace:'CPN'});
           return x+w;
         },0.28);
 
         deptPend.slice(0,7).forEach(([dept,n],i)=>{
-          const ry=3.08+i*0.32;
+          const ry=3.12+i*0.32;
           s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:ry,w:9.44,h:0.3,fill:{color:i%2===0?C.white:'FFF8F0'}});
           const pct=pendN?Math.round(n/pendN*100):0;
           [dept,n,pct+'%',n>3?'⚠️ ต้องติดตาม':'✅ ปกติ'].reduce((x,v,vi)=>{
