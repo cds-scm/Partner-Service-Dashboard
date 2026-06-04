@@ -4901,7 +4901,15 @@ function processCXData(data){
                   toLow.includes('greeting')||toLow.includes('8439');
       if(!isIVR && TALK_COL){
         const t=getTalk(row[TALK_COL]);
-        if(t>0){talkSec+=t;talkCnt++;}
+        if(t>0){
+          talkSec+=t;talkCnt++;
+          // เก็บลง daily ด้วยเพื่อให้ date filter คำนวณ avg_talk_sec ได้
+          if(date&&date.length>=10){
+            if(!daily[date])daily[date]={reach_ans:0,reach_abn:0,sla_ok:0,sla_total:0,talk_sec:0,talk_cnt:0,abn_3cx:0};
+            daily[date].talk_sec=(daily[date].talk_sec||0)+t;
+            daily[date].talk_cnt=(daily[date].talk_cnt||0)+1;
+          }
+        }
       }
     }
   });
@@ -5017,12 +5025,11 @@ function toggleAllSlides(el){
 }
 
 async function doExportPPTX(){
-  // ตรวจว่าเลือก slide อะไรบ้าง (ใช้ data-selected แทนสี)
   const selected=new Set(SLIDE_DEFS.filter(s=>{
     const chk=document.getElementById('chk-'+s.id);
     return chk&&(chk.dataset.selected==='1'||chk.style.background==='rgb(108, 92, 231)'||chk.style.background==='rgb(25, 118, 210)');
   }).map(s=>s.id));
-  if(selected.size===0){alert('กรุณาเลือก Slide อย่างน้อย 1 รายการ\n(คลิกที่ slide ที่ต้องการ ให้เปลี่ยนสี)');return;}
+  if(selected.size===0){alert('กรุณาเลือก Slide อย่างน้อย 1 รายการ');return;}
 
   closeExportModal();
   const btn=document.getElementById('btn-export-pptx');
@@ -5031,68 +5038,23 @@ async function doExportPPTX(){
   try{
     const pptx=new PptxGenJS();
     pptx.layout='LAYOUT_16x9';
-    pptx.title='CDS SCM Partner Service — Dashboard Report';
+    pptx.title='CDS SCM Partner Service — Monthly KPI Report';
 
-    // ── Dashboard Theme Colors (v3: White + Purple + Yellow) ──
-    const C={
-      b1:'5B21B6', b2:'7C3AED', b3:'8B5CF6', b4:'A78BFA', b5:'C4B5FD',
-      primary:'7C3AED', primaryD:'5B21B6', primaryL:'EDE9FE',
-      teal:'0EA5E9',  tealD:'0284C7',   tealL:'E0F2FE',
-      green:'10B981', greenL:'D1FAE5',
-      amber:'F59E0B', amberL:'FEF3C7',
-      red:'EF4444',   redL:'FEE2E2',
-      blue:'3B82F6',  purple:'7C3AED',
-      yellow:'FCD34D', yellowD:'F59E0B',
-      white:'FFFFFF', offW:'F9FAFB',
-      dark:'111827',  gray:'6B7280',    grayL:'E5E7EB',
-    };
-    const F={head:'CPN', body:'CPN'};
+    // ── Monthly Report Design Colors ──
+    const DARK='1E1B3A', PURPLE='9333EA', PURPLE_D='7C3AED', PURPLE_L='EDE9FE';
+    const YELLOW='FCD34D', YELLOW_D='F59E0B';
+    const WHITE='FFFFFF', OFF_W='F9FAFB', GRAY='6B7280', GRAY_L='E5E7EB';
+    const TEAL='06B6D4', GREEN='10B981', RED='EF4444', AMBER='F59E0B', BLUE='3B82F6';
+    const F='CPN';
 
-    // ── Header builder (v5: fixed overlaps) ──
-    // Brand bar: y=0.00  h=0.42
-    // Title bar: y=0.44  h=0.50  → bottom=0.94
-    // Content zone starts at y=1.00
-    function addHeader(s,num,title,accent){
-      const ac=accent||C.primary;
-      s.background={color:C.white};
-      // ── Brand bar (h=0.42) ──
-      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:0,w:10,h:0.42,fill:{color:'F9FAFB'}});
-      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:0,w:0.06,h:0.42,fill:{color:C.primary}});
-      s.addText('CDS SCM Partner Service',{x:0.14,y:0,w:5.0,h:0.42,fontSize:8.5,color:C.dark,bold:true,valign:'middle',margin:0,fontFace:F.head});
-      // Yellow circle — right end of brand bar (stays inside bar)
-      s.addShape(pptx.shapes.OVAL,{x:9.46,y:0.04,w:0.34,h:0.34,fill:{color:C.yellow},line:{color:C.yellow}});
-      // Dot grid — inside brand bar, before circle
-      for(let r=0;r<2;r++) for(let c=0;c<3;c++)
-        s.addShape(pptx.shapes.OVAL,{x:8.84+c*0.12,y:0.06+r*0.12,w:0.07,h:0.07,fill:{color:C.b4},line:{color:C.b4}});
-      // ── Title bar (y=0.44 h=0.50) ──
-      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:0.44,w:0.06,h:0.50,fill:{color:ac}});
-      s.addShape(pptx.shapes.RECTANGLE,{x:0.06,y:0.44,w:9.94,h:0.50,fill:{color:'FAFAFA'}});
-      s.addText(title,{x:0.16,y:0.44,w:9.6,h:0.50,fontSize:18,color:C.dark,bold:true,valign:'middle',margin:0,fontFace:F.head});
-    }
-
-    // ── Footer (v5) ──
-    function addFooter(s){
-      const today=new Date().toLocaleDateString('th-TH',{day:'2-digit',month:'long',year:'numeric'});
-      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:5.38,w:10,h:0.245,fill:{color:C.primary}});
-      s.addText(`CDS SCM Partner Service  ·  ${today}  ·  ข้อมูล ${RAW.length.toLocaleString()} รายการ`,
-        {x:0.3,y:5.395,w:8.9,h:0.22,fontSize:8,color:C.white,margin:0,fontFace:'CPN'});
-      s.addShape(pptx.shapes.OVAL,{x:9.55,y:5.395,w:0.19,h:0.19,fill:{color:C.yellow},line:{color:C.yellow}});
-    }
-
-    // ── KPI box helper ──
-    function addKpiBox(s,x,y,w,h,label,val,sub,accentColor){
-      s.addShape(pptx.shapes.RECTANGLE,{x,y,w,h,fill:{color:C.white},
-        line:{color:C.grayL,width:1},shadow:{type:'outer',blur:6,offset:2,angle:135,color:'000000',opacity:0.06}});
-      s.addShape(pptx.shapes.RECTANGLE,{x,y,w:0.06,h,fill:{color:accentColor}});
-      s.addText(label,{x:x+0.14,y:y+0.12,w:w-0.18,h:0.26,fontSize:8.5,bold:true,
-        color:accentColor,margin:0,fontFace:'CPN',charSpacing:1});
-      s.addText(val,{x:x+0.14,y:y+0.38,w:w-0.18,h:h-0.62,fontSize:26,bold:true,
-        color:C.dark,margin:0,fontFace:'CPN'});
-      s.addText(sub,{x:x+0.14,y:y+h-0.28,w:w-0.18,h:0.24,fontSize:8.5,
-        color:C.gray,margin:0,fontFace:'CPN'});
-    }
-
+    // ── ข้อมูลหลัก ──
     const src=FILTERED;
+    const today=new Date().toLocaleDateString('th-TH',{day:'2-digit',month:'long',year:'numeric'});
+    const _dfrom=document.getElementById('f-from')?.value||'';
+    const _dto=document.getElementById('f-to')?.value||'';
+    const _fm=document.getElementById('f-month')?.value||'';
+    const cx=getCX(_dfrom,_dto,SEL_DAY,_fm);
+
     const callSrc=src.filter(isKpiCall);
     const mailSrc=src.filter(isMail);
     const kpiCallN=callSrc.length;
@@ -5103,212 +5065,203 @@ async function doExportPPTX(){
     const fmrPct=mailN?Math.round(fmrN/mailN*100):0;
     const abandonN=src.filter(r=>r.logType==='Abandon').length;
     const depts=[...new Set(src.map(r=>r.typeDept).filter(Boolean))].sort();
-    const today2=new Date().toLocaleDateString('th-TH',{day:'2-digit',month:'long',year:'numeric'});
+    const abnPct=kpiCallN>0?+((cx.abn_3cx||abandonN)/kpiCallN*100).toFixed(1):0;
+    const reachPct=cx.sla_pct;
+    const atSec=cx.avg_talk_sec;
+    const atStr=atSec?`${Math.floor(atSec/60)}:${String(Math.round(atSec%60)).padStart(2,'0')}`:'—';
+    const cRes=src.filter(r=>isKpiCall(r)&&!r._referredMail).map(r=>r.resolutionTime).filter(x=>x!==null);
+    const avgResCall=cRes.length?+(avg(cRes).toFixed(1)):null;
+    const mRes=src.filter(isMail).map(r=>r.resolutionTime).filter(x=>x!==null);
+    const avgResMail=mRes.length?+(avg(mRes).toFixed(1)):null;
+    const pendSrc=src.filter(r=>(r.status==='Pending'||r.status==='Open')&&!r._referredMail&&r.logType!=='Call Back');
 
-    // ══════════════════════════════════════
-    // SLIDE: COVER
-    // ══════════════════════════════════════
+    // ── Helper: Page Number badge (Monthly Report style) ──
+    function addPageNum(s,num){
+      s.addShape(pptx.shapes.RECTANGLE,{x:9.1,y:5.1,w:0.72,h:0.36,fill:{color:DARK},line:{color:DARK}});
+      s.addShape(pptx.shapes.OVAL,{x:9.55,y:5.05,w:0.40,h:0.40,fill:{color:PURPLE},line:{color:PURPLE}});
+      s.addText('PAGE',{x:9.1,y:5.1,w:0.50,h:0.36,fontSize:7,bold:true,color:WHITE,valign:'middle',align:'center',margin:0,fontFace:F});
+      s.addText(String(num),{x:9.55,y:5.05,w:0.40,h:0.40,fontSize:11,bold:true,color:WHITE,valign:'middle',align:'center',margin:0,fontFace:F});
+    }
+
+    // ── Helper: Header bar (Monthly Report style) ──
+    function addHeader(s,title,accent){
+      const ac=accent||PURPLE;
+      s.background={color:WHITE};
+      // Top brand bar
+      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:0,w:10,h:0.40,fill:{color:DARK}});
+      s.addText('Partner Service',{x:0.14,y:0,w:3.0,h:0.40,fontSize:11,bold:true,color:WHITE,valign:'middle',margin:0,fontFace:F});
+      // Yellow circle decoration
+      s.addShape(pptx.shapes.OVAL,{x:9.52,y:0.05,w:0.32,h:0.32,fill:{color:YELLOW},line:{color:YELLOW}});
+      // Title bar with accent
+      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:0.44,w:10,h:0.50,fill:{color:OFF_W}});
+      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:0.44,w:0.07,h:0.50,fill:{color:ac}});
+      s.addText(title,{x:0.18,y:0.44,w:9.5,h:0.50,fontSize:17,bold:true,color:DARK,valign:'middle',margin:0,fontFace:F});
+    }
+
+    // ── Helper: Footer ──
+    function addFooter(s){
+      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:5.38,w:10,h:0.245,fill:{color:DARK}});
+      s.addText(`CDS SCM Partner Service  ·  ${today}  ·  ข้อมูล ${RAW.length.toLocaleString()} รายการ`,
+        {x:0.3,y:5.395,w:8.8,h:0.22,fontSize:8,color:WHITE,margin:0,fontFace:F});
+      s.addShape(pptx.shapes.OVAL,{x:9.55,y:5.395,w:0.18,h:0.18,fill:{color:YELLOW},line:{color:YELLOW}});
+    }
+
+    // ── Helper: Metric Card (Monthly Report style — dark bg variant) ──
+    function addMetricCard(s,x,y,w,h,label,val,sub,bgCol,textCol){
+      const bg=bgCol||PURPLE_L;
+      const tc=textCol||DARK;
+      s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x,y,w,h,fill:{color:bg},line:{color:bg},rectRadius:0.12});
+      s.addText(String(val),{x:x+0.10,y:y+0.15,w:w-0.2,h:h*0.48,fontSize:26,bold:true,color:tc,align:'center',valign:'middle',margin:0,fontFace:F});
+      s.addText(label,{x:x+0.10,y:y+h-0.42,w:w-0.2,h:0.26,fontSize:9,bold:true,color:tc,align:'center',margin:0,fontFace:F});
+      if(sub) s.addText(sub,{x:x+0.10,y:y+h-0.20,w:w-0.2,h:0.18,fontSize:7.5,color:tc,align:'center',margin:0,fontFace:F,italic:true,transparency:20});
+    }
+
+    // ── Helper: Progress bar row ──
+    function addProgress(s,x,y,w,label,pct,barCol,bgBarCol){
+      const filled=Math.min(w*(pct/100),w);
+      s.addText(label,{x,y,w:2.6,h:0.28,fontSize:10,color:DARK,margin:0,fontFace:F});
+      s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:x+2.7,y:y+0.06,w:w-3.0,h:0.16,fill:{color:bgBarCol||'E9D5FF'},line:{color:bgBarCol||'E9D5FF'},rectRadius:0.08});
+      if(filled>0) s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:x+2.7,y:y+0.06,w:filled,h:0.16,fill:{color:barCol||PURPLE},line:{color:barCol||PURPLE},rectRadius:0.08});
+      s.addText(pct+'%',{x:x+w-0.25,y,w:0.6,h:0.28,fontSize:10,bold:true,color:barCol||PURPLE,align:'right',margin:0,fontFace:F});
+    }
+
+    let pageNum=1;
+
+    // ══════════════════════════════════════════════════════
+    // SLIDE 1: COVER — Monthly Report style (purple bg)
+    // ══════════════════════════════════════════════════════
     if(selected.has('cover')){
       const s=pptx.addSlide();
-      s.background={color:C.white};
-      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:0,w:0.18,h:5.625,fill:{color:C.primary}});
-      s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:0.4,w:3.8,h:4.8,fill:{color:C.primaryL}});
-      for(let r=0;r<4;r++) for(let c=0;c<5;c++)
-        s.addShape(pptx.shapes.OVAL,{x:2.6+c*0.2,y:2.8+r*0.2,w:0.08,h:0.08,fill:{color:C.b5},line:{color:C.b5}});
-      s.addShape(pptx.shapes.OVAL,{x:9.1,y:0.1,w:0.55,h:0.55,fill:{color:C.yellow},line:{color:C.yellow}});
-      s.addShape(pptx.shapes.OVAL,{x:0.35,y:4.8,w:0.42,h:0.42,fill:{color:C.yellow},line:{color:C.yellow}});
-      s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:3.6,y:1.1,w:3.0,h:0.45,fill:{color:C.yellow},rectRadius:0.22});
-      s.addText('CDS SCM Partner Service',{x:3.6,y:1.1,w:3.0,h:0.45,fontSize:11,
-        color:C.primaryD,bold:true,align:'center',valign:'middle',margin:0,fontFace:F.head});
-      s.addText('✶',{x:3.1,y:1.12,w:0.5,h:0.4,fontSize:16,color:C.yellow,align:'center',margin:0});
-      s.addText('✶',{x:6.6,y:1.12,w:0.5,h:0.4,fontSize:16,color:C.yellow,align:'center',margin:0});
-      s.addText('DASHBOARD',{x:4.2,y:1.75,w:5.5,h:0.9,fontSize:46,
-        color:C.dark,bold:true,align:'left',margin:0,fontFace:F.head});
-      s.addText('REPORT',{x:4.2,y:2.6,w:5.5,h:0.9,fontSize:46,
-        color:C.primary,bold:true,align:'left',margin:0,fontFace:F.head});
-      s.addShape(pptx.shapes.RECTANGLE,{x:4.2,y:3.58,w:3.0,h:0.04,fill:{color:C.b5}});
+      s.background={color:PURPLE};
+
+      // Left dark strip
+      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:0,w:0.22,h:5.625,fill:{color:PURPLE_D},line:{color:PURPLE_D}});
+      // Bottom overlay band
+      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:3.9,w:10,h:1.8,fill:{color:PURPLE_D,transparency:40},line:{color:PURPLE_D,transparency:40}});
+      // Yellow accent circle top-right
+      s.addShape(pptx.shapes.OVAL,{x:9.1,y:0.1,w:0.55,h:0.55,fill:{color:YELLOW},line:{color:YELLOW}});
+      // Small yellow circle bottom-left
+      s.addShape(pptx.shapes.OVAL,{x:0.35,y:4.85,w:0.38,h:0.38,fill:{color:YELLOW},line:{color:YELLOW}});
+
+      // Dot grid decoration
+      for(let rr=0;rr<3;rr++) for(let cc=0;cc<4;cc++)
+        s.addShape(pptx.shapes.OVAL,{x:5.5+cc*0.24,y:0.8+rr*0.24,w:0.10,h:0.10,fill:{color:WHITE,transparency:70},line:{color:WHITE,transparency:70}});
+
+      // Badge: Partner Service
+      s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:0.5,y:1.0,w:3.2,h:0.46,fill:{color:YELLOW},line:{color:YELLOW},rectRadius:0.22});
+      s.addText('CDS SCM  Partner Service',{x:0.5,y:1.0,w:3.2,h:0.46,fontSize:11,bold:true,color:DARK,align:'center',valign:'middle',margin:0,fontFace:F});
+
+      // Snowflake decorations
+      s.addText('✶',{x:0.14,y:1.03,w:0.38,h:0.40,fontSize:15,color:YELLOW,align:'center',margin:0,fontFace:F});
+      s.addText('✶',{x:3.72,y:1.03,w:0.38,h:0.40,fontSize:15,color:YELLOW,align:'center',margin:0,fontFace:F});
+
+      // Main title
+      s.addText('DASHBOARD',{x:0.5,y:1.65,w:9.0,h:0.95,fontSize:52,bold:true,color:WHITE,align:'left',margin:0,fontFace:F});
+      s.addText('REPORT',{x:0.5,y:2.56,w:9.0,h:0.95,fontSize:52,bold:true,color:YELLOW,align:'left',margin:0,fontFace:F});
+
+      // Divider line
+      s.addShape(pptx.shapes.RECTANGLE,{x:0.5,y:3.60,w:5.0,h:0.035,fill:{color:WHITE,transparency:60},line:{color:WHITE,transparency:60}});
+
+      // KPI Summary Pills
       const pills=[
-        {v:kpiCallN.toLocaleString(),l:'KPI Call',c:C.primary},
-        {v:mailN.toLocaleString(),    l:'Mail',    c:C.teal},
-        {v:fcrPct+'%',               l:'FCR',     c:C.green},
-        {v:fmrPct+'%',               l:'FCR Mail',c:C.amber},
+        {v:kpiCallN.toLocaleString(),l:'KPI Call',    bg:WHITE,tc:PURPLE_D},
+        {v:mailN.toLocaleString(),    l:'Mail',         bg:'E9D5FF',tc:PURPLE_D},
+        {v:fcrPct+'%',               l:'FCR (Call)',   bg:YELLOW,  tc:DARK},
+        {v:fmrPct+'%',               l:'FCR (Mail)',   bg:'C4B5FD',tc:DARK},
       ];
       pills.forEach((p,i)=>{
-        const px=4.2+i*1.32;
-        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:px,y:3.75,w:1.22,h:0.85,fill:{color:C.primaryL},rectRadius:0.1});
-        s.addText(p.v,{x:px,y:3.8,w:1.22,h:0.42,fontSize:18,bold:true,
-          color:p.c,align:'center',margin:0,fontFace:F.head});
-        s.addText(p.l,{x:px,y:4.22,w:1.22,h:0.26,fontSize:8.5,
-          color:C.gray,align:'center',margin:0,fontFace:F.body});
+        const px=0.5+i*2.2;
+        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:px,y:3.78,w:2.0,h:0.88,fill:{color:p.bg,transparency:p.bg===WHITE?5:0},line:{color:p.bg},rectRadius:0.12});
+        s.addText(p.v,{x:px,y:3.82,w:2.0,h:0.46,fontSize:20,bold:true,color:p.tc,align:'center',margin:0,fontFace:F});
+        s.addText(p.l,{x:px,y:4.28,w:2.0,h:0.26,fontSize:9,color:p.tc,align:'center',margin:0,fontFace:F});
       });
-      s.addText(`สร้างเมื่อ: ${today2}`,{x:4.2,y:4.75,w:5.5,h:0.26,fontSize:10,
-        color:C.gray,align:'left',margin:0,fontFace:F.body});
-      s.addText('Presented By: Partner Service Team',{x:4.2,y:5.05,w:5.5,h:0.26,fontSize:10,
-        color:C.gray,align:'left',margin:0,fontFace:F.body});
+      s.addText(`Generated: ${today}`,{x:0.5,y:4.82,w:9.0,h:0.24,fontSize:9.5,color:WHITE,align:'left',margin:0,fontFace:F,italic:true,transparency:20});
+      s.addText('Presented By: Partner Service Team',{x:0.5,y:5.08,w:9.0,h:0.24,fontSize:9.5,color:WHITE,align:'left',margin:0,fontFace:F,transparency:20});
+      addPageNum(s,pageNum++);
     }
 
-    // ══════════════════════════════════════
-    // SLIDE: KPI OVERVIEW — วาด Canvas ตรงๆ ไม่พึ่ง html2canvas
-    // ══════════════════════════════════════
+    // ══════════════════════════════════════════════════════
+    // SLIDE 2: KPI OVERVIEW
+    // ══════════════════════════════════════════════════════
     if(selected.has('kpi')){
       const s=pptx.addSlide();
-      s.background={color:C.offW};
-      addHeader(s,'01','ภาพรวม KPI');
+      addHeader(s,'ภาพรวม KPI');
       addFooter(s);
 
-      // ──── ดึงข้อมูล ────
-      const _kpiN=FILTERED.filter(isKpiCall).length;
-      const _fwdN=FILTERED.filter(isForward).length;
-      const _mailN=FILTERED.filter(isMail).length;
-      const _cbN=FILTERED.filter(r=>r.logType==='Abandon').length;
-      const _fcrN=FILTERED.filter(r=>isKpiCall(r)&&r.caseLevel==='Call-Level 1').length;
-      const _fmrN=FILTERED.filter(r=>isMail(r)&&r.caseLevel==='Mail-Level 1').length;
-      const _fcrP=_kpiN>0?Math.round(_fcrN/_kpiN*100):0;
-      const _fmrP=_mailN>0?Math.round(_fmrN/_mailN*100):0;
-      const _dfrom=document.getElementById('f-from')?.value||'';
-      const _dto=document.getElementById('f-to')?.value||'';
-      const _fm=document.getElementById('f-month')?.value||'';
-      const _cx=getCX(_dfrom,_dto,SEL_DAY,_fm);
-      const _slaPct=_cx.sla_pct;
-      const _abnVal=_cx.abn_3cx!==null?_cx.abn_3cx:_cbN;
-      const _abnPct=_kpiN>0?+(_abnVal/_kpiN*100).toFixed(1):0;
-      const _cbPct=_abnVal>0?+(_cbN/_abnVal*100).toFixed(1):0;
-      const _cRes=FILTERED.filter(r=>isKpiCall(r)&&!r._referredMail).map(r=>r.resolutionTime).filter(x=>x!==null);
-      const _avgRC=_cRes.length?+(avg(_cRes).toFixed(1)):null;
-      const _mRes=FILTERED.filter(isMail).map(r=>r.resolutionTime).filter(x=>x!==null);
-      const _avgRM=_mRes.length?+(avg(_mRes).toFixed(1)):null;
-      const _gN=_kpiN+_mailN;
-      const _callP=_gN?Math.round(_kpiN/_gN*100):0;
-      const _mailP=_gN?Math.round(_mailN/_gN*100):0;
-      const _fwdP=0;
-      const _atSec=_cx.avg_talk_sec;
-      const _atStr=_atSec?`${Math.floor(_atSec/60)}:${String(Math.round(_atSec%60)).padStart(2,'0')}`:'—';
+      // Section: CALL — purple bg stripe left
+      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:1.00,w:10,h:1.90,fill:{color:PURPLE,transparency:93},line:{color:PURPLE,transparency:80}});
+      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:1.00,w:0.06,h:1.90,fill:{color:PURPLE}});
+      s.addText('CALL',{x:0.15,y:1.06,w:1.0,h:0.26,fontSize:10,bold:true,color:PURPLE,margin:0,fontFace:F,charSpacing:2});
 
-      // ──── วาดด้วย pptxgenjs native (ไม่ใช้ canvas) ────
-      s.background={color:C.offW};
-
-      // helper: KPI card แบบ native
-      const _nativeCard=(s,x,y,w,h,label,val,sfx,accentCol)=>{
-        // card bg
-        s.addShape(pptx.shapes.RECTANGLE,{x,y,w,h,fill:{color:C.white},
-          line:{color:C.grayL,width:0.5},
-          shadow:{type:'outer',blur:5,offset:2,angle:135,color:'000000',opacity:0.07}});
-        // accent top bar
-        s.addShape(pptx.shapes.RECTANGLE,{x,y,w,h:0.04,fill:{color:accentCol}});
-        // value + suffix
-        const valStr=val!==null&&val!==undefined?String(val):'—';
-        const fs=valStr.length<=3?30:valStr.length<=4?26:22;
-        s.addText(valStr+(sfx||''),{x:x+0.08,y:y+0.22,w:w-0.16,h:h*0.48,
-          fontSize:fs,bold:true,color:C.dark,align:'center',valign:'middle',
-          margin:0,fontFace:F.head});
-        // label
-        s.addText(label,{x:x+0.06,y:y+h-0.34,w:w-0.12,h:0.3,
-          fontSize:9,bold:true,color:accentCol,align:'center',
-          margin:0,fontFace:F.head});
-      };
-
-      // Content zone: y=1.00..5.30
-      // CALL sidebar: y=1.00, h=2.06 → bottom=3.06
-      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:1.00,w:1.32,h:2.06,
-        fill:{color:C.b1,transparency:88},line:{color:C.b2,transparency:60,width:0.5}});
-      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:1.00,w:0.05,h:2.06,fill:{color:C.b2}});
-      s.addText('CALL',{x:0,y:1.06,w:1.32,h:0.26,fontSize:10,bold:true,color:C.b2,
-        align:'center',margin:0,fontFace:F.head,charSpacing:2});
-      s.addText(String(_kpiN),{x:0,y:1.34,w:1.32,h:0.56,fontSize:30,bold:false,
-        color:C.dark,align:'center',valign:'middle',margin:0,fontFace:F.head});
-      s.addText(_callP+'%',{x:0,y:1.92,w:1.32,h:0.20,fontSize:10,color:C.gray,
-        align:'center',margin:0,fontFace:F.body});
-      s.addText('📞',{x:0,y:2.14,w:1.32,h:0.28,fontSize:15,align:'center',margin:0});
-      s.addText(`Avg Talk: ${_atStr} min`,{x:0,y:2.46,w:1.32,h:0.20,fontSize:7.5,
-        color:C.b2,align:'center',margin:0,fontFace:F.body,italic:true});
-
-      // MAIL sidebar: y=3.12, h=2.10 → bottom=5.22
-      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:3.12,w:1.32,h:2.10,
-        fill:{color:C.purple,transparency:88},line:{color:C.purple,transparency:60,width:0.5}});
-      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:3.12,w:0.05,h:2.10,fill:{color:C.purple}});
-      s.addText('MAIL',{x:0,y:3.18,w:1.32,h:0.26,fontSize:10,bold:true,color:C.purple,
-        align:'center',margin:0,fontFace:F.head,charSpacing:2});
-      s.addText(String(_mailN),{x:0,y:3.46,w:1.32,h:0.56,fontSize:30,bold:false,
-        color:C.purple,align:'center',valign:'middle',margin:0,fontFace:F.head});
-      s.addText(_mailP+'%',{x:0,y:4.04,w:1.32,h:0.20,fontSize:10,color:C.gray,
-        align:'center',margin:0,fontFace:F.body});
-      s.addText('✉️',{x:0,y:4.26,w:1.32,h:0.28,fontSize:15,align:'center',margin:0});
-
-      // CALL KPIs section header: y=1.00, h=2.06
-      s.addShape(pptx.shapes.RECTANGLE,{x:1.40,y:1.00,w:8.60,h:2.06,
-        fill:{color:C.b1,transparency:95}});
-      s.addText('CALL KPIs',{x:1.50,y:1.04,w:3,h:0.26,fontSize:10,bold:true,
-        color:C.b2,margin:0,fontFace:F.head,charSpacing:1});
-
-      // CALL 5 cards: y=1.32, h=1.68 → bottom=3.00
+      // CALL metric cards (5 cards)
+      const cW=1.86;
       const callCards=[
-        {l:'1st Contact Res.',v:_fcrP,sfx:'%',c:C.b3},
-        {l:'Avg. Resolution Time',v:_avgRC!==null?_avgRC:'—',sfx:_avgRC!==null?' วัน':'',c:C.b2},
-        {l:'Call Reach Rate',v:_slaPct!==null?_slaPct:'—',sfx:_slaPct!==null?'%':'',c:C.b4},
-        {l:'Abandon',v:_abnPct,sfx:'%',c:C.red},
-        {l:'Call Back',v:_cbPct,sfx:'%',c:C.teal},
+        {l:'Call ทั้งหมด',      v:kpiCallN.toLocaleString(), sub:'KPI Call',           bg:'EDE9FE',tc:PURPLE_D},
+        {l:'FCR (Call)',         v:fcrPct+'%',                sub:`${fcrN}/${kpiCallN}`,bg:PURPLE_D, tc:WHITE},
+        {l:'Avg. Talk Time',    v:atStr,                     sub:'นาที:วินาที',        bg:'1E1B3A',  tc:WHITE},
+        {l:'Abandon Rate',      v:abnPct+'%',                sub:`3CX: ${cx.abn_3cx||'—'}`, bg:RED, tc:WHITE},
+        {l:'Call Reach Rate',   v:reachPct!==null?reachPct+'%':'—', sub:'≤20วิ',       bg:GREEN, tc:WHITE},
       ];
-      const cW2=8.60/5;
-      callCards.forEach((k,i)=>{
-        _nativeCard(s,1.40+i*cW2,1.32,cW2-0.06,1.68,k.l,k.v,k.sfx,k.c);
-      });
+      callCards.forEach((k,i)=>{addMetricCard(s,0.18+i*(cW+0.06),1.32,cW,1.42,k.l,k.v,k.sub,k.bg,k.tc);});
 
-      // MAIL KPIs section header: y=3.12, h=2.10
-      s.addShape(pptx.shapes.RECTANGLE,{x:1.40,y:3.12,w:8.60,h:2.10,
-        fill:{color:C.purple,transparency:95}});
-      s.addText('MAIL KPIs',{x:1.50,y:3.16,w:3,h:0.26,fontSize:10,bold:true,
-        color:C.purple,margin:0,fontFace:F.head,charSpacing:1});
+      // Section: MAIL — teal bg stripe
+      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:3.04,w:10,h:1.90,fill:{color:TEAL,transparency:93},line:{color:TEAL,transparency:80}});
+      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:3.04,w:0.06,h:1.90,fill:{color:TEAL}});
+      s.addText('MAIL',{x:0.15,y:3.10,w:1.0,h:0.26,fontSize:10,bold:true,color:TEAL,margin:0,fontFace:F,charSpacing:2});
 
-      // MAIL 2 cards: y=3.44, h=1.72 → bottom=5.16
       const mailCards=[
-        {l:'1st Contact Res.',v:_fmrP,sfx:'%',c:C.purple},
-        {l:'Avg. Resolution Time',v:_avgRM!==null?_avgRM:'—',sfx:_avgRM!==null?' วัน':'',c:'9C27B0'},
+        {l:'Mail ทั้งหมด',          v:mailN.toLocaleString(),                          sub:'(standalone)',   bg:'E0F2FE',tc:'0284C7'},
+        {l:'FCR (Mail)',             v:fmrPct+'%',                                      sub:`${fmrN}/${mailN}`,bg:TEAL,    tc:WHITE},
+        {l:'Avg. Resolution (Call)', v:avgResCall!==null?avgResCall+' วัน':'—',        sub:'Call',           bg:AMBER,    tc:WHITE},
+        {l:'Avg. Resolution (Mail)', v:avgResMail!==null?avgResMail+' วัน':'—',        sub:'Mail',           bg:'0284C7', tc:WHITE},
+        {l:'Case ค้าง',             v:pendSrc.length.toLocaleString(),                 sub:'Pending+Open',  bg:RED,      tc:WHITE},
       ];
-      mailCards.forEach((k,i)=>{
-        _nativeCard(s,1.40+i*cW2,3.44,cW2-0.06,1.72,k.l,k.v,k.sfx,k.c);
-      });
+      mailCards.forEach((k,i)=>{addMetricCard(s,0.18+i*(cW+0.06),3.38,cW,1.42,k.l,k.v,k.sub,k.bg,k.tc);});
+
+      addPageNum(s,pageNum++);
     }
 
-    // ══════════════════════════════════════
-    // SLIDE: 1ST RESOLUTION
-    // ══════════════════════════════════════
+    // ══════════════════════════════════════════════════════
+    // SLIDE 3: FCR — Monthly Report progress bar style
+    // ══════════════════════════════════════════════════════
     if(selected.has('resolution')){
       const s=pptx.addSlide();
-      s.background={color:C.offW};
-      addHeader(s,'02','1st Contact Resolution (FCR)',C.teal);
+      addHeader(s,'1st Contact Resolution (FCR)',TEAL);
       addFooter(s);
-      // FCR card
-      const fcrC=fcrPct>=90?C.teal:fcrPct>=75?C.amber:C.red;
-      const fmrC=fmrPct>=90?C.teal:fmrPct>=75?C.amber:C.red;
-      // FCR cards: content y=1.00..5.25, card h=4.25
-      [[fcrPct,fcrN,kpiCallN,'FCR','Call+Transfer',fcrC,0.28],
-       [fmrPct,fmrN,mailN,'FCR (Mail)','ESCALATED',fmrC,5.22]].forEach(([pct,n,tot,lbl,sublbl,ac,x])=>{
-        s.addShape(pptx.shapes.RECTANGLE,{x,y:1.00,w:4.5,h:4.25,fill:{color:C.white},
-          line:{color:C.grayL,width:1},shadow:{type:'outer',blur:8,offset:3,angle:135,color:'000000',opacity:0.07}});
-        s.addShape(pptx.shapes.RECTANGLE,{x,y:1.00,w:4.5,h:0.06,fill:{color:ac}});
-        s.addText(lbl,{x:x+0.2,y:1.14,w:4.1,h:0.34,fontSize:11,bold:true,
-          color:ac,margin:0,fontFace:'CPN',charSpacing:2});
-        s.addText(pct+'%',{x:x+0.2,y:1.54,w:4.1,h:1.52,fontSize:76,bold:true,
-          color:C.dark,align:'center',valign:'middle',margin:0,fontFace:'CPN'});
-        s.addText(`Level 1: ${n} / ${tot} ${sublbl}`,{x:x+0.2,y:3.16,w:4.1,h:0.30,
-          fontSize:11,color:C.gray,align:'center',margin:0,fontFace:'CPN'});
-        // progress bar
-        s.addShape(pptx.shapes.RECTANGLE,{x:x+0.3,y:3.54,w:3.9,h:0.14,fill:{color:C.grayL}});
-        s.addShape(pptx.shapes.RECTANGLE,{x:x+0.3,y:3.54,w:Math.min(3.9,3.9*pct/100),h:0.14,fill:{color:ac}});
-        const badge=pct>=90?'✅ ดีมาก':pct>=75?'⚠️ พอใช้':'🔴 ต่ำกว่าเกณฑ์';
-        s.addText(badge,{x:x+0.2,y:3.80,w:4.1,h:0.30,fontSize:11,bold:true,
-          color:ac,align:'center',margin:0,fontFace:'CPN'});
+
+      // Two big FCR cards side by side
+      [[fcrPct,fcrN,kpiCallN,'FCR (Call)','Call + Transfer',PURPLE_D,0.28],
+       [fmrPct,fmrN,mailN,   'FCR (Mail)','Mail Standalone', TEAL,    5.14]].forEach(([pct,n,tot,lbl,sublbl,ac,x])=>{
+        const fColor=pct>=90?GREEN:pct>=75?AMBER:RED;
+        // Card background
+        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x,y:1.00,w:4.72,h:4.25,fill:{color:OFF_W},line:{color:GRAY_L,width:0.5},rectRadius:0.14});
+        // Accent top bar
+        s.addShape(pptx.shapes.RECTANGLE,{x,y:1.00,w:4.72,h:0.07,fill:{color:ac}});
+        // Label
+        s.addText(lbl,{x:x+0.22,y:1.16,w:4.3,h:0.34,fontSize:13,bold:true,color:ac,margin:0,fontFace:F,charSpacing:1});
+        // Big %
+        s.addText(pct+'%',{x:x+0.22,y:1.55,w:4.3,h:1.58,fontSize:80,bold:true,color:DARK,align:'center',valign:'middle',margin:0,fontFace:F});
+        // Sub label
+        s.addText(`Level 1: ${n} / ${tot}  •  ${sublbl}`,{x:x+0.22,y:3.22,w:4.3,h:0.28,fontSize:10.5,color:GRAY,align:'center',margin:0,fontFace:F});
+        // Progress bar
+        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:x+0.35,y:3.60,w:4.02,h:0.18,fill:{color:GRAY_L},line:{color:GRAY_L},rectRadius:0.09});
+        const fw=Math.min(4.02,4.02*pct/100);
+        if(fw>0) s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:x+0.35,y:3.60,w:fw,h:0.18,fill:{color:fColor},line:{color:fColor},rectRadius:0.09});
+        // Badge
+        const badge=pct>=90?'✅  ดีมาก':pct>=75?'⚠️  พอใช้':'🔴  ต่ำกว่าเกณฑ์';
+        s.addText(badge,{x:x+0.22,y:3.90,w:4.3,h:0.32,fontSize:12,bold:true,color:fColor,align:'center',margin:0,fontFace:F});
       });
+      addPageNum(s,pageNum++);
     }
 
-    // ══════════════════════════════════════
-    // SLIDE: สรุป CASE ทุกแผนก
-    // ══════════════════════════════════════
+    // ══════════════════════════════════════════════════════
+    // SLIDE 4: สรุป Case ทุกแผนก
+    // ══════════════════════════════════════════════════════
     if(selected.has('dept')){
       const s=pptx.addSlide();
-      s.background={color:C.offW};
-      addHeader(s,'03','สรุป Case ทุกแผนก',C.primary);
+      addHeader(s,'สรุป Case ทุกแผนก',PURPLE_D);
       addFooter(s);
+
       const kpiSrcF=src.filter(r=>!r._referredMail&&r.logType!=='Call Back');
       const total=kpiSrcF.length||1;
       const deptData=depts.map(dept=>{
@@ -5320,195 +5273,211 @@ async function doExportPPTX(){
         const fcrPctD=kc?Math.round(fcr1/kc*100):null;
         return{dept,n:di.length,pct:Math.round(di.length/total*100),calls,mails,fcrPct:fcrPctD};
       }).sort((a,b)=>b.n-a.n);
-      // Table header — content starts at y=1.02
-      s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:1.02,w:9.44,h:0.44,fill:{color:C.primary}});
-      const hdrs=[['แผนก',2.0],['Total',1.2],['%',0.8],['Call',1.2],['Mail',1.2],['FCR%',1.2]];
+
+      // Header row — Monthly Report table style
+      const hdrs=[['แผนก',2.3],['Total',1.1],['%',0.7],['Call',1.1],['Mail',1.0],['FCR%',1.1],['สถานะ',2.0]];
+      s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:1.02,w:9.44,h:0.46,fill:{color:PURPLE_D}});
       let hx=0.35;
       hdrs.forEach(([h,w])=>{
-        s.addText(h,{x:hx,y:1.06,w:w,h:0.34,fontSize:10,bold:true,color:C.white,margin:0,fontFace:'CPN'});
+        s.addText(h,{x:hx,y:1.06,w:w,h:0.36,fontSize:10,bold:true,color:WHITE,valign:'middle',margin:0,fontFace:F});
         hx+=w;
       });
       deptData.slice(0,8).forEach((d,i)=>{
-        const ry=1.54+i*0.48;
-        const bg=i%2===0?C.white:'F4F5F7';
+        const ry=1.56+i*0.47;
+        const bg=i%2===0?WHITE:'F5F3FF';
         s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:ry,w:9.44,h:0.44,fill:{color:bg}});
-        const vals=[d.dept,d.n,d.pct+'%',d.calls,d.mails,d.fcrPct!==null?d.fcrPct+'%':'—'];
+        const fColor=d.fcrPct!==null?(d.fcrPct>=80?GREEN:d.fcrPct>=60?AMBER:RED):GRAY;
+        const statusTxt=d.fcrPct!==null?(d.fcrPct>=80?'✅ ดี':d.fcrPct>=60?'⚠️ พอใช้':'🔴 ต่ำ'):'—';
+        const vals=[d.dept,d.n,d.pct+'%',d.calls,d.mails,d.fcrPct!==null?d.fcrPct+'%':'—',statusTxt];
         let vx=0.35;
         hdrs.forEach(([,w],vi)=>{
-          const isAccent=vi===5&&d.fcrPct!==null;
-          const ac=d.fcrPct>=80?C.teal:d.fcrPct>=60?C.amber:C.red;
+          const col=vi===5?fColor:vi===6?fColor:DARK;
           s.addText(String(vals[vi]),{x:vx,y:ry+0.06,w:w,h:0.32,fontSize:10,
-            color:isAccent?ac:C.dark,bold:isAccent,margin:0,fontFace:'CPN'});
+            color:col,bold:vi===0||vi===5,margin:0,fontFace:F});
           vx+=w;
         });
+        // Mini progress bar for FCR%
+        if(d.fcrPct!==null){
+          const bx=0.35+2.3+1.1+0.7+1.1+1.0;
+          s.addShape(pptx.shapes.RECTANGLE,{x:bx,y:ry+0.30,w:0.9,h:0.07,fill:{color:GRAY_L}});
+          s.addShape(pptx.shapes.RECTANGLE,{x:bx,y:ry+0.30,w:0.9*d.fcrPct/100,h:0.07,fill:{color:fColor}});
+        }
       });
+      addPageNum(s,pageNum++);
     }
 
-    // ══════════════════════════════════════
-    // SLIDE: FCR vs Non-FCR ตามแผนก
-    // ══════════════════════════════════════
+    // ══════════════════════════════════════════════════════
+    // SLIDE 5: FCR vs Non-FCR ตามแผนก
+    // ══════════════════════════════════════════════════════
     if(selected.has('fcr_dept')){
       const s=pptx.addSlide();
-      s.background={color:C.offW};
-      addHeader(s,'04','FCR vs Non-FCR ตามแผนก',C.teal);
+      addHeader(s,'FCR vs Non-FCR ตามแผนก',TEAL);
       addFooter(s);
+
       const fcrSrc=src.filter(r=>isKpiCall(r)&&r.logType!=='Call Back');
-      const BAR_MAX=7.8, BAR_H=0.36, startY=1.08;
+      const BAR_MAX=6.8, BAR_H=0.38, startY=1.08;
       const maxTotal=Math.max(...depts.map(d=>fcrSrc.filter(r=>r.typeDept===d).length),1);
+
       depts.forEach((dept,i)=>{
-        const dy=startY+i*0.66;
+        const dy=startY+i*0.65;
         if(dy>5.10)return;
         const di=fcrSrc.filter(r=>r.typeDept===dept);
-        const tot=di.length, lv1=di.filter(r=>r.caseLevel?.includes('Level 1')).length;
+        const tot=di.length;
+        const lv1=di.filter(r=>r.caseLevel?.includes('Level 1')).length;
         const lv2=di.filter(r=>r.caseLevel?.includes('Level 2')).length;
         const fPct=tot?Math.round(lv1/tot*100):0;
         const barW=tot?(tot/maxTotal)*BAR_MAX:0;
         const lv1W=tot?barW*(lv1/tot):0, lv2W=tot?barW*(lv2/tot):0;
-        s.addText(dept,{x:0.28,y:dy+0.03,w:1.6,h:0.3,fontSize:10,bold:true,color:C.dark,margin:0,fontFace:'CPN'});
-        s.addShape(pptx.shapes.RECTANGLE,{x:1.95,y:dy+0.03,w:BAR_MAX,h:BAR_H,fill:{color:'EDE9FF'}});
-        if(lv1W>0) s.addShape(pptx.shapes.RECTANGLE,{x:1.95,y:dy+0.03,w:lv1W,h:BAR_H,fill:{color:C.teal}});
-        if(lv2W>0) s.addShape(pptx.shapes.RECTANGLE,{x:1.95+lv1W,y:dy+0.03,w:lv2W,h:BAR_H,fill:{color:C.red}});
-        s.addText(`${lv1}/${tot}`,{x:9.82,y:dy+0.03,w:0.86,h:0.18,fontSize:8.5,color:C.dark,margin:0,fontFace:'CPN'});
-        s.addText(fPct+'%',{x:9.82,y:dy+0.18,w:0.86,h:0.20,fontSize:9,bold:true,
-          color:fPct>=80?C.teal:C.red,align:'right',margin:0,fontFace:'CPN'});
+        const fColor=fPct>=80?GREEN:fPct>=60?AMBER:RED;
+
+        s.addText(dept,{x:0.28,y:dy+0.04,w:1.7,h:0.30,fontSize:10,bold:true,color:DARK,margin:0,fontFace:F});
+        // Track bar
+        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:2.05,y:dy+0.05,w:BAR_MAX,h:BAR_H,fill:{color:'E9D5FF'},line:{color:'E9D5FF'},rectRadius:0.09});
+        if(lv1W>0) s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:2.05,y:dy+0.05,w:lv1W,h:BAR_H,fill:{color:TEAL},line:{color:TEAL},rectRadius:0.09});
+        if(lv2W>0) s.addShape(pptx.shapes.RECTANGLE,{x:2.05+lv1W,y:dy+0.05,w:lv2W,h:BAR_H,fill:{color:RED}});
+        // Numbers
+        s.addText(`${lv1}/${tot}`,{x:9.0,y:dy+0.04,w:0.58,h:0.18,fontSize:8.5,color:GRAY,align:'right',margin:0,fontFace:F});
+        s.addText(fPct+'%',{x:9.0,y:dy+0.21,w:0.58,h:0.22,fontSize:10,bold:true,color:fColor,align:'right',margin:0,fontFace:F});
       });
-      [[C.teal,'FCR (Level 1)'],[C.red,'Non-FCR (Level 2)']].forEach(([c,l],i)=>{
-        const lx=0.28+i*2.4;
-        s.addShape(pptx.shapes.RECTANGLE,{x:lx,y:5.14,w:0.14,h:0.14,fill:{color:c}});
-        s.addText(l,{x:lx+0.2,y:5.12,w:2.1,h:0.22,fontSize:9,color:c,margin:0,fontFace:'CPN'});
+      // Legend
+      [[TEAL,'FCR (Level 1)'],[RED,'Non-FCR (Level 2)']].forEach(([c,l],i)=>{
+        const lx=0.28+i*2.5;
+        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:lx,y:5.14,w:0.18,h:0.14,fill:{color:c},line:{color:c},rectRadius:0.04});
+        s.addText(l,{x:lx+0.24,y:5.12,w:2.2,h:0.22,fontSize:9.5,color:c,margin:0,fontFace:F});
       });
+      addPageNum(s,pageNum++);
     }
 
-    // ══════════════════════════════════════
-    // SLIDE: Top 10 Issue
-    // ══════════════════════════════════════
+    // ══════════════════════════════════════════════════════
+    // SLIDE 6: Top 10 Issue
+    // ══════════════════════════════════════════════════════
     if(selected.has('top10')){
       const s=pptx.addSlide();
-      s.background={color:C.offW};
-      addHeader(s,'05','Top 10 Issue',C.amber);
+      addHeader(s,'Top 10 Issue',AMBER);
       addFooter(s);
+
       const issueSrc=src.filter(r=>!r._referredMail&&r.logType!=='Call Back'&&!isForward(r));
       const cnt={};
       issueSrc.forEach(r=>{const v=getDetail(r)||'(ไม่ระบุ)';cnt[v]=(cnt[v]||0)+1;});
       const top10=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,10);
       const grandTotal=issueSrc.length||1, maxN=top10[0]?.[1]||1;
-      const BAR_W_MAX=5.5; let cumPct=0;
+      const BAR_W_MAX=5.6; let cumPct=0;
+      const accentCols=[PURPLE_D,PURPLE,TEAL,TEAL,BLUE,BLUE,AMBER,AMBER,GRAY,GRAY];
+
       top10.forEach(([label,n],i)=>{
-        const iy=1.04+i*0.43;
+        const iy=1.05+i*0.43;
         const p=Math.round(n/grandTotal*100); cumPct+=p;
         const bw=(n/maxN)*BAR_W_MAX;
-        const ac=i===0?C.primary:i<3?C.teal:C.blue;
-        s.addShape(pptx.shapes.RECTANGLE,{x:2.8,y:iy,w:BAR_W_MAX,h:0.31,fill:{color:'EDE9FF'}});
-        if(bw>0) s.addShape(pptx.shapes.RECTANGLE,{x:2.8,y:iy,w:bw,h:0.31,fill:{color:ac}});
-        s.addText(`${i+1}.`,{x:0.28,y:iy+0.02,w:0.35,h:0.26,fontSize:9.5,color:C.gray,margin:0,fontFace:'CPN'});
-        s.addText(label,{x:0.62,y:iy+0.02,w:2.12,h:0.26,fontSize:9.5,bold:i===0,color:C.dark,margin:0,fontFace:'CPN'});
-        if(bw>=0.7){
-          s.addText(`${n}`,{x:2.85,y:iy+0.03,w:bw-0.1,h:0.24,fontSize:9.5,bold:true,color:C.white,align:'right',margin:0,fontFace:'CPN'});
+        const ac=accentCols[i];
+        // Track
+        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:2.85,y:iy+0.04,w:BAR_W_MAX,h:0.28,fill:{color:PURPLE_L},line:{color:PURPLE_L},rectRadius:0.07});
+        if(bw>0) s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:2.85,y:iy+0.04,w:bw,h:0.28,fill:{color:ac},line:{color:ac},rectRadius:0.07});
+        s.addText(`${i+1}.`,{x:0.28,y:iy+0.03,w:0.35,h:0.24,fontSize:9.5,color:GRAY,margin:0,fontFace:F});
+        s.addText(label,{x:0.62,y:iy+0.03,w:2.18,h:0.24,fontSize:9.5,bold:i<3,color:DARK,margin:0,fontFace:F});
+        if(bw>=0.65){
+          s.addText(`${n}`,{x:2.90,y:iy+0.04,w:bw-0.12,h:0.22,fontSize:9.5,bold:true,color:WHITE,align:'right',margin:0,fontFace:F});
         }else{
-          s.addText(`${n}`,{x:2.85+bw,y:iy+0.03,w:0.55,h:0.24,fontSize:9.5,bold:true,color:C.dark,align:'left',margin:0,fontFace:'CPN'});
+          s.addText(`${n}`,{x:2.85+bw+0.04,y:iy+0.04,w:0.5,h:0.22,fontSize:9.5,bold:true,color:DARK,align:'left',margin:0,fontFace:F});
         }
-        s.addText(`${p}% (cum ${cumPct}%)`,{x:8.45,y:iy+0.03,w:1.3,h:0.24,fontSize:8,color:C.gray,margin:0,fontFace:'CPN'});
+        s.addText(`${p}%  (∑${cumPct}%)`,{x:8.55,y:iy+0.04,w:1.2,h:0.22,fontSize:8,color:GRAY,margin:0,fontFace:F});
       });
+      addPageNum(s,pageNum++);
     }
 
-    // ══════════════════════════════════════
-    // SLIDE: Resolution Time
-    // ══════════════════════════════════════
+    // ══════════════════════════════════════════════════════
+    // SLIDE 7: Resolution Time ตามแผนก
+    // ══════════════════════════════════════════════════════
     if(selected.has('res_time')){
       const s=pptx.addSlide();
-      s.background={color:C.offW};
-      addHeader(s,'06','Resolution Time ตามแผนก (วัน)',C.green);
+      addHeader(s,'Resolution Time ตามแผนก (วัน)',GREEN);
       addFooter(s);
+
       const resSrc=src.filter(r=>r.resolutionTime!==null&&r.logType!=='Call Back'&&r.logType!=='Transfer');
       const deptRes=depts.map(dept=>{
         const di=resSrc.filter(r=>r.typeDept===dept);
         return{dept,avgRes:di.length?+(avg(di.map(r=>r.resolutionTime)).toFixed(1)):null,n:di.length};
       }).filter(d=>d.n>0).sort((a,b)=>(b.avgRes||0)-(a.avgRes||0));
       const maxRes=Math.max(...deptRes.map(d=>d.avgRes||0),1);
-      const colorRes=v=>v<=0.5?C.teal:v<=1?C.green:v<=3?C.amber:C.red;
-      const BAR_W_MAX=6.5;
+      const colorRes=v=>v<=0.5?TEAL:v<=1?GREEN:v<=3?AMBER:RED;
+      const BAR_W_MAX=6.2;
       deptRes.forEach((d,i)=>{
-        const dy=1.08+i*0.68; if(dy>5.10)return;
+        const dy=1.08+i*0.66; if(dy>5.10)return;
         const bw=(d.avgRes/maxRes)*BAR_W_MAX;
         const ac=colorRes(d.avgRes);
-        s.addText(d.dept,{x:0.28,y:dy+0.06,w:1.6,h:0.34,fontSize:10.5,bold:true,color:C.dark,margin:0,fontFace:'CPN'});
-        s.addShape(pptx.shapes.RECTANGLE,{x:2.0,y:dy+0.08,w:BAR_W_MAX,h:0.36,fill:{color:'EDE9FF'}});
-        if(bw>0) s.addShape(pptx.shapes.RECTANGLE,{x:2.0,y:dy+0.08,w:bw,h:0.36,fill:{color:ac}});
-        s.addText(`${d.avgRes} วัน`,{x:2.06,y:dy+0.12,w:bw>0.4?bw-0.08:0.4,h:0.28,
-          fontSize:10.5,bold:true,color:C.white,align:'right',margin:0,fontFace:'CPN'});
-        s.addText(`(${d.n} case)`,{x:8.65,y:dy+0.12,w:0.9,h:0.28,fontSize:9,color:C.gray,margin:0,fontFace:'CPN'});
+        s.addText(d.dept,{x:0.28,y:dy+0.07,w:1.7,h:0.32,fontSize:10.5,bold:true,color:DARK,margin:0,fontFace:F});
+        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:2.08,y:dy+0.10,w:BAR_W_MAX,h:0.34,fill:{color:'D1FAE5'},line:{color:'D1FAE5'},rectRadius:0.09});
+        if(bw>0) s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:2.08,y:dy+0.10,w:bw,h:0.34,fill:{color:ac},line:{color:ac},rectRadius:0.09});
+        s.addText(`${d.avgRes} วัน`,{x:2.14,y:dy+0.14,w:bw>0.5?bw-0.1:0.5,h:0.26,
+          fontSize:10,bold:true,color:WHITE,align:'right',margin:0,fontFace:F});
+        s.addText(`(${d.n} case)`,{x:8.45,y:dy+0.14,w:1.0,h:0.26,fontSize:9,color:GRAY,margin:0,fontFace:F});
       });
-      const legs=[{c:C.teal,l:'≤ 0.5 วัน'},{c:C.green,l:'≤ 1 วัน'},{c:C.amber,l:'≤ 3 วัน'},{c:C.red,l:'> 3 วัน'}];
+      const legs=[{c:TEAL,l:'≤ 0.5 วัน'},{c:GREEN,l:'≤ 1 วัน'},{c:AMBER,l:'≤ 3 วัน'},{c:RED,l:'> 3 วัน'}];
       legs.forEach((l,i)=>{
         const lx=0.28+i*2.35;
-        s.addShape(pptx.shapes.RECTANGLE,{x:lx,y:5.14,w:0.14,h:0.14,fill:{color:l.c}});
-        s.addText(l.l,{x:lx+0.2,y:5.12,w:2.2,h:0.22,fontSize:9,color:l.c,margin:0,fontFace:'CPN'});
+        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:lx,y:5.14,w:0.18,h:0.14,fill:{color:l.c},line:{color:l.c},rectRadius:0.04});
+        s.addText(l.l,{x:lx+0.24,y:5.12,w:2.2,h:0.22,fontSize:9.5,color:l.c,margin:0,fontFace:F});
       });
+      addPageNum(s,pageNum++);
     }
 
-
-    // ══════════════════════════════════════
-    // SLIDE: Case ค้าง
-    // ══════════════════════════════════════
+    // ══════════════════════════════════════════════════════
+    // SLIDE 8: Case ค้าง
+    // ══════════════════════════════════════════════════════
     if(selected.has('pending')){
       const s=pptx.addSlide();
-      s.background={color:C.offW};
-      addHeader(s,'07','Case ค้าง (Pending / Open)',C.amber);
+      addHeader(s,'Case ค้าง (Pending / Open)',AMBER);
       addFooter(s);
 
-      const pendSrc=src.filter(r=>(r.status==='Pending'||r.status==='Open')
-        &&!r._referredMail&&r.logType!=='Call Back');
       const pendN=pendSrc.length;
-
-      // Summary pills
       const byDept={};
       pendSrc.forEach(r=>{const d=r.typeDept||'(ไม่ระบุ)';byDept[d]=(byDept[d]||0)+1;});
       const deptPend=Object.entries(byDept).sort((a,b)=>b[1]-a[1]);
+      const ptVals=pendSrc.map(r=>r.pendingTime).filter(x=>x!==null&&x>=0);
+      const avgPt=ptVals.length?+(avg(ptVals).toFixed(1)):null;
+      const maxPt=ptVals.length?Math.max(...ptVals):null;
 
-      const _ptVals=pendSrc.map(r=>r.pendingTime).filter(x=>x!==null&&x>=0);
-      const avgPt=_ptVals.length?+(avg(_ptVals).toFixed(1)):null;
-      const maxPt=_ptVals.length?Math.max(..._ptVals):null;
-
-      // KPI boxes
+      // 3 Summary Metric Cards (Monthly Report card style)
       const pkpis=[
-        {l:'CASE ค้างทั้งหมด', v:pendN.toLocaleString(), sub:'Pending + Open',     c:C.amber},
-        {l:'AVG. PENDING TIME', v:avgPt!==null?avgPt+' วัน':'—', sub:'เฉลี่ย',    c:C.red},
-        {l:'MAX PENDING TIME',  v:maxPt!==null?maxPt+' วัน':'—', sub:'นานสุด',    c:C.red},
+        {l:'Case ค้างทั้งหมด', v:pendN.toLocaleString(), sub:'Pending + Open', bg:AMBER,   tc:WHITE},
+        {l:'Avg. Pending Time',  v:avgPt!==null?avgPt+' วัน':'—', sub:'เฉลี่ย',  bg:RED,    tc:WHITE},
+        {l:'Max Pending Time',   v:maxPt!==null?maxPt+' วัน':'—', sub:'นานสุด',  bg:PURPLE_D,tc:WHITE},
       ];
       pkpis.forEach((k,i)=>{
-        addKpiBox(s, 0.28+i*3.22, 1.02, 3.08, 1.48, k.l, k.v, k.sub, k.c);
+        addMetricCard(s,0.28+i*3.22,1.04,3.08,1.42,k.l,k.v,k.sub,k.bg,k.tc);
       });
 
-      // Table: top pending by dept — starts at y=2.64
+      // Dept Pending Table
       if(deptPend.length){
-        s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:2.64,w:9.44,h:0.40,fill:{color:C.amber}});
-        [['แผนก',3.5],['จำนวน Case ค้าง',2.2],['% ของทั้งหมด',1.8],['สถานะ',1.9]].reduce((x,[h,w])=>{
-          s.addText(h,{x:x+0.08,y:2.70,w:w,h:0.26,fontSize:10,bold:true,color:C.white,margin:0,fontFace:'CPN'});
+        s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:2.60,w:9.44,h:0.44,fill:{color:AMBER}});
+        [['แผนก',3.5],['Case ค้าง',2.0],['%',1.5],['สถานะ',2.4]].reduce((x,[h,w])=>{
+          s.addText(h,{x:x+0.10,y:2.66,w:w,h:0.30,fontSize:10,bold:true,color:WHITE,valign:'middle',margin:0,fontFace:F});
           return x+w;
         },0.28);
 
         deptPend.slice(0,7).forEach(([dept,n],i)=>{
           const ry=3.12+i*0.32;
-          s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:ry,w:9.44,h:0.3,fill:{color:i%2===0?C.white:'FFF8F0'}});
+          const bg=i%2===0?WHITE:'FFF7ED';
+          s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:ry,w:9.44,h:0.30,fill:{color:bg}});
           const pct=pendN?Math.round(n/pendN*100):0;
-          [dept,n,pct+'%',n>3?'⚠️ ต้องติดตาม':'✅ ปกติ'].reduce((x,v,vi)=>{
-            const ws=[3.5,2.2,1.8,1.9];
-            s.addText(String(v),{x:x+0.08,y:ry+0.04,w:ws[vi],h:0.22,fontSize:9.5,
-              color:vi===3?(n>3?C.amber:C.teal):C.dark,bold:vi===0,margin:0,fontFace:'CPN'});
+          const isAlert=n>3;
+          [dept,n,pct+'%',isAlert?'⚠️ ต้องติดตาม':'✅ ปกติ'].reduce((x,v,vi)=>{
+            const ws=[3.5,2.0,1.5,2.4];
+            s.addText(String(v),{x:x+0.10,y:ry+0.04,w:ws[vi],h:0.22,fontSize:9.5,
+              color:vi===3?(isAlert?AMBER:TEAL):DARK,bold:vi===0,margin:0,fontFace:F});
             return x+ws[vi];
           },0.28);
         });
       }
+      addPageNum(s,pageNum++);
     }
 
     const fname=`CDS_SCM_Dashboard_${new Date().toISOString().slice(0,10)}.pptx`;
     await pptx.writeFile({fileName:fname});
-    // แจ้งสำเร็จ
     showDrillToast('✅ Export สำเร็จ: '+fname);
 
   }catch(e){
     console.error('Export error:',e);
-    alert('Export ไม่สำเร็จ:\n' + (e.message||e));
+    alert('Export ไม่สำเร็จ:\n'+(e.message||e));
   }finally{
     const btn=document.getElementById('btn-export-pptx');
     btn.innerHTML=`<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Export PPTX`;
