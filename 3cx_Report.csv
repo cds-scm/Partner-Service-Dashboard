@@ -1,4 +1,25 @@
 StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
+2026-06-04T13:56:46.555619+07:00,Internal,PT3.529377S,True,System,1,Answered,*30
+2026-06-04T13:56:40.252377+07:00,Inbound,PT2M25.784738S,True,Extension,1,Answered,0114
+2026-06-04T13:56:39.509363+07:00,Inbound Queue,PT3.166674S,True,Queue,1,Waiting,8196
+2026-06-04T13:56:27.240574+07:00,Inbound,PT12.148036S,True,Digital Receptionist,1,Answered,8439
+2026-06-04T13:51:18.803543+07:00,Inbound,PT1M13.717444S,True,Extension,1,Answered,0112
+2026-06-04T13:51:18.107411+07:00,Inbound Queue,PT2.747575S,True,Queue,1,Waiting,8196
+2026-06-04T13:51:05.842106+07:00,Inbound,PT12.047136S,True,Digital Receptionist,1,Answered,8439
+2026-06-04T13:45:03.662655+07:00,Internal,PT3.069495S,True,System,1,Answered,*31
+2026-06-04T13:32:13.04419+07:00,Inbound,PT8M3.511224S,True,Extension,1,Answered,0114
+2026-06-04T13:32:12.244149+07:00,Inbound Queue,PT2.557111S,True,Queue,1,Waiting,8196
+2026-06-04T13:32:00.07549+07:00,Inbound,PT12.151784S,True,Digital Receptionist,1,Answered,8439
+2026-06-04T13:28:39.602762+07:00,Inbound,PT15M35.330658S,True,Extension,1,Answered,0113
+2026-06-04T13:28:38.873234+07:00,Inbound Queue,PT3.096296S,True,Queue,1,Waiting,8196
+2026-06-04T13:28:26.708114+07:00,Inbound,PT12.143825S,True,Digital Receptionist,1,Answered,8439
+2026-06-04T13:22:03.379514+07:00,Inbound,PT2M18.88627S,True,Extension,1,Answered,0112
+2026-06-04T13:22:02.589495+07:00,Inbound Queue,PT3.07215S,True,Queue,1,Waiting,8196
+2026-06-04T13:21:50.426204+07:00,Inbound,PT12.044681S,True,Digital Receptionist,1,Answered,8439
+2026-06-04T13:15:09.181991+07:00,Internal,PT3.431S,True,System,1,Answered,*30
+2026-06-04T13:06:52.859172+07:00,Internal,PT3.425573S,True,System,1,Answered,*30
+2026-06-04T12:26:21.479291+07:00,Inbound,PT7.676874S,True,Digital Receptionist,1,Answered,8442
+2026-06-04T12:26:21.466026+07:00,Inbound,PT0S,False,Digital Receptionist,1,Unanswered,8439
 2026-06-04T12:00:33.469006+07:00,Internal,PT3.027589S,True,System,1,Answered,*31
 2026-06-04T12:00:24.458709+07:00,Internal,PT3.125859S,True,System,1,Answered,*31
 2026-06-04T11:42:36.630828+07:00,Internal,PT3.528432S,True,System,1,Answered,*30
