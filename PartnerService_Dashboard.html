@@ -2186,6 +2186,7 @@ function calcWkStats(rows){
 
 function renderWeekly(){
   if(!RAW.length)return;
+  const hasDeptFilter=!!(document.getElementById('f-dept')?.value||'');
   const wkMap={};
   FILTERED.forEach(r=>{
     if(!r.dateLog||r.dateLog.length<10)return;
@@ -2224,11 +2225,11 @@ function renderWeekly(){
     activeWeeks.map(({key,year,week})=>`<button class="wk-week-btn${WK_WEEK===key?' on':''}" onclick="setWkWeek('${key}')">${isoWeekShort(year,week)}</button>`).join('');
 
   if(WK_WEEK==='overview'){
-    renderWkOverview(activeWeeks, activeWeeks);
+    renderWkOverview(activeWeeks, activeWeeks, hasDeptFilter);
   } else {
     const wkData=activeWeeks.find(w=>w.key===WK_WEEK);
     if(wkData) renderWkDetail(wkData, activeWeeks);
-    else { WK_WEEK='overview'; renderWkOverview(activeWeeks, activeWeeks); }
+    else { WK_WEEK='overview'; renderWkOverview(activeWeeks, activeWeeks, hasDeptFilter); }
   }
 }
 
@@ -2236,7 +2237,7 @@ function setWkMonth(m){WK_MONTH=m;WK_WEEK='overview';renderWeekly();}
 function setWkWeek(w){WK_WEEK=w;renderWeekly();}
 
 
-function renderWkOverview(weeks,allWks){
+function renderWkOverview(weeks,allWks,hasDeptFilter=false){
   const stats=weeks.map(({key,year,week,rows})=>{
     const s=calcWkStats(rows);
     const cx_wk=getCXForWeek(year,week);
@@ -2256,7 +2257,7 @@ function renderWkOverview(weeks,allWks){
     <th>ช่วงวัน</th>
     <th>Total Call</th>
     <th>FCR</th><th>Total Mail</th><th>FCR (Mail)</th>
-    <th>Abandon</th><th>Avg. Talk Time</th>
+    ${hasDeptFilter?'':'<th>Abandon</th>'}<th${hasDeptFilter?' style="display:none"':''}>Avg. Talk Time</th>
     <th>Case Level 2</th><th>Pending</th>
   </tr></thead><tbody>`;
   stats.forEach(({year,week,s,cx_wk},i)=>{
@@ -2278,8 +2279,8 @@ function renderWkOverview(weeks,allWks){
       <td><strong style="color:${fcrC}">${s.fcrPct}%</strong></td>
       <td>${s.mailN} ${mkArr(s.mailN,prev?.mailN,false)}</td>
       <td><strong style="color:${fmrC}">${s.fmrPct}%</strong></td>
-      <td style="color:var(--red)">${cx_wk.abn_3cx||'—'}</td>
-      <td class="mono" style="font-size:11px">${atStr}</td>
+      ${hasDeptFilter?'':`<td style="color:var(--red)">${cx_wk.abn_3cx||'—'}</td>`}
+      <td class="mono" style="font-size:11px${hasDeptFilter?';display:none':''}">${atStr}</td>
       <td style="color:var(--amber)">${s.lv2N}</td>
       <td style="color:${s.pendN>0?'var(--amber)':'var(--green)'}">${s.pendN}</td>
     </tr>`;
@@ -2300,7 +2301,7 @@ function renderWkOverview(weeks,allWks){
     <td><strong style="color:${gFcr>=90?'var(--green)':gFcr>=75?'var(--amber)':'var(--red)'}">${gFcr}%</strong></td>
     <td>${totMailN}</td>
     <td><strong style="color:${gFmr>=85?'var(--purple)':gFmr>=70?'var(--amber)':'var(--red)'}">${gFmr}%</strong></td>
-    <td style="color:var(--red)">${totAbn}</td><td>—</td>
+    ${hasDeptFilter?'':`<td style="color:var(--red)">${totAbn}</td>`}<td style="${hasDeptFilter?'display:none':''}">—</td>
     <td style="color:var(--amber)">${totLv2}</td>
     <td style="color:${totPend>0?'var(--amber)':'var(--green)'}">${totPend}</td>
   </tr></tbody></table>`;
