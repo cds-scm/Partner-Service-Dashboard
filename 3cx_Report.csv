@@ -1,6 +1,15 @@
 StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
+2026-06-12T20:45:45.840268+07:00,Inbound,PT6.780734S,True,Digital Receptionist,1,Answered,8441
+2026-06-12T20:45:45.742923+07:00,Inbound,PT0S,False,Digital Receptionist,1,Unanswered,8439
+2026-06-12T20:44:48.806866+07:00,Inbound,PT14.638834S,True,Digital Receptionist,1,Answered,8441
+2026-06-12T20:44:48.761414+07:00,Inbound,PT0S,False,Digital Receptionist,1,Unanswered,8439
+2026-06-12T18:52:25.050302+07:00,Inbound,PT8.293641S,True,Digital Receptionist,1,Answered,8441
+2026-06-12T18:52:24.947698+07:00,Inbound,PT0S,False,Digital Receptionist,1,Unanswered,8439
+2026-06-12T18:22:30.608374+07:00,Inbound,PT15.099181S,True,Digital Receptionist,1,Answered,8441
+2026-06-12T18:22:30.599981+07:00,Inbound,PT0S,False,Digital Receptionist,1,Unanswered,8439
 2026-06-12T17:01:23.046037+07:00,Internal,PT3.124945S,True,System,1,Answered,*31
 2026-06-12T16:53:07.246414+07:00,Internal,PT3.135004S,True,System,1,Answered,*31
+2026-06-12T16:50:52.093841+07:00,Outbound,PT19M32.42962S,True,External,1,Answered,10024
 2026-06-12T16:44:26.652023+07:00,Outbound,PT0S,False,External,1,Unanswered,10024
 2026-06-12T16:44:11.265064+07:00,Outbound,PT0S,False,External,1,Unanswered,10024
 2026-06-12T16:42:31.212574+07:00,Internal,PT3.53288S,True,System,1,Answered,*30
