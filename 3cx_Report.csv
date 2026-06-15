@@ -1,4 +1,25 @@
 StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
+2026-06-15T10:35:22.783679+07:00,Inbound,PT12M6.312356S,True,Extension,1,Answered,0113
+2026-06-15T10:35:22.006699+07:00,Inbound Queue,PT2.687288S,True,Queue,1,Waiting,8196
+2026-06-15T10:35:09.838345+07:00,Inbound,PT12.150025S,True,Digital Receptionist,1,Answered,8439
+2026-06-15T10:31:36.830118+07:00,Outbound,PT22.72055S,True,External,1,Answered,10024
+2026-06-15T10:27:02.524494+07:00,Outbound,PT7M16.169981S,True,External,1,Answered,10023
+2026-06-15T10:26:39.196785+07:00,Outbound,PT0S,False,External,1,Unanswered,10023
+2026-06-15T10:25:37.865126+07:00,Internal,PT3.418862S,True,System,1,Answered,*30
+2026-06-15T10:24:47.782055+07:00,Outbound,PT0S,False,External,1,Unanswered,10022
+2026-06-15T10:19:55.458446+07:00,Internal,PT3.531297S,True,System,1,Answered,*30
+2026-06-15T10:15:08.072625+07:00,Outbound,PT14M22.389875S,True,External,1,Answered,10024
+2026-06-15T10:14:34.233813+07:00,Internal,PT3.43022S,True,System,1,Answered,*30
+2026-06-15T10:14:08.621146+07:00,Inbound,PT17.039072S,True,Digital Receptionist,1,Answered,8440
+2026-06-15T10:14:08.365652+07:00,Inbound Queue,PT0.317775S,True,Queue,1,Unanswered,8196
+2026-06-15T10:13:56.406415+07:00,Inbound,PT12.013227S,True,Digital Receptionist,1,Answered,8439
+2026-06-15T10:13:51.472679+07:00,Inbound,PT8.945519S,True,Digital Receptionist,1,Answered,8440
+2026-06-15T10:13:51.271381+07:00,Inbound Queue,PT0.317651S,True,Queue,1,Unanswered,8196
+2026-06-15T10:13:39.099112+07:00,Inbound,PT12.152919S,True,Digital Receptionist,1,Answered,8439
+2026-06-15T10:12:30.298798+07:00,Inbound,PT17.812486S,True,Digital Receptionist,1,Answered,8440
+2026-06-15T10:12:30.10288+07:00,Inbound Queue,PT0.298293S,True,Queue,1,Unanswered,8196
+2026-06-15T10:12:17.828975+07:00,Inbound,PT11.976734S,True,Digital Receptionist,1,Answered,8439
+2026-06-15T10:08:47.249018+07:00,Internal,PT3.124606S,True,System,1,Answered,*31
 2026-06-15T09:57:50.682497+07:00,Internal,PT3.028802S,True,System,1,Answered,*31
 2026-06-15T09:33:35.438656+07:00,Outbound,PT1M6.170875S,True,External,1,Answered,10024
 2026-06-15T09:33:05.400993+07:00,Outbound,PT0S,False,External,1,Unanswered,10024
