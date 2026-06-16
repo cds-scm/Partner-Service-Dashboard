@@ -1,4 +1,33 @@
 StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
+2026-06-16T12:00:27.691992+07:00,Internal,PT3.097211S,True,System,1,Answered,*31
+2026-06-16T11:59:45.199635+07:00,Internal,PT3.13457S,True,System,1,Answered,*31
+2026-06-16T11:36:26.249727+07:00,Inbound,PT7M19.40637S,True,Extension,1,Answered,0113
+2026-06-16T11:36:25.550117+07:00,Inbound Queue,PT2.929584S,True,Queue,1,Waiting,8196
+2026-06-16T11:36:13.193031+07:00,Inbound,PT12.138526S,True,Digital Receptionist,1,Answered,8439
+2026-06-16T11:24:17.994384+07:00,Inbound,PT2M23.107439S,True,Extension,1,Answered,0112
+2026-06-16T11:24:17.209569+07:00,Inbound Queue,PT3.037794S,True,Queue,1,Waiting,8196
+2026-06-16T11:24:04.930871+07:00,Inbound,PT12.159473S,True,Digital Receptionist,1,Answered,8439
+2026-06-16T11:20:26.924555+07:00,Internal,PT3.5217S,True,System,1,Answered,*30
+2026-06-16T11:20:18.334051+07:00,Inbound,PT2M43.327765S,True,Extension,1,Answered,0114
+2026-06-16T11:20:17.612896+07:00,Inbound Queue,PT2.722844S,True,Queue,1,Waiting,8196
+2026-06-16T11:20:05.349962+07:00,Inbound,PT12.142588S,True,Digital Receptionist,1,Answered,8439
+2026-06-16T11:18:17.313454+07:00,Outbound,PT2M13.549134S,True,External,1,Answered,10024
+2026-06-16T11:03:20.459486+07:00,Internal,PT3.126836S,True,System,1,Answered,*31
+2026-06-16T10:57:29.376481+07:00,Inbound,PT2M0.93799S,True,Extension,1,Answered,0112
+2026-06-16T10:57:28.723007+07:00,Inbound Queue,PT2.647382S,True,Queue,1,Waiting,8196
+2026-06-16T10:57:16.458329+07:00,Inbound,PT12.06396S,True,Digital Receptionist,1,Answered,8439
+2026-06-16T10:41:49.92787+07:00,Inbound,PT4M50.40958S,True,Extension,1,Answered,0114
+2026-06-16T10:41:49.309953+07:00,Inbound Queue,PT3.334419S,True,Queue,1,Waiting,8196
+2026-06-16T10:41:37.039644+07:00,Inbound,PT11.994614S,True,Digital Receptionist,1,Answered,8439
+2026-06-16T10:30:22.265962+07:00,Internal,PT3.446514S,True,System,1,Answered,*30
+2026-06-16T10:24:01.558869+07:00,Internal,PT3.138093S,True,System,1,Answered,*31
+2026-06-16T10:17:36.316129+07:00,Inbound,PT2M18.656225S,True,Extension,1,Answered,0113
+2026-06-16T10:17:35.52416+07:00,Inbound Queue,PT2.39733S,True,Queue,1,Waiting,8196
+2026-06-16T10:17:23.264351+07:00,Inbound,PT12.113581S,True,Digital Receptionist,1,Answered,8439
+2026-06-16T10:08:12.994347+07:00,Inbound Queue,PT3.488283S,True,Queue,1,Waiting,8048
+2026-06-16T10:07:43.68669+07:00,Inbound,PT27.222205S,True,Extension,1,Answered,0112
+2026-06-16T10:07:43.057753+07:00,Inbound Queue,PT2.842333S,True,Queue,1,Waiting,8196
+2026-06-16T10:07:30.91165+07:00,Inbound,PT11.806948S,True,Digital Receptionist,1,Answered,8439
 2026-06-16T09:56:07.028804+07:00,Internal,PT3.48882S,True,System,1,Answered,*30
 2026-06-16T09:36:31.38696+07:00,Internal,PT3.129463S,True,System,1,Answered,*31
 2026-06-16T09:05:27.546399+07:00,Internal,PT3.528449S,True,System,1,Answered,*30
