@@ -1,4 +1,28 @@
 StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
+2026-06-17T10:03:43.953559+07:00,Outbound,PT0S,False,External,1,Unanswered,10024
+2026-06-17T10:03:43.056559+07:00,Inbound Queue,PT4.955346S,True,Queue,1,Unanswered,8196
+2026-06-17T10:03:30.890733+07:00,Inbound,PT12.145281S,True,Digital Receptionist,1,Answered,8439
+2026-06-17T10:01:46.558474+07:00,Internal,PT4.33923S,True,System,1,Answered,*33
+2026-06-17T10:00:03.527785+07:00,Internal,PT4.532037S,True,System,1,Answered,*34
+2026-06-17T09:56:03.56887+07:00,Internal,PT4.340754S,True,System,1,Answered,*33
+2026-06-17T09:55:51.610936+07:00,Inbound,PT4M2.892055S,True,Extension,1,Answered,0112
+2026-06-17T09:55:51.445955+07:00,Inbound Queue,PT4.360444S,True,Queue,1,Waiting,8196
+2026-06-17T09:55:39.175166+07:00,Inbound,PT11.972967S,True,Digital Receptionist,1,Answered,8439
+2026-06-17T09:53:42.638647+07:00,Internal,PT4.43122S,True,System,1,Answered,*33
+2026-06-17T09:51:27.800368+07:00,Internal,PT3.528241S,True,System,1,Answered,*30
+2026-06-17T09:44:46.885798+07:00,Inbound,PT1M22.619194S,True,Extension,1,Answered,0114
+2026-06-17T09:44:46.176777+07:00,Inbound Queue,PT3.207571S,True,Queue,1,Waiting,8196
+2026-06-17T09:44:33.90892+07:00,Inbound,PT12.067348S,True,Digital Receptionist,1,Answered,8439
+2026-06-17T09:43:45.778585+07:00,Internal,PT3.025178S,True,System,1,Answered,*31
+2026-06-17T09:24:58.201332+07:00,Outbound,PT12M12.557536S,True,External,1,Answered,10024
+2026-06-17T09:08:25.576383+07:00,Inbound,PT7M22.142275S,True,Extension,1,Answered,0112
+2026-06-17T09:08:24.875355+07:00,Inbound Queue,PT3.433899S,True,Queue,1,Waiting,8196
+2026-06-17T09:08:12.607003+07:00,Inbound,PT12.147949S,True,Digital Receptionist,1,Answered,8439
+2026-06-17T09:02:36.610937+07:00,Internal,PT3.551951S,True,System,1,Answered,*30
+2026-06-17T08:51:54.903281+07:00,Internal,PT3.543759S,True,System,1,Answered,*30
+2026-06-17T08:36:03.732183+07:00,Inbound,PT11.78187S,True,Digital Receptionist,1,Answered,8441
+2026-06-17T08:36:03.630004+07:00,Inbound,PT0S,False,Digital Receptionist,1,Unanswered,8439
+2026-06-17T08:23:36.781148+07:00,Internal,PT3.531712S,True,System,1,Answered,*30
 2026-06-16T18:58:07.79003+07:00,Inbound,PT15.093403S,True,Digital Receptionist,1,Answered,8441
 2026-06-16T18:58:07.687051+07:00,Inbound,PT0S,False,Digital Receptionist,1,Unanswered,8439
 2026-06-16T17:53:49.531789+07:00,Inbound,PT10.592561S,True,Digital Receptionist,1,Answered,8441
