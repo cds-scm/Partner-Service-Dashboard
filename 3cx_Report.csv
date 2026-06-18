@@ -1,4 +1,11 @@
 StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
+2026-06-18T20:15:53.682009+07:00,Inbound,PT10.343764S,True,Digital Receptionist,1,Answered,8441
+2026-06-18T20:15:53.647631+07:00,Inbound,PT0S,False,Digital Receptionist,1,Unanswered,8439
+2026-06-18T18:48:00.994883+07:00,Inbound,PT6.982562S,True,Digital Receptionist,1,Answered,8441
+2026-06-18T18:48:00.892653+07:00,Inbound,PT0S,False,Digital Receptionist,1,Unanswered,8439
+2026-06-18T17:56:21.446528+07:00,Internal,PT3.155705S,True,System,1,Answered,*31
+2026-06-18T17:37:45.410124+07:00,Inbound,PT7.93144S,True,Digital Receptionist,1,Answered,8441
+2026-06-18T17:37:45.390084+07:00,Inbound,PT0S,False,Digital Receptionist,1,Unanswered,8439
 2026-06-18T17:00:47.96383+07:00,Internal,PT3.128281S,True,System,1,Answered,*31
 2026-06-18T16:54:36.344009+07:00,Inbound,PT3M12.464186S,True,Extension,1,Answered,0112
 2026-06-18T16:54:35.54818+07:00,Inbound Queue,PT3.664672S,True,Queue,1,Waiting,8196
