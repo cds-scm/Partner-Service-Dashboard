@@ -1,4 +1,13 @@
 StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
+2026-06-22T18:21:33.047312+07:00,Inbound,PT8.704642S,True,Digital Receptionist,1,Answered,8441
+2026-06-22T18:21:32.945404+07:00,Inbound,PT0S,False,Digital Receptionist,1,Unanswered,8439
+2026-06-22T17:42:47.349062+07:00,Inbound,PT8.20603S,True,Digital Receptionist,1,Answered,8441
+2026-06-22T17:42:47.29474+07:00,Inbound,PT0S,False,Digital Receptionist,1,Unanswered,8439
+2026-06-22T17:25:25.192668+07:00,Internal,PT2.390317S,True,System,1,Answered,0113
+2026-06-22T17:25:25.110824+07:00,Internal,PT0S,False,Extension,1,Unanswered,0113
+2026-06-22T17:23:18.794765+07:00,Inbound,PT6.424043S,True,Digital Receptionist,1,Answered,8441
+2026-06-22T17:23:18.69252+07:00,Inbound,PT0S,False,Digital Receptionist,1,Unanswered,8439
+2026-06-22T17:05:44.374501+07:00,Outbound,PT0S,False,External,1,Unanswered,10024
 2026-06-22T17:02:26.225293+07:00,Inbound,PT15.205793S,True,Digital Receptionist,1,Answered,8441
 2026-06-22T17:02:26.138456+07:00,Inbound,PT0S,False,Digital Receptionist,1,Unanswered,8439
 2026-06-22T16:58:06.951072+07:00,Inbound,PT1M46.812668S,True,Extension,1,Answered,0114
