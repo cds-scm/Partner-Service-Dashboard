@@ -435,7 +435,7 @@ body.has-data #tab-bar{display:flex!important}
     <input type="date" id="f-to" onchange="applyFilters()">
     <button class="bclear" onclick="clearDates()">✕</button>
   </div>
-  <div class="fg"><label>แผนก:</label><select id="f-dept" onchange="applyFilters()"><option value="">ทั้งหมด</option></select></div>
+  <div class="fg"><label>แผนก:</label><select id="f-dept" onchange="syncDeptSelectors(this.value);applyFilters()"><option value="">ทั้งหมด</option></select></div>
   <div class="fg"><label>Level:</label><select id="f-level" onchange="applyFilters()"><option value="">ทั้งหมด</option></select></div>
   <button class="bclear" onclick="clearAll()">✕ ล้างทั้งหมด</button>
   <span class="fcnt" id="f-cnt"></span>
@@ -467,7 +467,7 @@ body.has-data #tab-bar{display:flex!important}
   <div class="card" style="margin-bottom:12px">
     <div class="t10ctrl">
       <label>แผนก:</label>
-      <select id="dept-sel" onchange="renderTop10()"><option value="">🔍 ทุกแผนก (รวม)</option></select>
+      <select id="dept-sel" onchange="onDeptSelChange('dept-sel')"><option value="">🔍 ทุกแผนก (รวม)</option></select>
       <label>แสดงตาม:</label>
       <select id="issue-col" onchange="renderTop10()">
         <option value="typeDetail">Type ByDetail</option>
@@ -753,7 +753,7 @@ body.has-data #tab-bar{display:flex!important}
           <option value="issueDetail">Issue Detail</option>
         </select>
         <span>แผนก:</span>
-        <select id="ti-dept" onchange="renderTopIssuePage()" style="font-size:11px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;font-family:'CPN','Inter',sans-serif">
+        <select id="ti-dept" onchange="onDeptSelChange('ti-dept')" style="font-size:11px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;font-family:'CPN','Inter',sans-serif">
           <option value="">ทุกแผนก</option>
         </select>
       </div>
@@ -1163,6 +1163,17 @@ function loadDemoData(){
   console.log(`✅ Demo: ${RAW.length} rows loaded`);
 }
 
+// ─── Sync dept selector ทุกตัว (dept-sel, ti-dept) กับ f-dept หลัก ───
+function syncDeptSelectors(dept){
+  const ids=['f-dept','dept-sel','ti-dept'];
+  ids.forEach(id=>{const el=document.getElementById(id);if(el&&el.value!==dept)el.value=dept;});
+}
+function onDeptSelChange(sourceId){
+  const dept=document.getElementById(sourceId)?.value||'';
+  syncDeptSelectors(dept);
+  applyFilters();
+}
+
 // ─── Drill-down by Dept ───
 function drillToDept(dept){
   const sel=document.getElementById('f-dept');
@@ -1173,6 +1184,7 @@ function drillToDept(dept){
   } else {
     sel.value=dept;
   }
+  syncDeptSelectors(sel.value);
   applyFilters();
   // toast แจ้ง
   showDrillToast(sel.value?`กรองแผนก: ${sel.value}`:'แสดงทุกแผนก');
@@ -1280,6 +1292,7 @@ function populateFilters(){
   document.getElementById('f-dept').innerHTML='<option value="">ทั้งหมด</option>'+depts.map(d=>`<option>${d}</option>`).join('');
   document.getElementById('f-level').innerHTML='<option value="">ทั้งหมด</option>'+levels.map(l=>`<option>${l}</option>`).join('');
   document.getElementById('dept-sel').innerHTML='<option value="">🔍 ทุกแผนก (รวม)</option>'+depts.map(d=>`<option>${d}</option>`).join('');
+  document.getElementById('ti-dept').innerHTML='<option value="">ทุกแผนก</option>'+depts.map(d=>`<option>${d}</option>`).join('');
 }
 function setMode(m){
   MODE=m;
@@ -1344,9 +1357,9 @@ function renderKPI(){
   const ats=cx.avg_talk_sec;
   const atStr=ats!==null?`${Math.floor(ats/60)}:${String(Math.round(ats%60)).padStart(2,'0')}`:'—';
 
-  const callResSrc=d.filter(r=>isKpiCall(r)&&!r._referredMail).map(r=>r.resolutionTime).filter(x=>x!==null);
+  const callResSrc=d.filter(r=>isKpiCall(r)&&r.status==='Closed').map(r=>r.resolutionTime).filter(x=>x!==null);
   const avgResCall=callResSrc.length?+(avg(callResSrc).toFixed(1)):null;
-  const mailResSrc=d.filter(isMail).map(r=>r.resolutionTime).filter(x=>x!==null);
+  const mailResSrc=d.filter(r=>isMail(r)&&r.status==='Closed').map(r=>r.resolutionTime).filter(x=>x!==null);
   const avgResMail=mailResSrc.length?+(avg(mailResSrc).toFixed(1)):null;
 
   const months=[...new Set(RAW.map(r=>r.logMonth).filter(Boolean))].sort();
@@ -1364,8 +1377,8 @@ function renderKPI(){
     if(pMailN>0&&totalMailN>0) dFMR=Math.round(fmrN/totalMailN*100)-Math.round(pFmrN/pMailN*100);
     const pAbn=prev.filter(r=>r.logType==='Abandon').length;
     if(pKpiN>0) dAbandon=Math.round(abandonN/kpiCallN*100)-Math.round(pAbn/pKpiN*100);
-    const pCallRes=prev.filter(r=>isKpiCall(r)&&!r._referredMail).map(r=>r.resolutionTime).filter(x=>x!==null);
-    const pMailRes=prev.filter(isMail).map(r=>r.resolutionTime).filter(x=>x!==null);
+    const pCallRes=prev.filter(r=>isKpiCall(r)&&r.status==='Closed').map(r=>r.resolutionTime).filter(x=>x!==null);
+    const pMailRes=prev.filter(r=>isMail(r)&&r.status==='Closed').map(r=>r.resolutionTime).filter(x=>x!==null);
     if(pCallRes.length&&callResSrc.length) dAvgResCall=+(avgResCall-(avg(pCallRes))).toFixed(1);
     if(pMailRes.length&&mailResSrc.length) dAvgResMail=+(avgResMail-(avg(pMailRes))).toFixed(1);
   }
@@ -1773,11 +1786,15 @@ function renderMVC(){
 
 // ─── TOP 10 ───
 function renderTop10(){
-  const dept=document.getElementById('dept-sel')?.value||'';
+  const dept=document.getElementById('dept-sel')?.value||document.getElementById('f-dept')?.value||'';
   const col=document.getElementById('issue-col')?.value||'typeDetail';
   const el=document.getElementById('top10');
-  const src=(dept?FILTERED.filter(r=>r.typeDept===dept):FILTERED)
-    .filter(r=>!isForward(r)&&r.logType!=='Call Back');
+  // ใช้ filter ชนิด log เดียวกับหน้า Top Issue (isKpiCall || isMail) เพื่อให้ตัวเลขตรงกับตาราง "สรุป Case ทุกแผนก"
+  let src=FILTERED.filter(r=>!r._referredMail&&r.logType!=='Call Back');
+  if(MODE==='call') src=src.filter(r=>isKpiCall(r));
+  else if(MODE==='mail') src=src.filter(isMail);
+  else src=src.filter(r=>isKpiCall(r)||isMail(r));
+  if(dept) src=src.filter(r=>r.typeDept===dept);
   if(!src.length){el.innerHTML='<div class="empty">ไม่มีข้อมูล</div>';renderChartsDeptFiltered(dept);return;}
   const getV=r=>{const v=col==='issueDetail'?getIssue(r):getDetail(r);return v||'(ไม่ระบุ)';};
   const ct={};src.forEach(r=>{const v=getV(r);ct[v]=(ct[v]||0)+1;});
@@ -3599,13 +3616,8 @@ function renderTopIssuePage(){
   else if(MODE==='mail') src=src.filter(isMail);
   else src=src.filter(r=>isKpiCall(r)||isMail(r));
 
-  // Dept filter + populate dept select
-  const depts=[...new Set(FILTERED.map(r=>r.typeDept).filter(Boolean))].sort();
-  const tiDeptSel=document.getElementById('ti-dept');
-  if(tiDeptSel&&tiDeptSel.options.length<=1){
-    depts.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;tiDeptSel.appendChild(o);});
-  }
-  const selDept=tiDeptSel?.value||'';
+  // Dept filter — ผูกกับ ti-dept ซึ่ง sync กับตัวกรอง "แผนก" หลักของหน้า Dashboard เสมอ
+  const selDept=document.getElementById('ti-dept')?.value||document.getElementById('f-dept')?.value||'';
   if(selDept) src=src.filter(r=>r.typeDept===selDept);
 
   const col=document.getElementById('ti-col')?.value||'typeDetail';
