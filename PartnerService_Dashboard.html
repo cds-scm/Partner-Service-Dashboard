@@ -436,7 +436,6 @@ body.has-data #tab-bar{display:flex!important}
     <button class="bclear" onclick="clearDates()">✕</button>
   </div>
   <div class="fg"><label>แผนก:</label><select id="f-dept" onchange="syncDeptSelectors(this.value);applyFilters()"><option value="">ทั้งหมด</option></select></div>
-  <div class="fg"><label>Level:</label><select id="f-level" onchange="applyFilters()"><option value="">ทั้งหมด</option></select></div>
   <button class="bclear" onclick="clearAll()">✕ ล้างทั้งหมด</button>
   <span class="fcnt" id="f-cnt"></span>
 </div>
@@ -1290,7 +1289,7 @@ function populateFilters(){
   const levels=[...new Set(RAW.map(r=>r.caseLevel).filter(Boolean))].sort();
   document.getElementById('f-month').innerHTML='<option value="">ทั้งหมด</option>'+months.map(m=>`<option>${m}</option>`).join('');
   document.getElementById('f-dept').innerHTML='<option value="">ทั้งหมด</option>'+depts.map(d=>`<option>${d}</option>`).join('');
-  document.getElementById('f-level').innerHTML='<option value="">ทั้งหมด</option>'+levels.map(l=>`<option>${l}</option>`).join('');
+  if(document.getElementById('f-level')) document.getElementById('f-level').innerHTML='<option value="">ทั้งหมด</option>'+levels.map(l=>`<option>${l}</option>`).join('');
   document.getElementById('dept-sel').innerHTML='<option value="">🔍 ทุกแผนก (รวม)</option>'+depts.map(d=>`<option>${d}</option>`).join('');
   document.getElementById('ti-dept').innerHTML='<option value="">ทุกแผนก</option>'+depts.map(d=>`<option>${d}</option>`).join('');
 }
@@ -1303,7 +1302,7 @@ function onMonthChange(){clearDates(false);applyFilters();}
 function updateDayPills(){}
 function selectDay(d){}
 function clearDates(refresh=true){const ef=document.getElementById('f-from');if(ef)ef.value='';const et=document.getElementById('f-to');if(et)et.value='';if(refresh)applyFilters();}
-function clearAll(){const em=document.getElementById('f-month');if(em)em.value='';const ed=document.getElementById('f-dept');if(ed)ed.value='';const el2=document.getElementById('f-level');if(el2)el2.value='';SEL_DAY='';clearDates(false);setMode('all');}
+function clearAll(){const em=document.getElementById('f-month');if(em)em.value='';const ed=document.getElementById('f-dept');if(ed){ed.value='';syncDeptSelectors('');}const el2=document.getElementById('f-level');if(el2)el2.value='';SEL_DAY='';clearDates(false);setMode('all');}
 
 function applyFilters(){
   const fm=document.getElementById('f-month')?.value||'';
