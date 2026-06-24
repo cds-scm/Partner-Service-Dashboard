@@ -1,14 +1,14 @@
 {
   "source": "3CX Official ReportAbandonedQueueCalls",
   "period_from": "2026-05-01",
-  "period_to": "2026-06-23",
+  "period_to": "2026-06-22",
   "queue": "8196 Q_Partner Service_TH",
-  "total_abandon": 64,
+  "total_abandon": 63,
   "monthly": {
     "2026-05": 45,
-    "2026-06": 19
+    "2026-06": 18
   },
-  "note": "1-4 พ.ค. และ 19-21 มิ.ย. ปิดคิว (วันหยุด/เสาร์-อาทิตย์), 22 มิ.ย. เปิดคิวแต่ไม่มี Abandon, 23 มิ.ย. (provider ใหม่) มี 1 สาย ยืนยันตรงกับ Call Log LOG-02937",
+  "note": "1-4 พ.ค. และ 19-22 มิ.ย. ปิดคิว(วันหยุด/เสาร์-อาทิตย์)/ไม่มี Abandon. ตั้งแต่ 23 มิ.ย.เป็นต้นไป ใช้ข้อมูลจาก abandoned_calls.json (live, provider ใหม่) เท่านั้น ไม่ซ้ำกับไฟล์นี้",
   "calls": [
     {
       "Queue": "8196 Q_Partner Service_TH",
@@ -639,17 +639,6 @@
       "Polling Attempts": 0,
       "Agent State": "Logged Out",
       "month": "2026-05"
-    },
-    {
-      "Queue": "8196 Q_Partner Service_TH",
-      "Call Time": "2026-06-23T11:33:28",
-      "Caller ID": null,
-      "Agent": null,
-      "Waiting Time": "00:00:18",
-      "Polling Attempts": null,
-      "Agent State": null,
-      "source": "3CX_new_provider_verified",
-      "matched_call_log": "LOG-02937"
     }
   ]
 }
