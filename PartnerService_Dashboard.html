@@ -2173,7 +2173,7 @@ function renderPending(){
   </tr></thead><tbody>${pend.map(r=>`
     <tr class="td-row">
       <td><strong>${r.logId||'—'}</strong></td>
-      <td style="color:var(--blue)">${r.logType||'—'}</td>
+      <td style="color:var(--blue)">${r.logType==='Received'?'Call':(r.logType||'—')}</td>
       <td>${fmtDate(r.dateLog)}</td>
       <td><span class="badge ${r.status==='Open'?'b-open':'b-pend'}">${r.status}</span></td>
       <td><span class="badge ${pdC(r.pd)}">${r.pd} วัน${r.pd>=7?' ⚠':''}</span></td>
@@ -4676,7 +4676,7 @@ function renderFCREscList(){
     const rt=r.responseTime;
     return`<tr class="td-row">
       <td><strong>${r.logId||'—'}</strong></td>
-      <td style="color:var(--blue)">${r.logType||'—'}</td>
+      <td style="color:var(--blue)">${r.logType==='Received'?'Call':(r.logType||'—')}</td>
       <td style="white-space:nowrap">${fmtDate(r.dateLog)}</td>
       <td><strong>${r.typeDept||'—'}</strong></td>
       <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px" title="${getDetail(r)}">${getDetail(r)||'—'}</td>
