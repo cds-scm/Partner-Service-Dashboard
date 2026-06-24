@@ -10801,3 +10801,8 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-06-24T13:17:44.943564+07:00,Internal,PT3.416339S,True,System,1,Answered,*31
 2026-06-24T13:02:08.806909+07:00,Internal,PT3.413189S,True,System,1,Answered,*30
 2026-06-24T13:00:26.592293+07:00,Internal,PT3.403757S,True,System,1,Answered,*30
+2026-06-24T15:03:36.188516+07:00,Internal,PT3.432534S,True,System,1,Answered,*30
+2026-06-24T15:02:55.388621+07:00,Internal,PT3.413133S,True,System,1,Answered,*30
+2026-06-24T15:02:48.982607+07:00,Inbound,PT1M30.742974S,True,Extension,1,Answered,0114
+2026-06-24T15:02:48.754491+07:00,Inbound Queue,PT2.194123S,True,Queue,1,Waiting,8196
+2026-06-24T15:00:56.73057+07:00,Internal,PT3.413087S,True,System,1,Answered,*31
