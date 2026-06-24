@@ -4928,7 +4928,7 @@ function processCXData(data){
 
     if(!daily[date])daily[date]={reach_ans:0,reach_abn:0,sla_ok:0,sla_total:0,talk_sec:0,talk_cnt:0,abn_3cx:0};
     if(dir==='Inbound Queue'&&to===TARGET_TO){sTotal++;daily[date].sla_total++;if(st==='Waiting'){rAns++;sOk++;daily[date].reach_ans++;daily[date].sla_ok++;}}
-    if(dir==='Inbound Queue'&&st==='Unanswered'){rAbn++;totalAbn++;daily[date].reach_abn++;daily[date].abn_3cx++;}
+    if(dir==='Inbound Queue'&&to===TARGET_TO&&st==='Unanswered'){rAbn++;totalAbn++;daily[date].reach_abn++;daily[date].abn_3cx++;}
     // คำนวณ Avg Talk Time จาก Inbound Answered ของ agent (Extension)
     if(dir==='Inbound' && st==='Answered'){
       const toLow=to.toLowerCase();
