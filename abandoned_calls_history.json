@@ -1,0 +1,655 @@
+{
+  "source": "3CX Official ReportAbandonedQueueCalls",
+  "period_from": "2026-05-01",
+  "period_to": "2026-06-23",
+  "queue": "8196 Q_Partner Service_TH",
+  "total_abandon": 64,
+  "monthly": {
+    "2026-05": 45,
+    "2026-06": 19
+  },
+  "note": "1-4 พ.ค. และ 19-21 มิ.ย. ปิดคิว (วันหยุด/เสาร์-อาทิตย์), 22 มิ.ย. เปิดคิวแต่ไม่มี Abandon, 23 มิ.ย. (provider ใหม่) มี 1 สาย ยืนยันตรงกับ Call Log LOG-02937",
+  "calls": [
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-19T16:07:25",
+      "Caller ID": 621968768.0,
+      "Agent": "0112 Thanawan Payomhom",
+      "Waiting Time": "00:00:10",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-19T16:05:41",
+      "Caller ID": 814396614.0,
+      "Agent": "0114 Phanida Konkaew",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-19T14:41:09",
+      "Caller ID": 957468882.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:00:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-19T14:32:32",
+      "Caller ID": 845615412.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:00:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-19T13:11:30",
+      "Caller ID": 959364247.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:00:01",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-19T09:43:11",
+      "Caller ID": 818181261.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:00:40",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-19T09:42:21",
+      "Caller ID": 616539212.0,
+      "Agent": "0112 Thanawan Payomhom",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-17T13:00:55",
+      "Caller ID": 863861430.0,
+      "Agent": "0114 Phanida Konkaew",
+      "Waiting Time": "00:00:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-17T10:03:43",
+      "Caller ID": 802255384.0,
+      "Agent": "0114 Phanida Konkaew",
+      "Waiting Time": "00:00:05",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-15T10:14:08",
+      "Caller ID": 912945631.0,
+      "Agent": "0112 Thanawan Payomhom",
+      "Waiting Time": "00:00:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-15T10:13:51",
+      "Caller ID": 918751951.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:00:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-15T10:12:30",
+      "Caller ID": 918751951.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:00:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-11T11:03:24",
+      "Caller ID": 621968913.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-10T13:02:44",
+      "Caller ID": 649961945.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:00:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-10T13:01:56",
+      "Caller ID": 649961945.0,
+      "Agent": "0114 Phanida Konkaew",
+      "Waiting Time": "00:00:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-09T10:43:14",
+      "Caller ID": 808139900.0,
+      "Agent": "0114 Phanida Konkaew",
+      "Waiting Time": "00:00:02",
+      "Polling Attempts": 1,
+      "Agent State": "Logged In",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-08T13:05:34",
+      "Caller ID": 988259161.0,
+      "Agent": "0114 Phanida Konkaew",
+      "Waiting Time": "00:00:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-02T13:58:11",
+      "Caller ID": 614615222.0,
+      "Agent": "0112 Thanawan Payomhom",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-27T15:45:53",
+      "Caller ID": 894994650.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:00:01",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-27T13:03:18",
+      "Caller ID": 972181470.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:03:01",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-26T09:59:42",
+      "Caller ID": 860614668.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:00:36",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-25T10:43:50",
+      "Caller ID": 839249669.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:00:22",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-21T16:11:36",
+      "Caller ID": 825531810.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:01:01",
+      "Polling Attempts": 1,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-21T14:21:58",
+      "Caller ID": 818056518.0,
+      "Agent": "0114 Phanida Konkaew",
+      "Waiting Time": "00:00:17",
+      "Polling Attempts": 1,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-21T14:15:14",
+      "Caller ID": 818056518.0,
+      "Agent": "0112 Thanawan Payomhom",
+      "Waiting Time": "00:00:21",
+      "Polling Attempts": 1,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-21T14:14:07",
+      "Caller ID": 870032156.0,
+      "Agent": "0114 Phanida Konkaew",
+      "Waiting Time": "00:02:59",
+      "Polling Attempts": 17,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-21T14:09:54",
+      "Caller ID": 818056518.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:02:33",
+      "Polling Attempts": 27,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-21T14:09:52",
+      "Caller ID": 926350563.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:01:11",
+      "Polling Attempts": 14,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-21T14:07:52",
+      "Caller ID": 818056518.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:00:34",
+      "Polling Attempts": 10,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-21T14:06:26",
+      "Caller ID": 818056518.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:00:38",
+      "Polling Attempts": 12,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-20T16:02:17",
+      "Caller ID": 944596554.0,
+      "Agent": "0112 Thanawan Payomhom",
+      "Waiting Time": "00:00:03",
+      "Polling Attempts": 1,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-19T15:41:25",
+      "Caller ID": 821714947.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-19T15:35:44",
+      "Caller ID": 633733946.0,
+      "Agent": "0114 Phanida Konkaew",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-19T15:34:40",
+      "Caller ID": 877192929.0,
+      "Agent": "0112 Thanawan Payomhom",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-19T10:48:35",
+      "Caller ID": 615469642.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-18T15:02:36",
+      "Caller ID": 949975465.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:01:53",
+      "Polling Attempts": 128,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-18T15:00:23",
+      "Caller ID": 912945631.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:01:53",
+      "Polling Attempts": 35,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-18T14:55:53",
+      "Caller ID": 912945631.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:01:57",
+      "Polling Attempts": 36,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-15T14:44:43",
+      "Caller ID": 818363061.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:00:37",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-15T14:43:04",
+      "Caller ID": 927414430.0,
+      "Agent": "0114 Phanida Konkaew",
+      "Waiting Time": "00:00:03",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-15T13:02:56",
+      "Caller ID": 819259042.0,
+      "Agent": "0114 Phanida Konkaew",
+      "Waiting Time": "00:00:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-14T11:05:11",
+      "Caller ID": 629569323.0,
+      "Agent": "0112 Thanawan Payomhom",
+      "Waiting Time": "00:02:34",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-14T11:03:53",
+      "Caller ID": 813571827.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-13T13:00:17",
+      "Caller ID": 935359569.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:00:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-13T10:56:12",
+      "Caller ID": 627812623.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:00:43",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-12T11:13:51",
+      "Caller ID": 631870431.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:02:35",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-11T13:03:47",
+      "Caller ID": 831771307.0,
+      "Agent": "0114 Phanida Konkaew",
+      "Waiting Time": "00:00:06",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-11T13:02:57",
+      "Caller ID": 894334797.0,
+      "Agent": "0114 Phanida Konkaew",
+      "Waiting Time": "00:00:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-08T10:17:59",
+      "Caller ID": 894519220.0,
+      "Agent": "0114 Phanida Konkaew",
+      "Waiting Time": "00:02:32",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-08T09:57:47",
+      "Caller ID": 865176786.0,
+      "Agent": "0112 Thanawan Payomhom",
+      "Waiting Time": "00:00:13",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-07T15:09:29",
+      "Caller ID": 634128917.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-07T13:57:28",
+      "Caller ID": 818363061.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:01:28",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-07T13:53:13",
+      "Caller ID": 993481116.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-07T13:49:08",
+      "Caller ID": 956639592.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-07T13:48:05",
+      "Caller ID": 988279199.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-07T10:53:55",
+      "Caller ID": 830919365.0,
+      "Agent": "0114 Phanida Konkaew",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-07T10:53:27",
+      "Caller ID": 971315453.0,
+      "Agent": "0114 Phanida Konkaew",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-07T10:50:08",
+      "Caller ID": 830919365.0,
+      "Agent": "0112 Thanawan Payomhom",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-07T10:48:56",
+      "Caller ID": 999984226.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-07T10:26:15",
+      "Caller ID": 982854996.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-07T10:22:28",
+      "Caller ID": 809423951.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:01:54",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-06T14:10:59",
+      "Caller ID": 849700903.0,
+      "Agent": "0113 Ingraphat Siriwatpoonkasem",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged In",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-05-05T14:40:28",
+      "Caller ID": 854413373.0,
+      "Agent": "0112 Thanawan Payomhom",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-23T11:33:28",
+      "Caller ID": null,
+      "Agent": null,
+      "Waiting Time": "00:00:18",
+      "Polling Attempts": null,
+      "Agent State": null,
+      "source": "3CX_new_provider_verified",
+      "matched_call_log": "LOG-02937"
+    }
+  ]
+}
