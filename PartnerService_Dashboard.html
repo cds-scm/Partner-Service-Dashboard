@@ -1380,6 +1380,10 @@ function renderKPI(){
     const pMailRes=prev.filter(r=>isMail(r)&&r.status==='Closed').map(r=>r.resolutionTime).filter(x=>x!==null);
     if(pCallRes.length&&callResSrc.length) dAvgResCall=+(avgResCall-(avg(pCallRes))).toFixed(1);
     if(pMailRes.length&&mailResSrc.length) dAvgResMail=+(avgResMail-(avg(pMailRes))).toFixed(1);
+    if(!hasDeptFilter && CX.loaded && slaPct!==null){
+      const prevCx=getCX(null,null,null,prevM);
+      if(prevCx.sla_pct!==null) dSLA=+(slaPct-prevCx.sla_pct).toFixed(1);
+    }
   }
 
   const grandN = kpiCallN+totalMailN; // เทียบแค่ Call+Mail
@@ -1848,7 +1852,7 @@ function renderDeptCaseTable(src,singleDept){
       const di=kpiSrc.filter(r=>r.typeDept===dept);
       const n=di.length;
       const calls=src.filter(r=>r.typeDept===dept&&isKpiCall(r)).length; // Call+Transfer
-      const abandons=di.filter(r=>r.logType==='Abandon').length;
+      const abandons=src.filter(r=>r.typeDept===dept&&r.logType==='Abandon').length;
       const mails=di.filter(isMail).length;
       const open=di.filter(r=>r.status==='Open').length;
       const pnd=di.filter(r=>r.status==='Pending').length;
@@ -1879,7 +1883,7 @@ function renderDeptCaseTable(src,singleDept){
     tbl+=`<tr class="total-row">
       <td>รวมทั้งหมด</td><td>${kpiSrc.length}</td><td>100%</td>
       <td style="color:var(--blue)">${src.filter(isCallKpi).length}</td>
-      <td style="color:var(--red)">${kpiSrc.filter(r=>r.logType==='Abandon').length||'—'}</td>
+      <td style="color:var(--red)">${src.filter(r=>r.logType==='Abandon').length||'—'}</td>
       <td style="color:var(--purple)">${kpiSrc.filter(isMail).length}</td>
       <td>${kpiSrc.filter(r=>r.status==='Open').length}</td>
       <td>${kpiSrc.filter(r=>r.status==='Pending').length}</td>
