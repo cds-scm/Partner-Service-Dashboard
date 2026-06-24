@@ -1392,7 +1392,9 @@ function renderKPI(){
   const fwdP   = 0; // ไม่ใช้แล้ว
 
   // Abandon จาก 3CX (ถ้าโหลดแล้ว) ถ้าไม่มีหรือกรองแผนก → ใช้จาก Log
-  const abnVal  = (!hasDeptFilter && CX.loaded && cx.abn_3cx>0) ? cx.abn_3cx : abandonN;
+  // หมายเหตุ: เช็คจาก sla_total (ปริมาณสายทั้งหมดที่ 3CX มีข้อมูล) ไม่ใช่เช็คว่า abn_3cx>0
+  // เพราะวันที่ Abandon=0 จริงจาก 3CX (แต่มีข้อมูลสายอื่นอยู่) ก็ถือเป็นข้อมูลที่ใช้ได้
+  const abnVal  = (!hasDeptFilter && CX.loaded && cx.sla_total>0) ? cx.abn_3cx : abandonN;
   const abnPct  = kpiCallN>0?+(abnVal/kpiCallN*100).toFixed(1):0;
   const cbPct   = abnVal>0?+(abandonN/abnVal*100).toFixed(1):0;
 
@@ -4726,6 +4728,10 @@ const GITHUB_USER = 'cds-scm';
 const GITHUB_REPO = 'Partner-Service-Dashboard';
 const JSON_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/calllog_data.json`;
 const CX_URL   = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/3cx_Report.csv`;
+const ABN_HISTORY_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/abandoned_calls_history.json`;
+const ABN_LIVE_URL    = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/abandoned_calls.json`;
+// เก็บ Abandon ที่ถูกต้อง 100% จาก 3CX official report (history + live) แยกตามวันที่ "YYYY-MM-DD" -> count
+let OFFICIAL_ABANDON = {loaded:false, byDate:{}, total:0};
 
 // (compat aliases — ไม่ใช้แล้วแต่เผื่อมีโค้ดเรียก)
 const SP_SITE='https://centralgroup.sharepoint.com/sites/CDSSCMPartnerService';
@@ -4740,6 +4746,44 @@ function syncLog(msg, type='info'){
   // อัปเดต badge tooltip
   const badge=document.getElementById('auto-refresh-badge');
   if(badge) badge.title=`[${ts}] ${msg}`;
+}
+
+async function loadOfficialAbandon(){
+  const byDate={};
+  try{
+    const hRes=await fetch(ABN_HISTORY_URL+'?t='+Date.now());
+    if(hRes.ok){
+      const h=await hRes.json();
+      (h.calls||[]).forEach(c=>{
+        const ct=c['Call Time']||c.CallTime||'';
+        const d=String(ct).slice(0,10);
+        if(d.length===10) byDate[d]=(byDate[d]||0)+1;
+      });
+      syncLog(`Official Abandon (history) โหลดแล้ว: ${(h.calls||[]).length} สาย`,'ok');
+    }
+  }catch(e){ console.warn('[OFFICIAL_ABANDON] history load failed:', e.message); }
+
+  try{
+    const lRes=await fetch(ABN_LIVE_URL+'?t='+Date.now());
+    if(lRes.ok){
+      const l=await lRes.json();
+      const seen=new Set(); // กัน polling attempts ของสายเดียวกันนับซ้ำ
+      (l.raw||[]).forEach(c=>{
+        const ct=c.CallTime||c['Call Time']||'';
+        const caller=c.Caller||c['Caller ID']||'';
+        const key=ct+'|'+caller;
+        if(seen.has(key)) return;
+        seen.add(key);
+        const d=String(ct).slice(0,10);
+        if(d.length===10) byDate[d]=(byDate[d]||0)+1;
+      });
+      syncLog(`Official Abandon (live) โหลดแล้ว: count=${l.count}`,'ok');
+    }
+  }catch(e){ console.warn('[OFFICIAL_ABANDON] live load failed:', e.message); }
+
+  const total=Object.values(byDate).reduce((a,b)=>a+b,0);
+  OFFICIAL_ABANDON={loaded:Object.keys(byDate).length>0, byDate, total};
+  console.debug('[OFFICIAL_ABANDON]', OFFICIAL_ABANDON);
 }
 
 async function autoLoad(){
@@ -4791,6 +4835,7 @@ async function autoLoad(){
 
     // โหลด 3CX (await เพื่อไม่ให้ race กับ renderAll)
     try{
+      await loadOfficialAbandon();
       syncLog(`Fetching 3CX CSV: ${CX_URL}`);
       const cxRes=await fetch(CX_URL + '?t=' + Date.now()); // cache-bust
       syncLog(`3CX Response: ${cxRes.status} ${cxRes.statusText}`, cxRes.ok?'ok':'warn');
@@ -4943,6 +4988,17 @@ function processCXData(data){
   });
 
   console.debug(`[processCXData] Queue-8196 | Waiting(ans)=${rAns} Unanswered(abn)=${totalAbn} Total=${sTotal}`);
+
+  // ── Override ด้วยข้อมูล Abandon ทางการจาก 3CX Report (history+live) ถ้ามี ──
+  // เพราะ field Status ในไฟล์ดิบไม่น่าเชื่อถือ 100% (บางครั้งสายที่หลุดจริงถูกบันทึกเป็น "Waiting")
+  if(OFFICIAL_ABANDON.loaded){
+    Object.keys(OFFICIAL_ABANDON.byDate).forEach(d=>{
+      if(!daily[d]) daily[d]={reach_ans:0,reach_abn:0,sla_ok:0,sla_total:0,talk_sec:0,talk_cnt:0,abn_3cx:0};
+      daily[d].abn_3cx=OFFICIAL_ABANDON.byDate[d];
+    });
+    totalAbn=Object.values(daily).reduce((s,v)=>s+(v.abn_3cx||0),0);
+    console.debug(`[processCXData] ใช้ Official Abandon แทนค่าที่คำนวณเอง — totalAbn=${totalAbn}`);
+  }
 
   const rt=rAns+rAbn;
   CX={loaded:true,
