@@ -435,8 +435,7 @@ body.has-data #tab-bar{display:flex!important}
     <input type="date" id="f-to" onchange="applyFilters()">
     <button class="bclear" onclick="clearDates()">✕</button>
   </div>
-  <div class="fg"><label>แผนก:</label><select id="f-dept" onchange="applyFilters()"><option value="">ทั้งหมด</option></select></div>
-  <div class="fg"><label>Level:</label><select id="f-level" onchange="applyFilters()"><option value="">ทั้งหมด</option></select></div>
+  <div class="fg"><label>แผนก:</label><select id="f-dept" onchange="syncDeptSelectors(this.value);applyFilters()"><option value="">ทั้งหมด</option></select></div>
   <button class="bclear" onclick="clearAll()">✕ ล้างทั้งหมด</button>
   <span class="fcnt" id="f-cnt"></span>
 </div>
@@ -467,7 +466,7 @@ body.has-data #tab-bar{display:flex!important}
   <div class="card" style="margin-bottom:12px">
     <div class="t10ctrl">
       <label>แผนก:</label>
-      <select id="dept-sel" onchange="renderTop10()"><option value="">🔍 ทุกแผนก (รวม)</option></select>
+      <select id="dept-sel" onchange="onDeptSelChange('dept-sel')"><option value="">🔍 ทุกแผนก (รวม)</option></select>
       <label>แสดงตาม:</label>
       <select id="issue-col" onchange="renderTop10()">
         <option value="typeDetail">Type ByDetail</option>
@@ -753,7 +752,7 @@ body.has-data #tab-bar{display:flex!important}
           <option value="issueDetail">Issue Detail</option>
         </select>
         <span>แผนก:</span>
-        <select id="ti-dept" onchange="renderTopIssuePage()" style="font-size:11px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;font-family:'CPN','Inter',sans-serif">
+        <select id="ti-dept" onchange="onDeptSelChange('ti-dept')" style="font-size:11px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;font-family:'CPN','Inter',sans-serif">
           <option value="">ทุกแผนก</option>
         </select>
       </div>
@@ -1163,6 +1162,17 @@ function loadDemoData(){
   console.log(`✅ Demo: ${RAW.length} rows loaded`);
 }
 
+// ─── Sync dept selector ทุกตัว (dept-sel, ti-dept) กับ f-dept หลัก ───
+function syncDeptSelectors(dept){
+  const ids=['f-dept','dept-sel','ti-dept'];
+  ids.forEach(id=>{const el=document.getElementById(id);if(el&&el.value!==dept)el.value=dept;});
+}
+function onDeptSelChange(sourceId){
+  const dept=document.getElementById(sourceId)?.value||'';
+  syncDeptSelectors(dept);
+  applyFilters();
+}
+
 // ─── Drill-down by Dept ───
 function drillToDept(dept){
   const sel=document.getElementById('f-dept');
@@ -1173,6 +1183,7 @@ function drillToDept(dept){
   } else {
     sel.value=dept;
   }
+  syncDeptSelectors(sel.value);
   applyFilters();
   // toast แจ้ง
   showDrillToast(sel.value?`กรองแผนก: ${sel.value}`:'แสดงทุกแผนก');
@@ -1278,8 +1289,9 @@ function populateFilters(){
   const levels=[...new Set(RAW.map(r=>r.caseLevel).filter(Boolean))].sort();
   document.getElementById('f-month').innerHTML='<option value="">ทั้งหมด</option>'+months.map(m=>`<option>${m}</option>`).join('');
   document.getElementById('f-dept').innerHTML='<option value="">ทั้งหมด</option>'+depts.map(d=>`<option>${d}</option>`).join('');
-  document.getElementById('f-level').innerHTML='<option value="">ทั้งหมด</option>'+levels.map(l=>`<option>${l}</option>`).join('');
+  if(document.getElementById('f-level')) document.getElementById('f-level').innerHTML='<option value="">ทั้งหมด</option>'+levels.map(l=>`<option>${l}</option>`).join('');
   document.getElementById('dept-sel').innerHTML='<option value="">🔍 ทุกแผนก (รวม)</option>'+depts.map(d=>`<option>${d}</option>`).join('');
+  document.getElementById('ti-dept').innerHTML='<option value="">ทุกแผนก</option>'+depts.map(d=>`<option>${d}</option>`).join('');
 }
 function setMode(m){
   MODE=m;
@@ -1290,7 +1302,7 @@ function onMonthChange(){clearDates(false);applyFilters();}
 function updateDayPills(){}
 function selectDay(d){}
 function clearDates(refresh=true){const ef=document.getElementById('f-from');if(ef)ef.value='';const et=document.getElementById('f-to');if(et)et.value='';if(refresh)applyFilters();}
-function clearAll(){const em=document.getElementById('f-month');if(em)em.value='';const ed=document.getElementById('f-dept');if(ed)ed.value='';const el2=document.getElementById('f-level');if(el2)el2.value='';SEL_DAY='';clearDates(false);setMode('all');}
+function clearAll(){const em=document.getElementById('f-month');if(em)em.value='';const ed=document.getElementById('f-dept');if(ed){ed.value='';syncDeptSelectors('');}const el2=document.getElementById('f-level');if(el2)el2.value='';SEL_DAY='';clearDates(false);setMode('all');}
 
 function applyFilters(){
   const fm=document.getElementById('f-month')?.value||'';
@@ -1344,9 +1356,9 @@ function renderKPI(){
   const ats=cx.avg_talk_sec;
   const atStr=ats!==null?`${Math.floor(ats/60)}:${String(Math.round(ats%60)).padStart(2,'0')}`:'—';
 
-  const callResSrc=d.filter(r=>isKpiCall(r)&&!r._referredMail).map(r=>r.resolutionTime).filter(x=>x!==null);
+  const callResSrc=d.filter(r=>isKpiCall(r)&&r.status==='Closed').map(r=>r.resolutionTime).filter(x=>x!==null);
   const avgResCall=callResSrc.length?+(avg(callResSrc).toFixed(1)):null;
-  const mailResSrc=d.filter(isMail).map(r=>r.resolutionTime).filter(x=>x!==null);
+  const mailResSrc=d.filter(r=>isMail(r)&&r.status==='Closed').map(r=>r.resolutionTime).filter(x=>x!==null);
   const avgResMail=mailResSrc.length?+(avg(mailResSrc).toFixed(1)):null;
 
   const months=[...new Set(RAW.map(r=>r.logMonth).filter(Boolean))].sort();
@@ -1364,10 +1376,14 @@ function renderKPI(){
     if(pMailN>0&&totalMailN>0) dFMR=Math.round(fmrN/totalMailN*100)-Math.round(pFmrN/pMailN*100);
     const pAbn=prev.filter(r=>r.logType==='Abandon').length;
     if(pKpiN>0) dAbandon=Math.round(abandonN/kpiCallN*100)-Math.round(pAbn/pKpiN*100);
-    const pCallRes=prev.filter(r=>isKpiCall(r)&&!r._referredMail).map(r=>r.resolutionTime).filter(x=>x!==null);
-    const pMailRes=prev.filter(isMail).map(r=>r.resolutionTime).filter(x=>x!==null);
+    const pCallRes=prev.filter(r=>isKpiCall(r)&&r.status==='Closed').map(r=>r.resolutionTime).filter(x=>x!==null);
+    const pMailRes=prev.filter(r=>isMail(r)&&r.status==='Closed').map(r=>r.resolutionTime).filter(x=>x!==null);
     if(pCallRes.length&&callResSrc.length) dAvgResCall=+(avgResCall-(avg(pCallRes))).toFixed(1);
     if(pMailRes.length&&mailResSrc.length) dAvgResMail=+(avgResMail-(avg(pMailRes))).toFixed(1);
+    if(!hasDeptFilter && CX.loaded && slaPct!==null){
+      const prevCx=getCX(null,null,null,prevM);
+      if(prevCx.sla_pct!==null) dSLA=+(slaPct-prevCx.sla_pct).toFixed(1);
+    }
   }
 
   const grandN = kpiCallN+totalMailN; // เทียบแค่ Call+Mail
@@ -1376,7 +1392,9 @@ function renderKPI(){
   const fwdP   = 0; // ไม่ใช้แล้ว
 
   // Abandon จาก 3CX (ถ้าโหลดแล้ว) ถ้าไม่มีหรือกรองแผนก → ใช้จาก Log
-  const abnVal  = (!hasDeptFilter && CX.loaded && cx.abn_3cx>0) ? cx.abn_3cx : abandonN;
+  // หมายเหตุ: เช็คจาก sla_total (ปริมาณสายทั้งหมดที่ 3CX มีข้อมูล) ไม่ใช่เช็คว่า abn_3cx>0
+  // เพราะวันที่ Abandon=0 จริงจาก 3CX (แต่มีข้อมูลสายอื่นอยู่) ก็ถือเป็นข้อมูลที่ใช้ได้
+  const abnVal  = (!hasDeptFilter && CX.loaded && cx.sla_total>0) ? cx.abn_3cx : abandonN;
   const abnPct  = kpiCallN>0?+(abnVal/kpiCallN*100).toFixed(1):0;
   const cbPct   = abnVal>0?+(abandonN/abnVal*100).toFixed(1):0;
 
@@ -1773,11 +1791,15 @@ function renderMVC(){
 
 // ─── TOP 10 ───
 function renderTop10(){
-  const dept=document.getElementById('dept-sel')?.value||'';
+  const dept=document.getElementById('dept-sel')?.value||document.getElementById('f-dept')?.value||'';
   const col=document.getElementById('issue-col')?.value||'typeDetail';
   const el=document.getElementById('top10');
-  const src=(dept?FILTERED.filter(r=>r.typeDept===dept):FILTERED)
-    .filter(r=>!isForward(r)&&r.logType!=='Call Back');
+  // ใช้ filter ชนิด log เดียวกับหน้า Top Issue (isKpiCall || isMail) เพื่อให้ตัวเลขตรงกับตาราง "สรุป Case ทุกแผนก"
+  let src=FILTERED.filter(r=>!r._referredMail&&r.logType!=='Call Back');
+  if(MODE==='call') src=src.filter(r=>isKpiCall(r));
+  else if(MODE==='mail') src=src.filter(isMail);
+  else src=src.filter(r=>isKpiCall(r)||isMail(r));
+  if(dept) src=src.filter(r=>r.typeDept===dept);
   if(!src.length){el.innerHTML='<div class="empty">ไม่มีข้อมูล</div>';renderChartsDeptFiltered(dept);return;}
   const getV=r=>{const v=col==='issueDetail'?getIssue(r):getDetail(r);return v||'(ไม่ระบุ)';};
   const ct={};src.forEach(r=>{const v=getV(r);ct[v]=(ct[v]||0)+1;});
@@ -1832,7 +1854,7 @@ function renderDeptCaseTable(src,singleDept){
       const di=kpiSrc.filter(r=>r.typeDept===dept);
       const n=di.length;
       const calls=src.filter(r=>r.typeDept===dept&&isKpiCall(r)).length; // Call+Transfer
-      const abandons=di.filter(r=>r.logType==='Abandon').length;
+      const abandons=src.filter(r=>r.typeDept===dept&&r.logType==='Abandon').length;
       const mails=di.filter(isMail).length;
       const open=di.filter(r=>r.status==='Open').length;
       const pnd=di.filter(r=>r.status==='Pending').length;
@@ -1863,7 +1885,7 @@ function renderDeptCaseTable(src,singleDept){
     tbl+=`<tr class="total-row">
       <td>รวมทั้งหมด</td><td>${kpiSrc.length}</td><td>100%</td>
       <td style="color:var(--blue)">${src.filter(isCallKpi).length}</td>
-      <td style="color:var(--red)">${kpiSrc.filter(r=>r.logType==='Abandon').length||'—'}</td>
+      <td style="color:var(--red)">${src.filter(r=>r.logType==='Abandon').length||'—'}</td>
       <td style="color:var(--purple)">${kpiSrc.filter(isMail).length}</td>
       <td>${kpiSrc.filter(r=>r.status==='Open').length}</td>
       <td>${kpiSrc.filter(r=>r.status==='Pending').length}</td>
@@ -1884,6 +1906,14 @@ function renderDeptCaseTable(src,singleDept){
       typeMap[td].issues[id].push(r);
     });
     const total=kpiSrc.length||1;
+    // นับ Abandon แยกจาก src (unfiltered) เพราะ kpiSrc ไม่มี Abandon รวมอยู่ (isKpiRow กรองออกไปแล้ว)
+    const abandonByType={};
+    src.forEach(r=>{
+      if(r.logType==='Abandon'){
+        const td=getDetail(r)||'(ไม่ระบุ)';
+        abandonByType[td]=(abandonByType[td]||0)+1;
+      }
+    });
     const calcStats=rows=>({
       n:rows.length,
       call:rows.filter(isCallKpi).length,
@@ -1911,7 +1941,7 @@ function renderDeptCaseTable(src,singleDept){
       <th>Open</th><th>Pending</th><th>Closed</th><th>Avg Pending Time</th>
     </tr></thead><tbody>`;
     typeEntries.forEach(([td,{rows,issues}],idx)=>{
-      const s=calcStats(rows);const gid=`grp-${idx}`;
+      const s=calcStats(rows);s.abandon=abandonByType[td]||0;const gid=`grp-${idx}`;
       const issueEntries=Object.entries(issues).sort((a,b)=>b[1].length-a[1].length).filter(([id])=>id&&id!=='(ไม่ระบุ)');
       const hasChildren=issueEntries.length>1||(issueEntries.length===1&&issueEntries[0][0]!==td);
       const toggleBtn=hasChildren?`<span id="btn-${gid}" onclick="toggleGroup('${gid}')" style="cursor:pointer;margin-right:6px;font-size:12px;color:var(--blue)">▶</span>`:`<span style="margin-right:16px"></span>`;
@@ -1929,7 +1959,7 @@ function renderDeptCaseTable(src,singleDept){
     tbl+=`<tr class="total-row">
       <td>รวมทั้งหมด</td><td>${kpiSrc.length}</td><td>100%</td>
       <td style="color:var(--blue)">${src.filter(isCallKpi).length}</td>
-      <td style="color:var(--red)">${kpiSrc.filter(r=>r.logType==='Abandon').length||'—'}</td>
+      <td style="color:var(--red)">${src.filter(r=>r.logType==='Abandon').length||'—'}</td>
       <td style="color:var(--purple)">${kpiSrc.filter(isMail).length}</td>
       <td>${kpiSrc.filter(r=>r.status==='Open').length}</td>
       <td>${kpiSrc.filter(r=>r.status==='Pending').length}</td>
@@ -2153,7 +2183,7 @@ function renderPending(){
   </tr></thead><tbody>${pend.map(r=>`
     <tr class="td-row">
       <td><strong>${r.logId||'—'}</strong></td>
-      <td style="color:var(--blue)">${r.logType||'—'}</td>
+      <td style="color:var(--blue)">${r.logType==='Received'?'Call':(r.logType||'—')}</td>
       <td>${fmtDate(r.dateLog)}</td>
       <td><span class="badge ${r.status==='Open'?'b-open':'b-pend'}">${r.status}</span></td>
       <td><span class="badge ${pdC(r.pd)}">${r.pd} วัน${r.pd>=7?' ⚠':''}</span></td>
@@ -3599,13 +3629,8 @@ function renderTopIssuePage(){
   else if(MODE==='mail') src=src.filter(isMail);
   else src=src.filter(r=>isKpiCall(r)||isMail(r));
 
-  // Dept filter + populate dept select
-  const depts=[...new Set(FILTERED.map(r=>r.typeDept).filter(Boolean))].sort();
-  const tiDeptSel=document.getElementById('ti-dept');
-  if(tiDeptSel&&tiDeptSel.options.length<=1){
-    depts.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;tiDeptSel.appendChild(o);});
-  }
-  const selDept=tiDeptSel?.value||'';
+  // Dept filter — ผูกกับ ti-dept ซึ่ง sync กับตัวกรอง "แผนก" หลักของหน้า Dashboard เสมอ
+  const selDept=document.getElementById('ti-dept')?.value||document.getElementById('f-dept')?.value||'';
   if(selDept) src=src.filter(r=>r.typeDept===selDept);
 
   const col=document.getElementById('ti-col')?.value||'typeDetail';
@@ -4661,7 +4686,7 @@ function renderFCREscList(){
     const rt=r.responseTime;
     return`<tr class="td-row">
       <td><strong>${r.logId||'—'}</strong></td>
-      <td style="color:var(--blue)">${r.logType||'—'}</td>
+      <td style="color:var(--blue)">${r.logType==='Received'?'Call':(r.logType||'—')}</td>
       <td style="white-space:nowrap">${fmtDate(r.dateLog)}</td>
       <td><strong>${r.typeDept||'—'}</strong></td>
       <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px" title="${getDetail(r)}">${getDetail(r)||'—'}</td>
@@ -4711,6 +4736,10 @@ const GITHUB_USER = 'cds-scm';
 const GITHUB_REPO = 'Partner-Service-Dashboard';
 const JSON_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/calllog_data.json`;
 const CX_URL   = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/3cx_Report.csv`;
+const ABN_HISTORY_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/abandoned_calls_history.json`;
+const ABN_LIVE_URL    = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/abandoned_calls.json`;
+// เก็บ Abandon ที่ถูกต้อง 100% จาก 3CX official report (history + live) แยกตามวันที่ "YYYY-MM-DD" -> count
+let OFFICIAL_ABANDON = {loaded:false, byDate:{}, total:0};
 
 // (compat aliases — ไม่ใช้แล้วแต่เผื่อมีโค้ดเรียก)
 const SP_SITE='https://centralgroup.sharepoint.com/sites/CDSSCMPartnerService';
@@ -4725,6 +4754,44 @@ function syncLog(msg, type='info'){
   // อัปเดต badge tooltip
   const badge=document.getElementById('auto-refresh-badge');
   if(badge) badge.title=`[${ts}] ${msg}`;
+}
+
+async function loadOfficialAbandon(){
+  const byDate={};
+  try{
+    const hRes=await fetch(ABN_HISTORY_URL+'?t='+Date.now());
+    if(hRes.ok){
+      const h=await hRes.json();
+      (h.calls||[]).forEach(c=>{
+        const ct=c['Call Time']||c.CallTime||'';
+        const d=String(ct).slice(0,10);
+        if(d.length===10) byDate[d]=(byDate[d]||0)+1;
+      });
+      syncLog(`Official Abandon (history) โหลดแล้ว: ${(h.calls||[]).length} สาย`,'ok');
+    }
+  }catch(e){ console.warn('[OFFICIAL_ABANDON] history load failed:', e.message); }
+
+  try{
+    const lRes=await fetch(ABN_LIVE_URL+'?t='+Date.now());
+    if(lRes.ok){
+      const l=await lRes.json();
+      const seen=new Set(); // กัน polling attempts ของสายเดียวกันนับซ้ำ
+      (l.raw||[]).forEach(c=>{
+        const ct=c.CallTimeForCsv||c.CallTime||c['Call Time']||'';
+        const caller=c.CallerId||c.Caller||c['Caller ID']||'';
+        const key=ct+'|'+caller;
+        if(seen.has(key)) return;
+        seen.add(key);
+        const d=String(ct).slice(0,10);
+        if(d.length===10) byDate[d]=(byDate[d]||0)+1;
+      });
+      syncLog(`Official Abandon (live) โหลดแล้ว: count=${l.count}`,'ok');
+    }
+  }catch(e){ console.warn('[OFFICIAL_ABANDON] live load failed:', e.message); }
+
+  const total=Object.values(byDate).reduce((a,b)=>a+b,0);
+  OFFICIAL_ABANDON={loaded:Object.keys(byDate).length>0, byDate, total};
+  console.debug('[OFFICIAL_ABANDON]', OFFICIAL_ABANDON);
 }
 
 async function autoLoad(){
@@ -4776,6 +4843,7 @@ async function autoLoad(){
 
     // โหลด 3CX (await เพื่อไม่ให้ race กับ renderAll)
     try{
+      await loadOfficialAbandon();
       syncLog(`Fetching 3CX CSV: ${CX_URL}`);
       const cxRes=await fetch(CX_URL + '?t=' + Date.now()); // cache-bust
       syncLog(`3CX Response: ${cxRes.status} ${cxRes.statusText}`, cxRes.ok?'ok':'warn');
@@ -4917,7 +4985,7 @@ function processCXData(data){
 
     if(!daily[date])daily[date]={reach_ans:0,reach_abn:0,sla_ok:0,sla_total:0,talk_sec:0,talk_cnt:0,abn_3cx:0};
     if(dir==='Inbound Queue'&&to===TARGET_TO){sTotal++;daily[date].sla_total++;if(st==='Waiting'){rAns++;sOk++;daily[date].reach_ans++;daily[date].sla_ok++;}}
-    if(dir==='Inbound Queue'&&st==='Unanswered'){rAbn++;totalAbn++;daily[date].reach_abn++;daily[date].abn_3cx++;}
+    if(dir==='Inbound Queue'&&to===TARGET_TO&&st==='Unanswered'){rAbn++;totalAbn++;daily[date].reach_abn++;daily[date].abn_3cx++;}
     // คำนวณ Avg Talk Time จาก Inbound Answered ของ agent (Extension)
     if(dir==='Inbound' && st==='Answered'){
       const toLow=to.toLowerCase();
@@ -4928,6 +4996,17 @@ function processCXData(data){
   });
 
   console.debug(`[processCXData] Queue-8196 | Waiting(ans)=${rAns} Unanswered(abn)=${totalAbn} Total=${sTotal}`);
+
+  // ── Override ด้วยข้อมูล Abandon ทางการจาก 3CX Report (history+live) ถ้ามี ──
+  // เพราะ field Status ในไฟล์ดิบไม่น่าเชื่อถือ 100% (บางครั้งสายที่หลุดจริงถูกบันทึกเป็น "Waiting")
+  if(OFFICIAL_ABANDON.loaded){
+    Object.keys(OFFICIAL_ABANDON.byDate).forEach(d=>{
+      if(!daily[d]) daily[d]={reach_ans:0,reach_abn:0,sla_ok:0,sla_total:0,talk_sec:0,talk_cnt:0,abn_3cx:0};
+      daily[d].abn_3cx=OFFICIAL_ABANDON.byDate[d];
+    });
+    totalAbn=Object.values(daily).reduce((s,v)=>s+(v.abn_3cx||0),0);
+    console.debug(`[processCXData] ใช้ Official Abandon แทนค่าที่คำนวณเอง — totalAbn=${totalAbn}`);
+  }
 
   const rt=rAns+rAbn;
   CX={loaded:true,
