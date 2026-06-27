@@ -11072,3 +11072,4 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-06-26T15:08:01.295174+07:00,Internal,PT3.412794S,True,System,1,Answered,*30
 2026-06-26T14:59:03.34026+07:00,Inbound,PT6M41.466763S,True,Extension,1,Answered,0113
 2026-06-26T14:59:03.205585+07:00,Inbound Queue,PT3.865015S,True,Queue,1,Waiting,8196
+2026-06-27T10:12:13.694829+07:00,Internal,PT0S,False,System,1,Unanswered,EndCall
