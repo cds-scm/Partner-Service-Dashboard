@@ -11169,3 +11169,13 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-06-29T15:20:49.732806+07:00,Inbound Queue,PT2.52816S,True,Queue,1,Waiting,8196
 2026-06-29T15:13:13.440187+07:00,Inbound,PT8M53.772141S,True,Extension,1,Answered,0112
 2026-06-29T15:13:13.366851+07:00,Inbound Queue,PT2.245122S,True,Queue,1,Waiting,8196
+2026-06-30T10:02:29.913811+07:00,Inbound,PT51.798858S,True,Extension,1,Answered,0113
+2026-06-30T10:02:29.783689+07:00,Inbound Queue,PT3.668931S,True,Queue,1,Waiting,8196
+2026-06-30T09:59:24.715665+07:00,Internal,PT3.413749S,True,System,1,Answered,*30
+2026-06-30T09:57:29.985377+07:00,Internal,PT3.51454S,True,System,1,Answered,*31
+2026-06-30T09:46:03.315088+07:00,Internal,PT3.512899S,True,System,1,Answered,*31
+2026-06-30T09:24:32.997055+07:00,Inbound,PT3M16.073159S,True,Extension,1,Answered,0113
+2026-06-30T09:23:47.121884+07:00,Inbound,PT43.784274S,True,Extension,1,Answered,0112
+2026-06-30T09:23:46.987079+07:00,Inbound Queue,PT3.217349S,True,Queue,1,Waiting,8196
+2026-06-30T08:46:16.061527+07:00,Internal,PT3.314002S,True,System,1,Answered,*30
+2026-06-30T08:13:17.464198+07:00,Internal,PT3.414044S,True,System,1,Answered,*30
