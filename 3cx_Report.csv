@@ -12059,3 +12059,10 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-07-08T13:06:05.296482+07:00,Inbound Queue,PT13.540225S,True,Queue,1,Waiting,8048
 2026-07-08T13:05:36.603213+07:00,Inbound,PT26.356821S,True,Extension,1,Answered,0113
 2026-07-08T13:05:36.47934+07:00,Inbound Queue,PT2.494213S,True,Queue,1,Waiting,8196
+2026-07-08T14:57:59.877151+07:00,Inbound Queue,PT4.602825S,True,Queue,1,Waiting,8048
+2026-07-08T14:57:18.527627+07:00,Inbound,PT39.131931S,True,Extension,1,Answered,0113
+2026-07-08T14:57:18.360932+07:00,Inbound Queue,PT2.431609S,True,Queue,1,Waiting,8196
+2026-07-08T14:47:45.112972+07:00,Inbound,PT3M50.027625S,True,Extension,1,Answered,0112
+2026-07-08T14:47:44.94582+07:00,Inbound Queue,PT4.169453S,True,Queue,1,Waiting,8196
+2026-07-08T14:43:54.306518+07:00,Inbound,PT6M25.543967S,True,Extension,1,Answered,0113
+2026-07-08T14:43:54.074753+07:00,Inbound Queue,PT2.780813S,True,Queue,1,Waiting,8196
