@@ -12098,3 +12098,4 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-07-08T15:11:25.840751+07:00,Internal,PT3.411827S,True,System,1,Answered,*30
 2026-07-08T15:06:14.26676+07:00,Inbound,PT1M29.475733S,True,Extension,1,Answered,0112
 2026-07-08T15:06:14.076752+07:00,Inbound Queue,PT4.286663S,True,Queue,1,Waiting,8196
+2026-07-08T17:07:41.091277+07:00,Internal,PT3.514138S,True,System,1,Answered,*31
