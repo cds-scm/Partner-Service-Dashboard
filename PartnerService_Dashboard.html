@@ -4795,95 +4795,122 @@ async function loadOfficialAbandon(){
 }
 
 async function autoLoad(){
-  syncLog('เริ่ม fetch GitHub JSON…');
-  // แสดง loading overlay (ไม่ซ่อน upload-zone ก่อน fetch สำเร็จ)
-  // ถ้ามีข้อมูลอยู่แล้ว → แสดงเป็น inline badge แทน full overlay
-  const hasData = RAW.length > 0;
-  let loadingEl = null;
+  console.log('[AutoSync] เริ่มต้นโหลดข้อมูลระบบ...');
+  syncLog('เริ่ม AutoSync…');
+
+  // แสดง loading overlay ถ้ายังไม่มีข้อมูล
+  const hasData=RAW.length>0;
+  let loadingEl=null;
   if(!hasData){
     const loadingHtml='<div id="sp-loading" style="position:fixed;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--gray);background:rgba(244,245,247,0.88);z-index:9999"><div style="width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite"></div><div style="font-size:13px;font-weight:600">กำลังดึงข้อมูลจาก GitHub...</div></div>';
     document.body.insertAdjacentHTML('beforeend',loadingHtml);
-    loadingEl = document.getElementById('sp-loading');
+    loadingEl=document.getElementById('sp-loading');
   } else {
-    // แสดง mini spinner บน badge
     const badge=document.getElementById('auto-refresh-badge');
     if(badge){badge.style.background='#fffbe6';badge.style.borderColor='#FFA940';}
   }
   const hideLoading=()=>{
-    if(loadingEl) loadingEl.remove();
+    if(loadingEl)loadingEl.remove();
     const badge=document.getElementById('auto-refresh-badge');
     if(badge){badge.style.background='';badge.style.borderColor='';}
   };
 
   try{
-    let data=null;
-    syncLog(`Fetching: ${JSON_URL}`);
-    const res=await fetch(JSON_URL + '?t=' + Date.now()); // cache-bust
-    syncLog(`Response status: ${res.status} ${res.statusText}`, res.ok?'ok':'warn');
-    if(res.ok){
-      const text=await res.text();
-      syncLog(`JSON size: ${(text.length/1024).toFixed(1)} KB`,'ok');
-      try{
-        data=JSON.parse(text);
-        if(data?.value&&Array.isArray(data.value)) data=data.value;
-        if(!Array.isArray(data)||!data.length) data=null;
-        if(data) syncLog(`JSON parsed: ${data.length} records`,'ok');
-        else syncLog('JSON parsed แต่ไม่มีข้อมูล (empty array)','warn');
-      }catch(pe){syncLog('JSON parse error: '+pe.message,'err');}
+    // 1. โหลดข้อมูล Log (JSON)
+    syncLog('Step 1: โหลด JSON Log data…');
+    if(typeof fetchJSONData==='function'){
+      await fetchJSONData();
+    } else if(typeof loadJSON==='function'){
+      await loadJSON();
     } else {
-      syncLog(`HTTP ${res.status} — ตรวจสอบ repo/branch/ไฟล์ใน GitHub`,'err');
-    }
-    hideLoading();
-    if(!data||!Array.isArray(data)||!data.length) throw new Error(`ดึงข้อมูลไม่ได้ (HTTP ${res.status})`);
-    processLogData(data);
-    const ea=document.getElementById('err-area');if(ea)ea.innerHTML='';
-    const now=new Date().toLocaleTimeString('th-TH');
-    document.getElementById('d-badge').textContent=`📊 ${RAW.length.toLocaleString()} รายการ (Auto-Sync ${now})`;
-    syncLog(`processLogData เสร็จ — RAW: ${RAW.length} rows`,'ok');
-
-    // โหลด 3CX (await เพื่อไม่ให้ race กับ renderAll)
-    try{
-      await loadOfficialAbandon();
-      syncLog(`Fetching 3CX CSV: ${CX_URL}`);
-      const cxRes=await fetch(CX_URL + '?t=' + Date.now()); // cache-bust
-      syncLog(`3CX Response: ${cxRes.status} ${cxRes.statusText}`, cxRes.ok?'ok':'warn');
-      if(cxRes.ok){
-        const text=await cxRes.text();
-        syncLog(`3CX CSV size: ${(text.length/1024).toFixed(1)} KB`,'ok');
-        const cxData=_parseCSVText(text);
-        // normalize column names ก่อน check (ลบ BOM + trim whitespace)
-        const normCxData=cxData.map(row=>{
-          const nr={};
-          for(const[k,v] of Object.entries(row)){
-            nr[k.replace(/^\uFEFF/,'').trim()]=v;
-          }
-          return nr;
-        });
-        const cxCols=normCxData.length?Object.keys(normCxData[0]):[];
-        syncLog(`3CX rows: ${normCxData.length}, cols: ${cxCols.join(', ')}`);
-        const hasValidCols=cxCols.some(c=>c.toLowerCase().includes('direction'))||
-                             cxCols.some(c=>c.toLowerCase().includes('starttime'));
-        if(normCxData.length&&hasValidCols){
-          processCXData(normCxData);
-          syncLog(`processCXData เสร็จ ✓`,'ok');
+      // fallback: fetch ตรงจาก JSON_URL (logic เดิม)
+      const res=await fetch(JSON_URL+'?t='+Date.now());
+      syncLog(`JSON Response: ${res.status} ${res.statusText}`,res.ok?'ok':'warn');
+      if(res.ok){
+        const text=await res.text();
+        syncLog(`JSON size: ${(text.length/1024).toFixed(1)} KB`,'ok');
+        let data=null;
+        try{
+          data=JSON.parse(text);
+          if(data?.value&&Array.isArray(data.value))data=data.value;
+          if(!Array.isArray(data)||!data.length)data=null;
+          if(data)syncLog(`JSON parsed: ${data.length} records`,'ok');
+          else syncLog('JSON parsed แต่ไม่มีข้อมูล','warn');
+        }catch(pe){syncLog('JSON parse error: '+pe.message,'err');}
+        if(data&&Array.isArray(data)&&data.length){
+          processLogData(data);
+          const ea=document.getElementById('err-area');if(ea)ea.innerHTML='';
+          const now=new Date().toLocaleTimeString('th-TH');
+          document.getElementById('d-badge').textContent=`📊 ${RAW.length.toLocaleString()} รายการ (Auto-Sync ${now})`;
+          syncLog(`processLogData เสร็จ — RAW: ${RAW.length} rows`,'ok');
         } else {
-          syncLog(`3CX CSV — cols ที่พบ: ${cxCols.join(', ')||'(ไม่มี)'}`, 'warn');
-          if(RAW.length) requestAnimationFrame(renderAll);
+          throw new Error(`ดึงข้อมูลไม่ได้ (HTTP ${res.status})`);
         }
       } else {
-        syncLog(`3CX fetch ล้มเหลว HTTP ${cxRes.status}`,'warn');
-        if(RAW.length) requestAnimationFrame(renderAll);
+        throw new Error(`HTTP ${res.status} — ตรวจสอบ repo/branch/ไฟล์ใน GitHub`);
+      }
+    }
+
+    hideLoading();
+
+    // 2. พักเบรก 3 วินาที เพื่อไม่ให้ GitHub มองว่าเป็นสแปม
+    syncLog('Step 2: รอ 3 วินาทีก่อนโหลด 3CX…');
+    await new Promise(resolve=>setTimeout(resolve,3000));
+
+    // 3. โหลดข้อมูล 3CX (CSV)
+    syncLog('Step 3: โหลด 3CX CSV…');
+    try{
+      if(typeof fetch3CXCSV==='function'){
+        await fetch3CXCSV();
+      } else if(typeof loadCSV==='function'){
+        await loadCSV();
+      } else {
+        // fallback: fetch ตรงจาก CX_URL (logic เดิม)
+        await loadOfficialAbandon();
+        const cxRes=await fetch(CX_URL+'?t='+Date.now());
+        syncLog(`3CX Response: ${cxRes.status} ${cxRes.statusText}`,cxRes.ok?'ok':'warn');
+        if(cxRes.ok){
+          const text=await cxRes.text();
+          syncLog(`3CX CSV size: ${(text.length/1024).toFixed(1)} KB`,'ok');
+          const cxData=_parseCSVText(text);
+          const normCxData=cxData.map(row=>{
+            const nr={};
+            for(const[k,v] of Object.entries(row))nr[k.replace(/^\uFEFF/,'').trim()]=v;
+            return nr;
+          });
+          const cxCols=normCxData.length?Object.keys(normCxData[0]):[];
+          syncLog(`3CX rows: ${normCxData.length}, cols: ${cxCols.join(', ')}`);
+          const hasValidCols=cxCols.some(c=>c.toLowerCase().includes('direction'))||
+                              cxCols.some(c=>c.toLowerCase().includes('starttime'));
+          if(normCxData.length&&hasValidCols){
+            processCXData(normCxData);
+            syncLog('processCXData เสร็จ ✓','ok');
+          } else {
+            syncLog(`3CX CSV — cols ที่พบ: ${cxCols.join(', ')||'(ไม่มี)'},'warn'`);
+            if(RAW.length)requestAnimationFrame(renderAll);
+          }
+        } else {
+          syncLog(`3CX fetch ล้มเหลว HTTP ${cxRes.status}`,'warn');
+          if(RAW.length)requestAnimationFrame(renderAll);
+        }
       }
     }catch(cxErr){
       syncLog('3CX load exception: '+cxErr.message,'warn');
       console.warn('3CX load skipped:',cxErr.message);
-      if(RAW.length) requestAnimationFrame(renderAll);
+      if(RAW.length)requestAnimationFrame(renderAll);
     }
+
   }catch(err){
     hideLoading();
     syncLog('autoLoad failed: '+err.message,'err');
-    console.warn('Auto-load failed, manual upload available:',err.message);
+    console.error('[AutoSync] เกิดข้อผิดพลาดในการโหลดข้อมูล:',err);
     showErr('ดึงข้อมูลอัตโนมัติจาก GitHub ไม่สำเร็จ — กรุณาอัปโหลดไฟล์ด้วยตนเอง หรือกด Demo เพื่อดูตัวอย่าง');
+  } finally {
+    // 4. โหลดเสร็จแล้วค่อยเริ่มนับถอยหลังรอบใหม่
+    syncLog('Step 4: เริ่ม Auto-Refresh รอบถัดไป');
+    if(typeof startAutoRefresh==='function'){
+      startAutoRefresh();
+    }
   }
 }
 
@@ -6132,20 +6159,30 @@ let countdownTimer = null;
 let secondsLeft = REFRESH_INTERVAL;
 
 function startAutoRefresh(){
-  secondsLeft = REFRESH_INTERVAL;
-  updateCountdown();
-  document.getElementById('auto-refresh-badge').style.display = '';
-
-  // Countdown tick ทุกวินาที
-  if(countdownTimer) clearInterval(countdownTimer);
-  countdownTimer = setInterval(()=>{
-    secondsLeft--;
-    updateCountdown();
-    if(secondsLeft <= 0){
-      secondsLeft = REFRESH_INTERVAL;
-      autoLoad();
+    // 1. ป้องกันการรันซ้อน: เคลียร์ตัวจับเวลาเก่าออกให้เกลี้ยงก่อนเสมอเมื่อฟังก์ชันนี้เริ่มทำงาน
+    if(countdownTimer) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
     }
-  }, 1000);
+    
+    secondsLeft = REFRESH_INTERVAL;
+    updateCountdown();
+    document.getElementById('auto-refresh-badge').style.display = '';
+
+    // 2. เริ่มนับถอยหลังรอบใหม่
+    countdownTimer = setInterval(() => {
+        secondsLeft--;
+        updateCountdown();
+        
+        if(secondsLeft <= 0){
+            // 3. สำคัญมาก: เมื่อนับจนครบเวลาแล้ว ให้เคลียร์ตัวเองหยุดทันทีก่อนจะไปโหลดข้อมูล
+            clearInterval(countdownTimer);
+            countdownTimer = null;
+            
+            // 4. สั่งโหลดข้อมูลได้อย่างปลอดภัย ไร้กังวลเรื่องการรันซ้อน
+            autoLoad(); 
+        }
+    }, 1000);
 }
 
 function updateCountdown(){
