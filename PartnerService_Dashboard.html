@@ -4734,10 +4734,12 @@ function showErr(msg){document.getElementById('err-area').innerHTML=`<div class=
 // ── CONFIG: GitHub Raw URLs ──
 const GITHUB_USER = 'cds-scm';
 const GITHUB_REPO = 'Partner-Service-Dashboard';
-const JSON_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/calllog_data.json`;
-const CX_URL   = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/3cx_Report.csv`;
-const ABN_HISTORY_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/abandoned_calls_history.json`;
-const ABN_LIVE_URL    = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/abandoned_calls.json`;
+// ดึงจาก GitHub Pages (same-origin friendly) แทน raw.githubusercontent.com
+const PAGES_BASE  = `https://${GITHUB_USER}.github.io/${GITHUB_REPO}`;
+const JSON_URL    = `${PAGES_BASE}/calllog_data.json`;
+const CX_URL      = `${PAGES_BASE}/3cx_Report.csv`;
+const ABN_HISTORY_URL = `${PAGES_BASE}/abandoned_calls_history.json`;
+const ABN_LIVE_URL    = `${PAGES_BASE}/abandoned_calls.json`;
 // เก็บ Abandon ที่ถูกต้อง 100% จาก 3CX official report (history + live) แยกตามวันที่ "YYYY-MM-DD" -> count
 let OFFICIAL_ABANDON = {loaded:false, byDate:{}, total:0};
 
@@ -5221,7 +5223,7 @@ function buildKpiSnapshot(){
 }
 async function generateClaudeNarrative(kpi){
   // ── Fetch Skill files จาก GitHub ──
-  const SKILL_BASE=`https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/partner-service-skill`;
+  const SKILL_BASE=`${PAGES_BASE}/partner-service-skill`;
   const tmplId=kpi.template_type||'cds_dashboard_report';
   const styleId=kpi.style_id||'corporate_dark';
   let systemPrompt='';
