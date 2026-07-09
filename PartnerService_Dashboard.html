@@ -4735,11 +4735,10 @@ function showErr(msg){document.getElementById('err-area').innerHTML=`<div class=
 const GITHUB_USER = 'cds-scm';
 const GITHUB_REPO = 'Partner-Service-Dashboard';
 // ดึงจาก GitHub Pages (same-origin friendly) แทน raw.githubusercontent.com
-const PAGES_BASE  = `https://${GITHUB_USER}.github.io/${GITHUB_REPO}`;
-const JSON_URL    = `${PAGES_BASE}/calllog_data.json`;
-const CX_URL      = `${PAGES_BASE}/3cx_Report.csv`;
-const ABN_HISTORY_URL = `${PAGES_BASE}/abandoned_calls_history.json`;
-const ABN_LIVE_URL    = `${PAGES_BASE}/abandoned_calls.json`;
+const JSON_URL    = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/calllog_data.json`;
+const CX_URL      = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/3cx_Report.csv`;
+const ABN_HISTORY_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/abandoned_calls_history.json`;
+const ABN_LIVE_URL    = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/abandoned_calls.json`;
 // เก็บ Abandon ที่ถูกต้อง 100% จาก 3CX official report (history + live) แยกตามวันที่ "YYYY-MM-DD" -> count
 let OFFICIAL_ABANDON = {loaded:false, byDate:{}, total:0};
 
@@ -4818,83 +4817,73 @@ async function autoLoad(){
   };
 
   try{
-    // 1. โหลดข้อมูล Log (JSON)
-    syncLog('Step 1: โหลด JSON Log data…');
-    if(typeof fetchJSONData==='function'){
-      await fetchJSONData();
-    } else if(typeof loadJSON==='function'){
-      await loadJSON();
-    } else {
-      // fallback: fetch ตรงจาก JSON_URL (logic เดิม)
-      const res=await fetch(JSON_URL+'?t='+Date.now());
-      syncLog(`JSON Response: ${res.status} ${res.statusText}`,res.ok?'ok':'warn');
-      if(res.ok){
-        const text=await res.text();
-        syncLog(`JSON size: ${(text.length/1024).toFixed(1)} KB`,'ok');
-        let data=null;
-        try{
-          data=JSON.parse(text);
-          if(data?.value&&Array.isArray(data.value))data=data.value;
-          if(!Array.isArray(data)||!data.length)data=null;
-          if(data)syncLog(`JSON parsed: ${data.length} records`,'ok');
-          else syncLog('JSON parsed แต่ไม่มีข้อมูล','warn');
-        }catch(pe){syncLog('JSON parse error: '+pe.message,'err');}
-        if(data&&Array.isArray(data)&&data.length){
-          processLogData(data);
-          const ea=document.getElementById('err-area');if(ea)ea.innerHTML='';
-          const now=new Date().toLocaleTimeString('th-TH');
-          document.getElementById('d-badge').textContent=`📊 ${RAW.length.toLocaleString()} รายการ (Auto-Sync ${now})`;
-          syncLog(`processLogData เสร็จ — RAW: ${RAW.length} rows`,'ok');
-        } else {
-          throw new Error(`ดึงข้อมูลไม่ได้ (HTTP ${res.status})`);
-        }
+    syncLog('Step 1+2: โหลด JSON และ 3CX พร้อมกัน (parallel)…');
+
+    // fetch ทั้งสองไฟล์พร้อมกันทันที — GitHub รองรับ concurrent requests ได้ปกติ
+    const [jsonRes, cxRes] = await Promise.all([
+      fetch(JSON_URL+'?t='+Date.now()),
+      fetch(CX_URL+'?t='+Date.now()),
+    ]);
+
+    syncLog(`JSON: ${jsonRes.status} ${jsonRes.statusText}`, jsonRes.ok?'ok':'warn');
+    syncLog(`3CX:  ${cxRes.status}  ${cxRes.statusText}`,  cxRes.ok?'ok':'warn');
+
+    // อ่าน text ทั้งสองพร้อมกัน
+    const [jsonText, cxText] = await Promise.all([
+      jsonRes.ok ? jsonRes.text() : Promise.resolve(null),
+      cxRes.ok  ? cxRes.text()  : Promise.resolve(null),
+    ]);
+
+    // ── Process JSON Log ──
+    if(jsonText){
+      let data=null;
+      try{
+        data=JSON.parse(jsonText);
+        if(data?.value&&Array.isArray(data.value))data=data.value;
+        if(!Array.isArray(data)||!data.length)data=null;
+        if(data)syncLog(`JSON parsed: ${data.length} records`,'ok');
+        else syncLog('JSON ไม่มีข้อมูล','warn');
+      }catch(pe){syncLog('JSON parse error: '+pe.message,'err');}
+      if(data&&data.length){
+        processLogData(data);
+        const ea=document.getElementById('err-area');if(ea)ea.innerHTML='';
+        const now=new Date().toLocaleTimeString('th-TH');
+        document.getElementById('d-badge').textContent=`📊 ${RAW.length.toLocaleString()} รายการ (Auto-Sync ${now})`;
+        syncLog(`processLogData เสร็จ — RAW: ${RAW.length} rows`,'ok');
       } else {
-        throw new Error(`HTTP ${res.status} — ตรวจสอบ repo/branch/ไฟล์ใน GitHub`);
+        throw new Error(`ดึง JSON ไม่ได้ (HTTP ${jsonRes.status})`);
       }
+    } else {
+      throw new Error(`HTTP ${jsonRes.status} — ตรวจสอบ repo/branch/ไฟล์ใน GitHub`);
     }
 
     hideLoading();
 
-    // 2. พักเบรก 3 วินาที เพื่อไม่ให้ GitHub มองว่าเป็นสแปม
-    syncLog('Step 2: รอ 3 วินาทีก่อนโหลด 3CX…');
-    await new Promise(resolve=>setTimeout(resolve,3000));
-
-    // 3. โหลดข้อมูล 3CX (CSV)
-    syncLog('Step 3: โหลด 3CX CSV…');
+    // ── Process 3CX CSV ──
     try{
-      if(typeof fetch3CXCSV==='function'){
-        await fetch3CXCSV();
-      } else if(typeof loadCSV==='function'){
-        await loadCSV();
-      } else {
-        // fallback: fetch ตรงจาก CX_URL (logic เดิม)
-        await loadOfficialAbandon();
-        const cxRes=await fetch(CX_URL+'?t='+Date.now());
-        syncLog(`3CX Response: ${cxRes.status} ${cxRes.statusText}`,cxRes.ok?'ok':'warn');
-        if(cxRes.ok){
-          const text=await cxRes.text();
-          syncLog(`3CX CSV size: ${(text.length/1024).toFixed(1)} KB`,'ok');
-          const cxData=_parseCSVText(text);
-          const normCxData=cxData.map(row=>{
-            const nr={};
-            for(const[k,v] of Object.entries(row))nr[k.replace(/^\uFEFF/,'').trim()]=v;
-            return nr;
-          });
-          const cxCols=normCxData.length?Object.keys(normCxData[0]):[];
-          syncLog(`3CX rows: ${normCxData.length}, cols: ${cxCols.join(', ')}`);
-          const hasValidCols=cxCols.some(c=>c.toLowerCase().includes('direction'))||
-                              cxCols.some(c=>c.toLowerCase().includes('starttime'));
-          if(normCxData.length&&hasValidCols){
-            processCXData(normCxData);
-            syncLog('processCXData เสร็จ ✓','ok');
-          } else {
-            syncLog(`3CX CSV — cols ที่พบ: ${cxCols.join(', ')||'(ไม่มี)'},'warn'`);
-            if(RAW.length)requestAnimationFrame(renderAll);
-          }
+      await loadOfficialAbandon();
+      if(cxText){
+        syncLog(`3CX CSV size: ${(cxText.length/1024).toFixed(1)} KB`,'ok');
+        const cxData=_parseCSVText(cxText);
+        const normCxData=cxData.map(row=>{
+          const nr={};
+          for(const[k,v] of Object.entries(row))nr[k.replace(/^\uFEFF/,'').trim()]=v;
+          return nr;
+        });
+        const cxCols=normCxData.length?Object.keys(normCxData[0]):[];
+        syncLog(`3CX rows: ${normCxData.length}, cols: ${cxCols.join(', ')}`);
+        const hasValidCols=cxCols.some(c=>c.toLowerCase().includes('direction'))||
+                            cxCols.some(c=>c.toLowerCase().includes('starttime'));
+        if(normCxData.length&&hasValidCols){
+          processCXData(normCxData);
+          syncLog('processCXData เสร็จ ✓','ok');
         } else {
-          syncLog(`3CX fetch ล้มเหลว HTTP ${cxRes.status}`,'warn');
+          syncLog(`3CX cols ไม่ถูกต้อง: ${cxCols.join(', ')||'(ไม่มี)'}`, 'warn');
           if(RAW.length)requestAnimationFrame(renderAll);
         }
+      } else {
+        syncLog(`3CX fetch ล้มเหลว HTTP ${cxRes.status}`,'warn');
+        if(RAW.length)requestAnimationFrame(renderAll);
       }
     }catch(cxErr){
       syncLog('3CX load exception: '+cxErr.message,'warn');
@@ -4975,56 +4964,69 @@ function processCXData(data){
   const TALK_COL   = cols.find(c=>['talking','talkingduration'].includes(c.toLowerCase()))||null;
   const ANS_COL    = cols.find(c=>c.toLowerCase()==='answered')||null;
 
-  console.debug('[processCXData] cols:', cols.join(', '));
-  console.debug('[processCXData] TIME_COL:', TIME_COL, '| DIR_COL:', DIR_COL, '| STATUS_COL:', STATUS_COL, '| TO_COL:', TO_COL);
-
   // parse ISO 8601 duration e.g. PT12.65S → seconds
-  const parseDur=v=>{
-    if(!v)return 0;
-    const s=String(v).trim().toUpperCase();
-    const m=s.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:([\d.]+)S)?/);
-    if(!m)return 0;
-    return (parseFloat(m[1]||0)*3600)+(parseFloat(m[2]||0)*60)+(parseFloat(m[3]||0));
-  };
-  const sampleTalk = TALK_COL?(normData.find(r=>r[TALK_COL])?.[TALK_COL]||''):'';
-  const USE_ISO    = String(sampleTalk).toUpperCase().startsWith('PT');
-  const getTalk    = v=>{
-    if(!v)return 0;
-    const s=String(v).trim();
-    if(USE_ISO)return parseDur(s);
-    const p=s.split(':');
-    if(p.length===3)return Math.round(+p[0]*3600+ +p[1]*60+ +p[2]);
-    return 0;
-  };
+  const parseDur=v=>{if(!v)return 0;const s=String(v).trim().toUpperCase();const m=s.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:([\d.]+)S)?/);if(!m)return 0;return(parseFloat(m[1]||0)*3600)+(parseFloat(m[2]||0)*60)+(parseFloat(m[3]||0));};
+  const sampleTalk=TALK_COL?(normData.find(r=>r[TALK_COL])?.[TALK_COL]||''):'';
+  const USE_ISO=String(sampleTalk).toUpperCase().startsWith('PT');
+  const getTalk=v=>{if(!v)return 0;const s=String(v).trim();if(USE_ISO)return parseDur(s);const p=s.split(':');if(p.length===3)return Math.round(+p[0]*3600+ +p[1]*60+ +p[2]);return 0;};
 
-  // ══ LOGIC หลัก: ใช้ Direction + Status + To=8196 ══
-  // Queue 8196 = Inbound Queue → To=8196
-  //   Status=Waiting    → สายที่รับได้ (Answered)
-  //   Status=Unanswered → สายที่วางสาย (Abandon)
+  const CTYPE_COL  = cols.find(c=>['calltype','call type'].includes(c.toLowerCase()))||null;
+
+  console.debug('[processCXData] cols:', cols.join(', '));
+  console.debug('[processCXData] TIME_COL:', TIME_COL, '| DIR_COL:', DIR_COL, '| STATUS_COL:', STATUS_COL, '| TO_COL:', TO_COL, '| ANS_COL:', ANS_COL, '| CTYPE_COL:', CTYPE_COL);
+
+  // ══ Auto-detect Format ══
+  // Format A (เก่า): มี column To + Status → ใช้ To=8196 + Status=Waiting/Unanswered
+  // Format B (ใหม่): ไม่มี To,Status แต่มี Answered + CallType → TalkingDuration = Waiting time ใน Queue
+  const isFormatB = !TO_COL && !STATUS_COL && !!ANS_COL && !!CTYPE_COL;
   const TARGET_TO = '8196';
+  const SLA_SEC   = 20; // Call Reach Rate: ≤ 20 วิ = รับทัน
+  console.debug(`[processCXData] Format: ${isFormatB?'B (Answered+CallType+WaitDuration)':'A (To+Status)'}`);
+
   const daily={};let rAns=0,rAbn=0,sOk=0,sTotal=0,talkSec=0,talkCnt=0,totalAbn=0;
 
   normData.forEach(row=>{
-    const dir = String(DIR_COL?row[DIR_COL]:'').trim();
-    const to  = String(TO_COL?row[TO_COL]:'').trim();
-    const st  = String(STATUS_COL?row[STATUS_COL]:'').trim();
+    const dir   = String(DIR_COL?row[DIR_COL]:'').trim();
+    const to    = String(TO_COL?row[TO_COL]:'').trim();
+    const st    = String(STATUS_COL?row[STATUS_COL]:'').trim();
+    const ans   = String(ANS_COL?row[ANS_COL]:'').trim().toLowerCase();
+    const ctype = String(CTYPE_COL?row[CTYPE_COL]:'').trim();
     const rawTime = String(TIME_COL?row[TIME_COL]:'').trim();
-    const date = rawTime.slice(0,10);
+    const date  = rawTime.slice(0,10);
     if(!date||date.length<10) return;
 
     if(!daily[date])daily[date]={reach_ans:0,reach_abn:0,sla_ok:0,sla_total:0,talk_sec:0,talk_cnt:0,abn_3cx:0};
-    if(dir==='Inbound Queue'&&to===TARGET_TO){sTotal++;daily[date].sla_total++;if(st==='Waiting'){rAns++;sOk++;daily[date].reach_ans++;daily[date].sla_ok++;}}
-    if(dir==='Inbound Queue'&&to===TARGET_TO&&st==='Unanswered'){rAbn++;totalAbn++;daily[date].reach_abn++;daily[date].abn_3cx++;}
-    // คำนวณ Avg Talk Time จาก Inbound Answered ของ agent (Extension)
-    if(dir==='Inbound' && st==='Answered'){
-      const toLow=to.toLowerCase();
-      const isIVR=toLow.includes('pleasehold')||toLow.includes('menu')||
-                  toLow.includes('greeting')||toLow.includes('8439');
-      if(!isIVR&&TALK_COL){const t=getTalk(row[TALK_COL]);if(t>0){talkSec+=t;talkCnt++;if(!daily[date])daily[date]={reach_ans:0,reach_abn:0,sla_ok:0,sla_total:0,talk_sec:0,talk_cnt:0,abn_3cx:0};daily[date].talk_sec+=t;daily[date].talk_cnt++;}}
+
+    if(isFormatB){
+      // Format B: TalkingDuration ของ Inbound Queue = Waiting time ก่อนรับสาย
+      if(dir==='Inbound Queue'&&ctype==='Queue'){
+        const waitSec=getTalk(TALK_COL?row[TALK_COL]:'');
+        sTotal++;daily[date].sla_total++;
+        if(waitSec<=SLA_SEC){rAns++;sOk++;daily[date].reach_ans++;daily[date].sla_ok++;}
+        else{rAbn++;daily[date].reach_abn++;}
+      }
+      // Avg Talk Time: Inbound Extension ที่รับสาย
+      if(dir==='Inbound'&&ans==='true'&&ctype==='Extension'&&TALK_COL){
+        const t=getTalk(row[TALK_COL]);
+        if(t>0){talkSec+=t;talkCnt++;daily[date].talk_sec=(daily[date].talk_sec||0)+t;daily[date].talk_cnt=(daily[date].talk_cnt||0)+1;}
+      }
+    } else {
+      // Format A: To=8196 + Status=Waiting/Unanswered
+      if(dir==='Inbound Queue'&&to===TARGET_TO){
+        sTotal++;daily[date].sla_total++;
+        if(st==='Waiting'){rAns++;sOk++;daily[date].reach_ans++;daily[date].sla_ok++;}
+        if(st==='Unanswered'){rAbn++;totalAbn++;daily[date].reach_abn++;daily[date].abn_3cx++;}
+      }
+      // Avg Talk Time: Inbound Answered (ไม่ใช่ IVR)
+      if(dir==='Inbound'&&st==='Answered'){
+        const toLow=to.toLowerCase();
+        const isIVR=toLow.includes('pleasehold')||toLow.includes('menu')||toLow.includes('greeting')||toLow.includes('8439');
+        if(!isIVR&&TALK_COL){const t=getTalk(row[TALK_COL]);if(t>0){talkSec+=t;talkCnt++;daily[date].talk_sec=(daily[date].talk_sec||0)+t;daily[date].talk_cnt=(daily[date].talk_cnt||0)+1;}}
+      }
     }
   });
 
-  console.debug(`[processCXData] Queue-8196 | Waiting(ans)=${rAns} Unanswered(abn)=${totalAbn} Total=${sTotal}`);
+  console.debug(`[processCXData] Format${isFormatB?'B':'A'} | Reach ans=${rAns} total=${sTotal} | TalkCnt=${talkCnt}`);
 
   // ── Override ด้วยข้อมูล Abandon ทางการจาก 3CX Report (history+live) ถ้ามี ──
   // เพราะ field Status ในไฟล์ดิบไม่น่าเชื่อถือ 100% (บางครั้งสายที่หลุดจริงถูกบันทึกเป็น "Waiting")
