@@ -472,11 +472,26 @@ body.has-data #tab-bar{display:flex!important}
         <option value="typeDetail">Type ByDetail</option>
         <option value="issueDetail">Issue Detail</option>
       </select>
+      <label>FCR:</label>
+      <select id="top10-fcr" onchange="renderTop10()" style="font-size:11px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;font-family:'CPN','Inter',sans-serif">
+        <option value="">ทั้งหมด</option>
+        <option value="fcr">FCR (Level 1)</option>
+        <option value="nonfcr">Non-FCR (Level 2)</option>
+      </select>
     </div>
     <div id="top10" class="bars"></div>
   </div>
 
-  <div class="sec"><div class="dot" style="background:var(--teal)"></div><span id="dept-table-title">สรุป Case ทุกแผนก</span></div>
+  <div class="sec"><div class="dot" style="background:var(--teal)"></div><span id="dept-table-title">สรุป Case ทุกแผนก</span>
+    <span style="margin-left:12px;display:inline-flex;align-items:center;gap:6px">
+      <label style="font-size:11px;color:var(--gray);font-weight:600">FCR:</label>
+      <select id="dept-table-fcr" onchange="onDeptTableFcrChange()" style="font-size:11px;padding:4px 9px;border:1px solid var(--border);border-radius:6px;background:#fff;font-family:'CPN','Inter',sans-serif">
+        <option value="">ทั้งหมด</option>
+        <option value="fcr">FCR (Level 1)</option>
+        <option value="nonfcr">Non-FCR (Level 2)</option>
+      </select>
+    </span>
+  </div>
   <div class="card" style="margin-bottom:12px;overflow-x:auto"><div id="dept-case-table"><div class="empty">เลือกแผนกหรืออัปโหลดข้อมูลเพื่อดู</div></div></div>
 </div>
 
@@ -1162,6 +1177,14 @@ function loadDemoData(){
   console.log(`✅ Demo: ${RAW.length} rows loaded`);
 }
 
+// ── FCR filter จากฝั่งตาราง "สรุป Case ทุกแผนก" ──
+function onDeptTableFcrChange(){
+  const ff=document.getElementById('dept-table-fcr')?.value||'';
+  const t10=document.getElementById('top10-fcr');
+  if(t10) t10.value=ff;
+  renderTop10();
+}
+
 // ─── Sync dept selector ทุกตัว (dept-sel, ti-dept) กับ f-dept หลัก ───
 function syncDeptSelectors(dept){
   const ids=['f-dept','dept-sel','ti-dept'];
@@ -1793,14 +1816,22 @@ function renderMVC(){
 function renderTop10(){
   const dept=document.getElementById('dept-sel')?.value||document.getElementById('f-dept')?.value||'';
   const col=document.getElementById('issue-col')?.value||'typeDetail';
+  const fcrFilter=document.getElementById('top10-fcr')?.value||'';
   const el=document.getElementById('top10');
-  // ใช้ filter ชนิด log เดียวกับหน้า Top Issue (isKpiCall || isMail) เพื่อให้ตัวเลขตรงกับตาราง "สรุป Case ทุกแผนก"
+  // sync dept-table-fcr ให้ตรงกับ top10-fcr
+  const dtFcr=document.getElementById('dept-table-fcr');
+  if(dtFcr && dtFcr.value!==fcrFilter) dtFcr.value=fcrFilter;
+
   let src=FILTERED.filter(r=>!r._referredMail&&r.logType!=='Call Back');
   if(MODE==='call') src=src.filter(r=>isKpiCall(r));
   else if(MODE==='mail') src=src.filter(isMail);
   else src=src.filter(r=>isKpiCall(r)||isMail(r));
   if(dept) src=src.filter(r=>r.typeDept===dept);
-  if(!src.length){el.innerHTML='<div class="empty">ไม่มีข้อมูล</div>';renderChartsDeptFiltered(dept);return;}
+  // FCR filter
+  if(fcrFilter==='fcr')    src=src.filter(r=>r.caseLevel?.includes('Level 1'));
+  if(fcrFilter==='nonfcr') src=src.filter(r=>r.caseLevel?.includes('Level 2'));
+
+  if(!src.length){el.innerHTML='<div class="empty">ไม่มีข้อมูล</div>';renderChartsDeptFiltered(dept,fcrFilter);return;}
   const getV=r=>{const v=col==='issueDetail'?getIssue(r):getDetail(r);return v||'(ไม่ระบุ)';};
   const ct={};src.forEach(r=>{const v=getV(r);ct[v]=(ct[v]||0)+1;});
   const sorted=Object.entries(ct).sort((a,b)=>b[1]-a[1]).slice(0,10);
@@ -1822,16 +1853,29 @@ function renderTop10(){
         </div>
       </div>
     </div>`).join('');
-  renderChartsDeptFiltered(dept);
+  renderChartsDeptFiltered(dept,fcrFilter);
 }
 
-function renderChartsDeptFiltered(dept){
-  const src=dept?FILTERED.filter(r=>r.typeDept===dept):FILTERED;
-  document.getElementById('dept-table-title').textContent=dept?`สรุป Issue — ${dept}`:'สรุป Case ทุกแผนก';
-  renderDeptCaseTable(src,dept);
+function renderChartsDeptFiltered(dept,fcrFilter){
+  const ff=fcrFilter||document.getElementById('dept-table-fcr')?.value||'';
+  // sync dropdown ทั้งสองให้ตรงกัน
+  const t10Fcr=document.getElementById('top10-fcr');
+  const dtFcr=document.getElementById('dept-table-fcr');
+  if(t10Fcr && t10Fcr.value!==ff) t10Fcr.value=ff;
+  if(dtFcr && dtFcr.value!==ff) dtFcr.value=ff;
+
+  let src=dept?FILTERED.filter(r=>r.typeDept===dept):FILTERED;
+  // กรอง FCR
+  if(ff==='fcr')    src=src.filter(r=>r.caseLevel?.includes('Level 1'));
+  if(ff==='nonfcr') src=src.filter(r=>r.caseLevel?.includes('Level 2'));
+
+  const fcrLabel=ff==='fcr'?' — FCR เท่านั้น':ff==='nonfcr'?' — Non-FCR เท่านั้น':'';
+  document.getElementById('dept-table-title').textContent=
+    (dept?`สรุป Issue — ${dept}`:'สรุป Case ทุกแผนก')+fcrLabel;
+  renderDeptCaseTable(src,dept,ff);
 }
 
-function renderDeptCaseTable(src,singleDept){
+function renderDeptCaseTable(src,singleDept,fcrFilter){
   const el=document.getElementById('dept-case-table');
   if(!src.length){el.innerHTML='<div class="empty">ไม่มีข้อมูล</div>';return;}
 
@@ -4999,6 +5043,7 @@ function processCXData(data){
 
     if(isFormatB){
       // Format B: TalkingDuration ของ Inbound Queue = Waiting time ก่อนรับสาย
+      // Abandon ไม่นับที่นี่ — ใช้ OFFICIAL_ABANDON (จากไฟล์ history+live) override ทีหลัง
       if(dir==='Inbound Queue'&&ctype==='Queue'){
         const waitSec=getTalk(TALK_COL?row[TALK_COL]:'');
         sTotal++;daily[date].sla_total++;
