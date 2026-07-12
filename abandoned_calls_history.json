@@ -1,14 +1,14 @@
 {
   "source": "3CX Official ReportAbandonedQueueCalls",
   "period_from": "2026-05-01",
-  "period_to": "2026-06-22",
+  "period_to": "2026-06-30",
   "queue": "8196 Q_Partner Service_TH",
-  "total_abandon": 63,
+  "total_abandon": 66,
   "monthly": {
     "2026-05": 45,
-    "2026-06": 18
+    "2026-06": 21
   },
-  "note": "1-4 พ.ค. และ 19-22 มิ.ย. ปิดคิว(วันหยุด/เสาร์-อาทิตย์)/ไม่มี Abandon. ตั้งแต่ 23 มิ.ย.เป็นต้นไป ใช้ข้อมูลจาก abandoned_calls.json (live, provider ใหม่) เท่านั้น ไม่ซ้ำกับไฟล์นี้",
+  "note": "1-4 พ.ค. และ 19-22 มิ.ย. ปิดคิว(วันหยุด/เสาร์-อาทิตย์)/ไม่มี Abandon. ตั้งแต่ 23 มิ.ย.เป็นต้นไป ใช้ข้อมูลจาก abandoned_calls.json (live, provider ใหม่) เท่านั้น ไม่ซ้ำกับไฟล์นี้ | อัปเดต 2026-07-10: backfill ด้วยมือ 3 รายการช่วง 23-30 มิ.ย. (23,25,30 มิ.ย.) จากรายงาน 3CX Abandoned Queue Calls โดยตรง เพื่อปิดช่องโหว่ข้อมูลที่ขาดหายจาก Flow",
   "calls": [
     {
       "Queue": "8196 Q_Partner Service_TH",
@@ -639,6 +639,36 @@
       "Polling Attempts": 0,
       "Agent State": "Logged Out",
       "month": "2026-05"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-23T11:33:28",
+      "Caller ID": 895125365,
+      "Agent": "0113 Ingraphat Ingraphat",
+      "Waiting Time": "00:00:19",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-25T14:14:34",
+      "Caller ID": 910037243,
+      "Agent": "0113 Ingraphat Ingraphat",
+      "Waiting Time": "00:00:38",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-06"
+    },
+    {
+      "Queue": "8196 Q_Partner Service_TH",
+      "Call Time": "2026-06-30T16:05:39",
+      "Caller ID": 960481258,
+      "Agent": "0113 Ingraphat Ingraphat",
+      "Waiting Time": "00:03:00",
+      "Polling Attempts": 0,
+      "Agent State": "Logged Out",
+      "month": "2026-06"
     }
   ]
 }
