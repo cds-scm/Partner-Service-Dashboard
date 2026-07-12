@@ -1294,7 +1294,7 @@ function getCX(dateFrom,dateTo,selDay,month){
       reach_pct:rt>0?Math.round(a.reach_ans/rt*1000)/10:null,
       sla_ok:a.sla_ok,sla_total:a.sla_total,
       sla_pct:a.sla_total>0?Math.round(a.sla_ok/a.sla_total*1000)/10:null,
-      avg_talk_sec:a.talk_cnt>0?a.talk_sec/a.talk_cnt:CX.total.avg_talk_sec,
+      avg_talk_sec:a.talk_cnt>0?a.talk_sec/a.talk_cnt:null,
       abn_3cx:a.abn_3cx};
   }
   const t=CX.total;
