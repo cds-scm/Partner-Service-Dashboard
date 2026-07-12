@@ -5059,7 +5059,13 @@ function processCXData(data){
       // Format A: To=8196 + Status=Waiting/Unanswered
       if(dir==='Inbound Queue'&&to===TARGET_TO){
         sTotal++;daily[date].sla_total++;
-        if(st==='Waiting'){rAns++;sOk++;daily[date].reach_ans++;daily[date].sla_ok++;}
+        if(st==='Waiting'){
+          // นับ reach_ans เสมอ (Agent รับได้)
+          rAns++;daily[date].reach_ans++;
+          // แต่นับ sla_ok เฉพาะที่รับได้ภายใน 20 วิเท่านั้น (ตาม requirement)
+          const waitSec=getTalk(TALK_COL?row[TALK_COL]:'');
+          if(waitSec<=SLA_SEC){sOk++;daily[date].sla_ok++;}
+        }
         if(st==='Unanswered'){rAbn++;totalAbn++;daily[date].reach_abn++;daily[date].abn_3cx++;}
       }
       // Avg Talk Time: Inbound Answered (ไม่ใช่ IVR)
