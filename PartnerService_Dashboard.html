@@ -1398,7 +1398,8 @@ function renderKPI(){
     if(pKpiN>0&&kpiCallN>0) dFCR=Math.round(fcrN/kpiCallN*100)-Math.round(pFcrN/pKpiN*100);
     if(pMailN>0&&totalMailN>0) dFMR=Math.round(fmrN/totalMailN*100)-Math.round(pFmrN/pMailN*100);
     const pAbn=prev.filter(r=>r.logType==='Abandon').length;
-    if(pKpiN>0) dAbandon=Math.round(abandonN/kpiCallN*100)-Math.round(pAbn/pKpiN*100);
+    // dAbandon: เปรียบเทียบ % Abandon จาก 3CX จริง (abnVal) ไม่ใช่จาก Log
+    // ใช้ abnVal ที่คำนวณแล้วด้านล่าง — ต้องคำนวณ abnVal ก่อน ดูด้านล่าง
     const pCallRes=prev.filter(r=>isKpiCall(r)&&r.status==='Closed').map(r=>r.resolutionTime).filter(x=>x!==null);
     const pMailRes=prev.filter(r=>isMail(r)&&r.status==='Closed').map(r=>r.resolutionTime).filter(x=>x!==null);
     if(pCallRes.length&&callResSrc.length) dAvgResCall=+(avgResCall-(avg(pCallRes))).toFixed(1);
@@ -1424,9 +1425,15 @@ function renderKPI(){
   if(prevM){
     const prev2=RAW.filter(r=>r.logMonth===prevM);
     const pKpiN2=prev2.filter(isKpiCall).length;
-    const pAbn2=prev2.filter(r=>r.logType==='Abandon').length;
-    const curCb=kpiCallN>0?Math.round(abandonN/kpiCallN*100):0;
-    const prevCb=pKpiN2>0?Math.round(pAbn2/pKpiN2*100):0;
+    const pAbn2Log=prev2.filter(r=>r.logType==='Abandon').length; // log-based (Call Back สายที่โทรกลับ)
+    // Abandon จริง (3CX) ของเดือนก่อน
+    const prevCx2=(!hasDeptFilter&&CX.loaded)?getCX(null,null,null,prevM):null;
+    const pAbn2Real=prevCx2&&prevCx2.sla_total>0?prevCx2.abn_3cx:pAbn2Log;
+    // dAbandon: เปรียบเทียบ % Abandon จริงจาก 3CX เดือนนี้ vs เดือนก่อน
+    if(pKpiN2>0&&kpiCallN>0) dAbandon=+(abnPct-(pKpiN2>0?pAbn2Real/pKpiN2*100:0)).toFixed(1);
+    // dCallBack: % Call Back = abandonN / abnVal เดือนนี้ vs เดือนก่อน
+    const curCb=abnVal>0?Math.round(abandonN/abnVal*100):0;
+    const prevCb=pAbn2Real>0?Math.round(pAbn2Log/pAbn2Real*100):0;
     if(pKpiN2>0) dCallBack=curCb-prevCb;
   }
 
@@ -1542,7 +1549,7 @@ function renderKPI(){
         </div>
 
         <div style="display:flex;flex-direction:column;align-items:center">
-          ${mkDonut(cbPct,'%',`${abandonN}/${abnVal}สาย`,Math.min(cbPct,100),BLUE_T,BLUE_F,dCallBack,false)}
+          ${mkDonut(cbPct,'%',`${abandonN}/${abnVal}สาย`,Math.min(cbPct,100),BLUE_T,BLUE_F,dCallBack,true)}
           ${lbl('Call Back','#5B8DEF')}
         </div>
 
