@@ -640,7 +640,7 @@ body.has-data #tab-bar{display:flex!important}
       <span style="color:var(--gray)">แสดง Issue ตาม:</span>
       <select id="mgmt-issue-col" onchange="renderMgmt()" style="font-size:12px;padding:3px 8px;border-radius:6px;border:1px solid var(--border);color:var(--dark);background:#fff">
         <option value="typeDetail">Type ByDetail</option>
-        <option value="issueDetail">Issue Detail</option>
+        <option value="issueDetail" selected>Issue Detail</option>
       </select>
     </div>
   </div>
@@ -2071,7 +2071,7 @@ function renderMgmt(){
     return`<div class="brow"><div class="blbl">${s.dept}</div><div class="bwrap"><div class="bfill" style="width:${Math.round(s.avgR/maxAvgR*100)}%;background:${c}">${s.avgR>0?nf(s.avgR):''}</div></div><div class="bcnt" style="color:${c}">${nf(s.avgR)}</div></div>`;
   }).join(''):'<div class="empty">ไม่มีข้อมูล</div>';
   // Top Cases by Dept
-  const issueCol=document.getElementById('mgmt-issue-col')?.value||'typeDetail';
+  const issueCol=document.getElementById('mgmt-issue-col')?.value||'issueDetail';
   const getIssueVal=r=>{
     const v=issueCol==='issueDetail'?getIssue(r):getDetail(r);
     return v&&v.trim()?v.trim():'(ไม่ระบุ)';
