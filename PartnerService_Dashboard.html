@@ -1232,7 +1232,7 @@ function showDrillToast(msg){
 
 function postLoad(){
   if(!RAW.length){showErr('ไม่พบข้อมูลที่ใช้ได้');return;}
-  const months=[...new Set(RAW.map(r=>r.logMonth).filter(Boolean))].sort().reverse();
+  const months=[...new Set(RAW.map(r=>r.logMonth).filter(Boolean))].sort((a,b)=>(MONTH_ORDER[b]||99)-(MONTH_ORDER[a]||99));
   const label=months.length===1?months[0]:months.length>1?`${months[months.length-1]} — ${months[0]}`:'';
   document.getElementById('h-sub').textContent='CDS SCM Partner Service'+(label?' | '+label:'');
   document.getElementById('d-badge').textContent=`📊 ${RAW.length.toLocaleString()} รายการ`;
@@ -1307,7 +1307,7 @@ function getCX(dateFrom,dateTo,selDay,month){
 // FILTERS
 // ══════════════════════════════════════════════════════
 function populateFilters(){
-  const months=[...new Set(RAW.map(r=>r.logMonth).filter(Boolean))].sort().reverse();
+  const months=[...new Set(RAW.map(r=>r.logMonth).filter(Boolean))].sort((a,b)=>(MONTH_ORDER[b]||99)-(MONTH_ORDER[a]||99));
   const depts=[...new Set(RAW.map(r=>r.typeDept).filter(Boolean))].sort();
   const levels=[...new Set(RAW.map(r=>r.caseLevel).filter(Boolean))].sort();
   document.getElementById('f-month').innerHTML='<option value="">ทั้งหมด</option>'+months.map(m=>`<option>${m}</option>`).join('');
@@ -1384,7 +1384,7 @@ function renderKPI(){
   const mailResSrc=d.filter(r=>isMail(r)&&r.status==='Closed').map(r=>r.resolutionTime).filter(x=>x!==null);
   const avgResMail=mailResSrc.length?+(avg(mailResSrc).toFixed(1)):null;
 
-  const months=[...new Set(RAW.map(r=>r.logMonth).filter(Boolean))].sort();
+  const months=[...new Set(RAW.map(r=>r.logMonth).filter(Boolean))].sort((a,b)=>(MONTH_ORDER[a]||99)-(MONTH_ORDER[b]||99));
   const curM=fm||(months.length?months[months.length-1]:'');
   const curMIdx=months.indexOf(curM);
   const prevM=curMIdx>0?months[curMIdx-1]:'';
