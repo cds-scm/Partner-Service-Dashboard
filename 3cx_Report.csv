@@ -12798,3 +12798,11 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-07-16T16:48:40.275164+07:00,Inbound Queue,PT1.720246S,True,Queue,1,Waiting,8196
 2026-07-16T16:44:51.220417+07:00,Inbound,PT20M28.733029S,True,Extension,1,Answered,0112
 2026-07-16T16:44:51.090013+07:00,Inbound Queue,PT3.875057S,True,Queue,1,Waiting,8196
+2026-07-17T09:55:20.3326+07:00,Internal,PT3.522627S,True,System,1,Answered,*31
+2026-07-17T09:46:27.17486+07:00,Internal,PT3.413011S,True,System,1,Answered,*30
+2026-07-17T09:40:34.313533+07:00,Internal,PT3.455993S,True,System,1,Answered,*30
+2026-07-17T09:34:05.669505+07:00,Inbound,PT46.829438S,True,Extension,1,Answered,0112
+2026-07-17T09:34:05.436691+07:00,Inbound Queue,PT3.80846S,True,Queue,1,Waiting,8196
+2026-07-17T09:09:02.769508+07:00,Inbound,PT1M41.809377S,True,Extension,1,Answered,0112
+2026-07-17T09:09:02.541052+07:00,Inbound Queue,PT4.63795S,True,Queue,1,Waiting,8196
+2026-07-17T08:58:47.030662+07:00,Internal,PT3.459093S,True,System,1,Answered,*30
