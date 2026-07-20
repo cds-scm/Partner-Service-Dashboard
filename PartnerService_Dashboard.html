@@ -100,6 +100,30 @@ input[type=file]{display:none}
 .bclear{font-size:12px;color:var(--primary);background:none;border:none;
   cursor:pointer;font-family:'CPN','Inter',sans-serif;padding:3px 7px}
 
+/* ── MULTI-SELECT แผนก ── */
+.ms-wrap{position:relative;display:inline-block}
+.ms-btn{font-size:12px;padding:4px 10px;border:1.5px solid var(--border);border-radius:8px;
+  background:#fff;color:#1E1B3A;font-family:'CPN','Inter',sans-serif;cursor:pointer;
+  min-width:120px;max-width:260px;text-align:left;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;display:inline-flex;align-items:center;gap:6px;justify-content:space-between}
+.ms-btn:hover{border-color:var(--primary)}
+.ms-btn.active{border-color:var(--primary);color:var(--primary);font-weight:600}
+.ms-caret{font-size:10px;color:var(--gray);flex-shrink:0}
+.ms-menu{display:none;position:absolute;top:calc(100% + 4px);left:0;z-index:500;
+  background:#fff;border:1.5px solid var(--border);border-radius:10px;
+  box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:230px;overflow:hidden}
+.ms-menu.open{display:block}
+.ms-head{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:7px 10px;border-bottom:1px solid var(--border);background:#F8F9FB;
+  font-size:11px;color:var(--gray);white-space:nowrap}
+.ms-clear{font-size:11px;color:var(--primary);background:none;border:none;cursor:pointer;
+  font-family:'CPN','Inter',sans-serif;padding:2px 4px}
+.ms-list{max-height:280px;overflow-y:auto;padding:4px 0}
+.ms-item{display:flex;align-items:center;gap:8px;padding:6px 11px;font-size:12px;
+  cursor:pointer;color:#1E1B3A;user-select:none}
+.ms-item:hover{background:#F1F5FB}
+.ms-item input{cursor:pointer;margin:0;accent-color:var(--primary)}
+
 /* ── TABS ── */
 .tabs{background:#fff;border-bottom:1px solid var(--border);
   padding:0 16px;display:flex;gap:0;overflow-x:auto}
@@ -435,7 +459,20 @@ body.has-data #tab-bar{display:flex!important}
     <input type="date" id="f-to" onchange="applyFilters()">
     <button class="bclear" onclick="clearDates()">✕</button>
   </div>
-  <div class="fg"><label>แผนก:</label><select id="f-dept" onchange="syncDeptSelectors(this.value);applyFilters()"><option value="">ทั้งหมด</option></select></div>
+  <div class="fg"><label>แผนก:</label>
+    <div class="ms-wrap">
+      <button type="button" class="ms-btn dept-ms-btn" onclick="toggleDeptMenu(event,'dept-ms-menu')">ทั้งหมด <span class="ms-caret">▾</span></button>
+      <div class="ms-menu" id="dept-ms-menu">
+        <div class="ms-head">
+          <span class="dept-ms-count">เลือกได้มากกว่า 1 แผนก</span>
+          <button type="button" class="ms-clear" onclick="setSelDepts([])">ล้าง</button>
+        </div>
+        <div class="ms-list dept-ms-list"></div>
+      </div>
+    </div>
+    <!-- select เดิม: ซ่อนไว้เพื่อให้โค้ดส่วนอื่นที่อ่าน .value ยังทำงานได้ (มีค่าเมื่อเลือกแผนกเดียว) -->
+    <select id="f-dept" style="display:none"><option value="">ทั้งหมด</option></select>
+  </div>
   <button class="bclear" onclick="clearAll()">✕ ล้างทั้งหมด</button>
   <span class="fcnt" id="f-cnt"></span>
 </div>
@@ -466,7 +503,17 @@ body.has-data #tab-bar{display:flex!important}
   <div class="card" style="margin-bottom:12px">
     <div class="t10ctrl">
       <label>แผนก:</label>
-      <select id="dept-sel" onchange="onDeptSelChange('dept-sel')"><option value="">🔍 ทุกแผนก (รวม)</option></select>
+      <div class="ms-wrap">
+        <button type="button" class="ms-btn dept-ms-btn" onclick="toggleDeptMenu(event,'ds-ms-menu')">🔍 ทุกแผนก (รวม) <span class="ms-caret">▾</span></button>
+        <div class="ms-menu" id="ds-ms-menu">
+          <div class="ms-head">
+            <span class="dept-ms-count">เลือกได้มากกว่า 1 แผนก</span>
+            <button type="button" class="ms-clear" onclick="setSelDepts([])">ล้าง</button>
+          </div>
+          <div class="ms-list dept-ms-list"></div>
+        </div>
+      </div>
+      <select id="dept-sel" style="display:none"><option value="">ทุกแผนก</option></select>
       <label>แสดงตาม:</label>
       <select id="issue-col" onchange="renderTop10()">
         <option value="typeDetail">Type ByDetail</option>
@@ -767,15 +814,29 @@ body.has-data #tab-bar{display:flex!important}
           <option value="issueDetail">Issue Detail</option>
         </select>
         <span>แผนก:</span>
-        <select id="ti-dept" onchange="onDeptSelChange('ti-dept')" style="font-size:11px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;font-family:'CPN','Inter',sans-serif">
-          <option value="">ทุกแผนก</option>
+        <div class="ms-wrap">
+          <button type="button" class="ms-btn dept-ms-btn" style="font-size:11px;padding:5px 10px;min-width:110px" onclick="toggleDeptMenu(event,'ti-ms-menu')">ทุกแผนก <span class="ms-caret">▾</span></button>
+          <div class="ms-menu" id="ti-ms-menu">
+            <div class="ms-head">
+              <span class="dept-ms-count">เลือกได้มากกว่า 1 แผนก</span>
+              <button type="button" class="ms-clear" onclick="setSelDepts([])">ล้าง</button>
+            </div>
+            <div class="ms-list dept-ms-list"></div>
+          </div>
+        </div>
+        <select id="ti-dept" style="display:none"><option value="">ทุกแผนก</option></select>
+        <span>เคส:</span>
+        <select id="ti-fcr" onchange="renderTopIssuePage()" style="font-size:11px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;font-family:'CPN','Inter',sans-serif">
+          <option value="all">ทั้งหมด</option>
+          <option value="fcr">FCR (Level 1)</option>
+          <option value="nonfcr">Non-FCR (Level 2)</option>
         </select>
       </div>
     </div>
   </div>
   <!-- Pareto chart -->
   <div class="card" style="margin-bottom:12px">
-    <div class="sec-title"><div class="dot" style="background:var(--teal)"></div>Top 10 Issue</div>
+    <div class="sec-title"><div class="dot" style="background:var(--teal)"></div><span id="ti-pareto-title">Top 10 Issue</span></div>
     <div id="ti-pareto" style="overflow-x:auto"></div>
   </div>
   <!-- Monthly breakdown table -->
@@ -1185,31 +1246,77 @@ function onDeptTableFcrChange(){
   renderTop10();
 }
 
-// ─── Sync dept selector ทุกตัว (dept-sel, ti-dept) กับ f-dept หลัก ───
-function syncDeptSelectors(dept){
-  const ids=['f-dept','dept-sel','ti-dept'];
-  ids.forEach(id=>{const el=document.getElementById(id);if(el&&el.value!==dept)el.value=dept;});
+// ═══ MULTI-SELECT แผนก ═══
+// SEL_DEPTS = แผนกที่เลือกอยู่ (array ว่าง = ทุกแผนก)
+let SEL_DEPTS=[];
+// ใช้เช็คว่า record ผ่าน filter แผนกหรือไม่ (ใช้แทนการเทียบ r.typeDept!==fd แบบเดิม)
+function deptMatch(r){ return SEL_DEPTS.length===0 || SEL_DEPTS.includes(r.typeDept); }
+
+// ─── Sync dept selector ทุกตัว (f-dept ที่ซ่อนไว้, dept-sel, ti-dept) ให้ตรงกับ SEL_DEPTS ───
+// เลือกแผนกเดียว → selector เหล่านี้แสดงแผนกนั้น (พฤติกรรมเดิม)
+// เลือกหลายแผนก → selector แสดง "ทุกแผนก" เพราะข้อมูลถูกกรองด้วย SEL_DEPTS ตั้งแต่ FILTERED แล้ว
+function syncDeptSelectors(){
+  const one = SEL_DEPTS.length===1 ? SEL_DEPTS[0] : '';
+  ['f-dept','dept-sel','ti-dept'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&el.value!==one) el.value=one;
+  });
 }
+function updateDeptButton(){
+  let label;
+  if(SEL_DEPTS.length===0)      label='ทั้งหมด';
+  else if(SEL_DEPTS.length===1) label=SEL_DEPTS[0];
+  else                          label=`${SEL_DEPTS.length} แผนก`;
+  // อัปเดตปุ่ม multi-select ทุกตัวในหน้า (ตัวกรองหลัก + หน้า Top Issue + หน้า Top 10)
+  document.querySelectorAll('.dept-ms-btn').forEach(btn=>{
+    btn.innerHTML=`${label} <span class="ms-caret">▾</span>`;
+    btn.classList.toggle('active', SEL_DEPTS.length>0);
+    btn.title = SEL_DEPTS.length>1 ? SEL_DEPTS.join(', ') : '';
+  });
+  document.querySelectorAll('.dept-ms-count').forEach(el=>{
+    el.textContent = SEL_DEPTS.length>0 ? `เลือกแล้ว ${SEL_DEPTS.length} แผนก` : 'เลือกได้มากกว่า 1 แผนก';
+  });
+  document.querySelectorAll('.dept-ms-list input[type=checkbox]').forEach(cb=>{
+    cb.checked = SEL_DEPTS.includes(cb.value);
+  });
+}
+// ตั้งค่าแผนกที่เลือกแบบ programmatic (ใช้โดย drill-down, ปุ่มล้าง, selector หน้าย่อย)
+function setSelDepts(arr){
+  SEL_DEPTS = Array.from(new Set(arr.filter(Boolean)));
+  syncDeptSelectors();
+  updateDeptButton();
+  applyFilters();
+}
+function toggleDeptMenu(ev, menuId){
+  ev?.stopPropagation();
+  const target=document.getElementById(menuId);
+  // ปิดเมนูอื่นก่อน แล้วค่อยสลับเมนูที่กด
+  document.querySelectorAll('.ms-menu').forEach(m=>{ if(m!==target) m.classList.remove('open'); });
+  target?.classList.toggle('open');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.ms-wrap'))
+    document.querySelectorAll('.ms-menu.open').forEach(m=>m.classList.remove('open'));
+});
+function onDeptCheck(cb){
+  if(cb.checked){ if(!SEL_DEPTS.includes(cb.value)) SEL_DEPTS.push(cb.value); }
+  else SEL_DEPTS=SEL_DEPTS.filter(d=>d!==cb.value);
+  syncDeptSelectors();
+  updateDeptButton();
+  applyFilters();
+}
+// selector แผนกในหน้าย่อย (dept-sel / ti-dept) — เลือกแล้วให้กรองแผนกเดียวนั้น
 function onDeptSelChange(sourceId){
   const dept=document.getElementById(sourceId)?.value||'';
-  syncDeptSelectors(dept);
-  applyFilters();
+  setSelDepts(dept?[dept]:[]);
 }
 
 // ─── Drill-down by Dept ───
 function drillToDept(dept){
-  const sel=document.getElementById('f-dept');
-  if(!sel)return;
-  if(sel.value===dept){
-    // คลิกซ้ำ = ยกเลิก drill-down
-    sel.value='';
-  } else {
-    sel.value=dept;
-  }
-  syncDeptSelectors(sel.value);
-  applyFilters();
-  // toast แจ้ง
-  showDrillToast(sel.value?`กรองแผนก: ${sel.value}`:'แสดงทุกแผนก');
+  // คลิกซ้ำแผนกเดิม (ที่เลือกอยู่แผนกเดียว) = ยกเลิก drill-down
+  const isOnlyThis = SEL_DEPTS.length===1 && SEL_DEPTS[0]===dept;
+  setSelDepts(isOnlyThis ? [] : [dept]);
+  showDrillToast(isOnlyThis ? 'แสดงทุกแผนก' : `กรองแผนก: ${dept}`);
 }
 
 function showDrillToast(msg){
@@ -1312,6 +1419,17 @@ function populateFilters(){
   const levels=[...new Set(RAW.map(r=>r.caseLevel).filter(Boolean))].sort();
   document.getElementById('f-month').innerHTML='<option value="">ทั้งหมด</option>'+months.map(m=>`<option>${m}</option>`).join('');
   document.getElementById('f-dept').innerHTML='<option value="">ทั้งหมด</option>'+depts.map(d=>`<option>${d}</option>`).join('');
+  // สร้างรายการ checkbox ให้ multi-select แผนกทุกตัวในหน้า
+  const msLists=document.querySelectorAll('.dept-ms-list');
+  if(msLists.length){
+    const html=depts.map(d=>
+      `<label class="ms-item"><input type="checkbox" value="${d.replace(/"/g,'&quot;')}" onchange="onDeptCheck(this)"><span>${d}</span></label>`
+    ).join('');
+    msLists.forEach(el=>{el.innerHTML=html;});
+    // เอาแผนกที่เลือกไว้ซึ่งไม่มีในข้อมูลชุดใหม่ออก แล้วอัปเดตปุ่ม
+    SEL_DEPTS=SEL_DEPTS.filter(d=>depts.includes(d));
+    updateDeptButton();
+  }
   if(document.getElementById('f-level')) document.getElementById('f-level').innerHTML='<option value="">ทั้งหมด</option>'+levels.map(l=>`<option>${l}</option>`).join('');
   document.getElementById('dept-sel').innerHTML='<option value="">🔍 ทุกแผนก (รวม)</option>'+depts.map(d=>`<option>${d}</option>`).join('');
   document.getElementById('ti-dept').innerHTML='<option value="">ทุกแผนก</option>'+depts.map(d=>`<option>${d}</option>`).join('');
@@ -1325,11 +1443,10 @@ function onMonthChange(){clearDates(false);applyFilters();}
 function updateDayPills(){}
 function selectDay(d){}
 function clearDates(refresh=true){const ef=document.getElementById('f-from');if(ef)ef.value='';const et=document.getElementById('f-to');if(et)et.value='';if(refresh)applyFilters();}
-function clearAll(){const em=document.getElementById('f-month');if(em)em.value='';const ed=document.getElementById('f-dept');if(ed){ed.value='';syncDeptSelectors('');}const el2=document.getElementById('f-level');if(el2)el2.value='';SEL_DAY='';clearDates(false);setMode('all');}
+function clearAll(){const em=document.getElementById('f-month');if(em)em.value='';SEL_DEPTS=[];syncDeptSelectors();updateDeptButton();const el2=document.getElementById('f-level');if(el2)el2.value='';SEL_DAY='';clearDates(false);setMode('all');}
 
 function applyFilters(){
   const fm=document.getElementById('f-month')?.value||'';
-  const fd=document.getElementById('f-dept')?.value||'';
   const fl=document.getElementById('f-level')?.value||'';
   const dfrom=document.getElementById('f-from')?.value||'';
   const dto=document.getElementById('f-to')?.value||'';
@@ -1337,7 +1454,7 @@ function applyFilters(){
     if(fm&&r.logMonth!==fm)return false;
     if(dfrom&&r.dateLog&&r.dateLog.slice(0,10)<dfrom)return false;
     if(dto&&r.dateLog&&r.dateLog.slice(0,10)>dto)return false;
-    if(fd&&r.typeDept!==fd)return false;
+    if(!deptMatch(r))return false;
     if(fl&&r.caseLevel!==fl)return false;
     if(!modeFilter(r))return false;
     return true;
@@ -1364,7 +1481,7 @@ function renderKPI(){
   const totalMailN= d.filter(isMail).length;
   const abandonN  = d.filter(r=>r.logType==='Abandon').length;
   // ตรวจ dept filter — 3CX ไม่มีข้อมูลแผนก
-  const hasDeptFilter=!!(document.getElementById('f-dept')?.value||'');
+  const hasDeptFilter=SEL_DEPTS.length>0;
 
   const fcrN = d.filter(r=>isKpiCall(r)&&r.caseLevel==='Call-Level 1').length;
   const fmrN = d.filter(r=>isMail(r)&&r.caseLevel==='Mail-Level 1').length;
@@ -2196,7 +2313,7 @@ function renderPending(){
     if(r._referredMail||r.logType==='Call Back') return false;
     if(r.status!=='Open'&&r.status!=='Pending') return false;
     if(!r.dateLog||r.dateLog>refDate) return false;
-    if(dept&&r.typeDept!==dept) return false;
+    if(!deptMatch(r)) return false;
     if(level&&!r.caseLevel?.includes(level)) return false;
     if(fm&&r.logMonth!==fm) return false;
     // กรองตาม MODE (Call/Mail/ทั้งหมด)
@@ -2267,7 +2384,7 @@ function calcWkStats(rows){
 
 function renderWeekly(){
   if(!RAW.length)return;
-  const hasDeptFilter=!!(document.getElementById('f-dept')?.value||'');
+  const hasDeptFilter=SEL_DEPTS.length>0;
   const wkMap={};
   FILTERED.forEach(r=>{
     if(!r.dateLog||r.dateLog.length<10)return;
@@ -3684,9 +3801,18 @@ function renderTopIssuePage(){
   const selDept=document.getElementById('ti-dept')?.value||document.getElementById('f-dept')?.value||'';
   if(selDept) src=src.filter(r=>r.typeDept===selDept);
 
+  // FCR / Non-FCR filter — เลือกได้ว่าจะดู Top Issue ของเคสทั้งหมด, เฉพาะ FCR (Level 1), หรือเฉพาะ Non-FCR (Level 2)
+  const fcrSel=document.getElementById('ti-fcr')?.value||'all';
+  if(fcrSel==='fcr') src=src.filter(r=>r.caseLevel?.includes('Level 1'));
+  else if(fcrSel==='nonfcr') src=src.filter(r=>r.caseLevel?.includes('Level 2'));
+
   const col=document.getElementById('ti-col')?.value||'typeDetail';
   const getV=col==='typeDetail'?getDetail:getIssue;
   const total=src.length||1;
+
+  const fcrLabelMap={all:'ทั้งหมด',fcr:'FCR (Level 1)',nonfcr:'Non-FCR (Level 2)'};
+  const titleEl=document.getElementById('ti-pareto-title');
+  if(titleEl) titleEl.textContent=`Top 10 Issue — ${fcrLabelMap[fcrSel]||'ทั้งหมด'}`;
 
   // Count
   const cnt={};
@@ -4783,13 +4909,48 @@ function showErr(msg){document.getElementById('err-area').innerHTML=`<div class=
 // AUTO LOAD จาก SharePoint
 // ══════════════════════════════════════════════════════
 // ── CONFIG: GitHub Raw URLs ──
+// ══════════════════════════════════════════════════════════════
+//  แหล่งข้อมูล (DATA SOURCE) — สลับได้ที่บรรทัดเดียวด้านล่างนี้
+// ══════════════════════════════════════════════════════════════
+//   'auto'   = ตรวจอัตโนมัติ (แนะนำ — ใช้ได้ทั้ง GitHub Pages และ Server)
+//   'github' = ไฟล์ข้อมูลอยู่โฟลเดอร์เดียวกับหน้านี้ (บน GitHub Pages)  ← ใช้ตอนนี้
+//   'local'  = ไฟล์ข้อมูลอยู่ในโฟลเดอร์ ./data/  ← เปลี่ยนเป็นค่านี้เมื่อย้ายขึ้น Server
+const DATA_SOURCE = 'auto';
+
 const GITHUB_USER = 'cds-scm';
 const GITHUB_REPO = 'Partner-Service-Dashboard';
-// ดึงจาก GitHub Pages (same-origin friendly) แทน raw.githubusercontent.com
-const JSON_URL    = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/calllog_data.json`;
-const CX_URL      = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/3cx_Report.csv`;
-const ABN_HISTORY_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/abandoned_calls_history.json`;
-const ABN_LIVE_URL    = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/abandoned_calls.json`;
+const GH_RAW = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main`;
+
+// บน GitHub Pages ไฟล์ข้อมูลอยู่โฟลเดอร์เดียวกับหน้านี้ → ใช้ path แบบ same-origin
+// (สำคัญมากสำหรับมือถือ/เบราว์เซอร์ในแอป ที่มักบล็อกการดึงข้อมูลข้าม domain)
+const _onPages = location.hostname.endsWith('github.io');
+const _useLocalData = DATA_SOURCE === 'local' || (DATA_SOURCE === 'auto' && !_onPages && location.protocol !== 'file:');
+const DATA_BASE = _useLocalData ? './data' : '.';
+// ถ้าดึงแบบ same-origin ไม่สำเร็จ จะลองใหม่จาก raw.githubusercontent อัตโนมัติ
+const DATA_FALLBACK = _useLocalData ? null : GH_RAW;
+console.info(`[Dashboard] แหล่งข้อมูลหลัก: ${DATA_BASE}` + (DATA_FALLBACK ? ` (สำรอง: ${DATA_FALLBACK})` : ''));
+
+const JSON_URL        = `${DATA_BASE}/calllog_data.json`;
+const CX_URL          = `${DATA_BASE}/3cx_Report.csv`;
+const ABN_HISTORY_URL = `${DATA_BASE}/abandoned_calls_history.json`;
+const ABN_LIVE_URL    = `${DATA_BASE}/abandoned_calls.json`;
+
+// ดึงข้อมูลจากแหล่งหลักก่อน ถ้าไม่สำเร็จค่อยลองแหล่งสำรอง
+async function fetchData(url){
+  const bust = (u) => u + (u.includes('?') ? '&' : '?') + 't=' + Date.now();
+  try{
+    const res = await fetch(bust(url));
+    if(res.ok) return res;
+    throw new Error('HTTP ' + res.status);
+  }catch(err){
+    if(!DATA_FALLBACK) throw err;
+    const alt = bust(url.replace(DATA_BASE, DATA_FALLBACK));
+    console.warn(`[Dashboard] ดึงจากแหล่งหลักไม่สำเร็จ (${err.message}) — ลองแหล่งสำรอง`);
+    const res2 = await fetch(alt);
+    if(!res2.ok) throw new Error('HTTP ' + res2.status);
+    return res2;
+  }
+}
 // เก็บ Abandon ที่ถูกต้อง 100% จาก 3CX official report (history + live) แยกตามวันที่ "YYYY-MM-DD" -> count
 let OFFICIAL_ABANDON = {loaded:false, byDate:{}, total:0};
 
@@ -4811,7 +4972,7 @@ function syncLog(msg, type='info'){
 async function loadOfficialAbandon(){
   const byDate={};
   try{
-    const hRes=await fetch(ABN_HISTORY_URL+'?t='+Date.now());
+    const hRes=await fetchData(ABN_HISTORY_URL);
     if(hRes.ok){
       const h=await hRes.json();
       (h.calls||[]).forEach(c=>{
@@ -4824,7 +4985,7 @@ async function loadOfficialAbandon(){
   }catch(e){ console.warn('[OFFICIAL_ABANDON] history load failed:', e.message); }
 
   try{
-    const lRes=await fetch(ABN_LIVE_URL+'?t='+Date.now());
+    const lRes=await fetchData(ABN_LIVE_URL);
     if(lRes.ok){
       const l=await lRes.json();
       const seen=new Set(); // กัน polling attempts ของสายเดียวกันนับซ้ำ
@@ -4850,6 +5011,33 @@ async function autoLoad(){
   console.log('[AutoSync] เริ่มต้นโหลดข้อมูลระบบ...');
   syncLog('เริ่ม AutoSync…');
 
+  // ── ตรวจการเปิดไฟล์แบบ file:// (ดับเบิลคลิกไฟล์ตรงๆ) ──
+  // เบราว์เซอร์จะบล็อกการดึงข้อมูลจากภายนอกเสมอ (โดยเฉพาะบนมือถือ) ทำให้หน้าขาวเปล่า
+  // จึงแจ้งเตือนให้ชัดเจนแทนที่จะปล่อยให้ค้างเงียบๆ
+  if(location.protocol === 'file:'){
+    const msg = `<div style="position:fixed;inset:0;z-index:99999;background:#F4F5F7;
+        display:flex;align-items:center;justify-content:center;padding:24px;
+        font-family:'CPN','Inter',sans-serif">
+      <div style="max-width:460px;background:#fff;border-radius:16px;padding:28px 24px;
+          box-shadow:0 8px 32px rgba(0,0,0,.10);text-align:center">
+        <div style="font-size:40px;margin-bottom:10px">📂</div>
+        <div style="font-size:17px;font-weight:700;color:#1E1B3A;margin-bottom:10px">
+          เปิดไฟล์แบบนี้ไม่ได้ค่ะ</div>
+        <div style="font-size:13px;color:#5F5E5A;line-height:1.7;margin-bottom:18px">
+          เบราว์เซอร์บล็อกการโหลดข้อมูลเมื่อเปิดไฟล์จากเครื่องโดยตรง
+          (โดยเฉพาะบนมือถือ) กรุณาเปิดผ่านลิงก์เว็บแทน</div>
+        <a href="https://cds-scm.github.io/Partner-Service-Dashboard/PartnerService_Dashboard.html"
+           style="display:inline-block;background:#185FA5;color:#fff;text-decoration:none;
+           padding:11px 22px;border-radius:10px;font-size:14px;font-weight:600">
+          เปิด Dashboard บนเว็บ →</a>
+        <div style="font-size:11px;color:#9A9A96;margin-top:16px;line-height:1.6">
+          หรือถ้าอยู่บนคอม: วางไฟล์นี้ไว้กับ LocalServer.exe แล้วเปิดโปรแกรมนั้นแทน</div>
+      </div></div>`;
+    document.body.insertAdjacentHTML('beforeend', msg);
+    console.warn('[AutoSync] เปิดด้วย file:// — ไม่สามารถโหลดข้อมูลได้');
+    return;
+  }
+
   // แสดง loading overlay ถ้ายังไม่มีข้อมูล
   const hasData=RAW.length>0;
   let loadingEl=null;
@@ -4872,8 +5060,8 @@ async function autoLoad(){
 
     // fetch ทั้งสองไฟล์พร้อมกันทันที — GitHub รองรับ concurrent requests ได้ปกติ
     const [jsonRes, cxRes] = await Promise.all([
-      fetch(JSON_URL+'?t='+Date.now()),
-      fetch(CX_URL+'?t='+Date.now()),
+      fetchData(JSON_URL),
+      fetchData(CX_URL),
     ]);
 
     syncLog(`JSON: ${jsonRes.status} ${jsonRes.statusText}`, jsonRes.ok?'ok':'warn');
@@ -6306,7 +6494,7 @@ function renderMonthly(){
   const dfrom=document.getElementById('f-from')?.value||'';
   const dto=document.getElementById('f-to')?.value||'';
   const ALL_FILTERED=RAW.filter(r=>{
-    if(fd&&r.typeDept!==fd)return false;
+    if(!deptMatch(r))return false;
     if(fl&&r.caseLevel!==fl)return false;
     if(dfrom&&r.dateLog&&r.dateLog.slice(0,10)<dfrom)return false;
     if(dto&&r.dateLog&&r.dateLog.slice(0,10)>dto)return false;
