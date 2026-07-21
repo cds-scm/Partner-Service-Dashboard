@@ -13114,3 +13114,4 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-07-21T15:21:23.87272+07:00,Inbound Queue,PT4.333981S,True,Queue,1,Waiting,8196
 2026-07-21T15:06:45.495147+07:00,Inbound,PT7M30.240766S,True,Extension,1,Answered,0114
 2026-07-21T15:06:45.277777+07:00,Inbound Queue,PT3.004555S,True,Queue,1,Waiting,8196
+2026-07-21T17:45:42.826846+07:00,Internal,PT3.523627S,True,System,1,Answered,*31
