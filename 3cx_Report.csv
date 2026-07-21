@@ -13005,3 +13005,11 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-07-20T15:14:06.184817+07:00,Internal,PT3.42314S,True,System,1,Answered,*31
 2026-07-20T15:08:01.444943+07:00,Inbound,PT1M56.617138S,True,Extension,1,Answered,0114
 2026-07-20T15:08:01.253466+07:00,Inbound Queue,PT2.0487S,True,Queue,1,Waiting,8196
+2026-07-21T10:02:05.054064+07:00,Inbound,PT1M4.860134S,True,Extension,1,Answered,0114
+2026-07-21T10:02:04.804843+07:00,Inbound Queue,PT2.031382S,True,Queue,1,Waiting,8196
+2026-07-21T09:22:12.71521+07:00,Inbound Queue,PT4.443822S,True,Queue,1,Waiting,8048
+2026-07-21T09:21:37.789693+07:00,Inbound,PT29.90828S,True,Extension,1,Answered,0112
+2026-07-21T09:21:37.55526+07:00,Inbound Queue,PT5.238413S,True,Queue,1,Waiting,8196
+2026-07-21T09:02:21.519294+07:00,Internal,PT3.413369S,True,System,1,Answered,*30
+2026-07-21T08:49:59.802285+07:00,Outbound,PT11.527144S,True,External,1,Answered,10009
+2026-07-21T07:53:32.542062+07:00,Internal,PT3.413364S,True,System,1,Answered,*30
