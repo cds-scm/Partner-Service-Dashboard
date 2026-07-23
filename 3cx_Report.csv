@@ -13371,3 +13371,9 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-07-23T15:20:42.194797+07:00,Internal,PT3.411356S,True,System,1,Answered,*30
 2026-07-23T15:03:15.950274+07:00,Inbound,PT3M18.504364S,True,Extension,1,Answered,0112
 2026-07-23T15:03:15.7181+07:00,Inbound Queue,PT4.059335S,True,Queue,1,Waiting,8196
+2026-07-23T17:50:37.046637+07:00,Internal,PT3.503395S,True,System,1,Answered,*31
+2026-07-23T17:14:42.942123+07:00,Outbound,PT0S,False,External,1,Unanswered,10009
+2026-07-23T17:13:22.791967+07:00,Outbound,PT28.943883S,True,External,1,Answered,10009
+2026-07-23T17:11:02.027234+07:00,Outbound,PT0S,False,External,1,Unanswered,10009
+2026-07-23T17:10:48.458978+07:00,Outbound,PT0S,False,External,1,Unanswered,10009
+2026-07-23T17:04:22.891512+07:00,Outbound,PT2M39.201476S,True,External,1,Answered,10009
