@@ -13543,3 +13543,4 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-07-27T15:36:49.312962+07:00,Inbound Queue,PT3.255717S,True,Queue,1,Waiting,8196
 2026-07-27T15:29:01.63163+07:00,Internal,PT3.413599S,True,System,1,Answered,*31
 2026-07-27T15:13:25.52341+07:00,Internal,PT3.413075S,True,System,1,Answered,*30
+2026-07-27T18:06:56.48034+07:00,Internal,PT3.514282S,True,System,1,Answered,*31
