@@ -13620,3 +13620,10 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-07-29T16:07:18.902245+07:00,Internal,PT3.513499S,True,System,1,Answered,*31
 2026-07-29T15:56:36.181276+07:00,Internal,PT3.513073S,True,System,1,Answered,*31
 2026-07-29T15:39:17.790146+07:00,Internal,PT3.412369S,True,System,1,Answered,*31
+2026-07-30T09:48:49.097544+07:00,Internal,PT3.413026S,True,System,1,Answered,*30
+2026-07-30T09:35:57.314844+07:00,Internal,PT3.512882S,True,System,1,Answered,*31
+2026-07-30T09:16:02.190769+07:00,Inbound,PT47.370484S,True,Extension,1,Answered,0112
+2026-07-30T09:16:01.963067+07:00,Inbound Queue,PT4.741698S,True,Queue,1,Waiting,8196
+2026-07-30T08:48:28.169038+07:00,Internal,PT3.413571S,True,System,1,Answered,*30
+2026-07-30T08:48:26.066023+07:00,Internal,PT3.41211S,True,System,1,Answered,*30
+2026-07-30T08:32:20.378926+07:00,Internal,PT3.313344S,True,System,1,Answered,*30
