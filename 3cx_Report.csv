@@ -14386,3 +14386,9 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-08-06T15:23:05.613113+07:00,Inbound Queue,PT1.976515S,True,Queue,1,Waiting,8196
 2026-08-06T15:21:02.61469+07:00,Internal,PT0.479101S,True,System,1,Answered,*30
 2026-08-06T15:16:44.139433+07:00,Internal,PT3.530305S,True,System,1,Answered,*31
+2026-08-06T17:59:54.834023+07:00,Internal,PT3.45106S,True,System,1,Answered,*31
+2026-08-06T17:59:41.702979+07:00,Internal,PT3.476648S,True,System,1,Answered,*31
+2026-08-06T17:06:56.642968+07:00,Internal,PT3.513341S,True,System,1,Answered,*31
+2026-08-06T17:05:14.436476+07:00,Internal,PT3.518189S,True,System,1,Answered,*31
+2026-08-06T17:00:05.913246+07:00,Inbound,PT4M58.12507S,True,Extension,1,Answered,0113
+2026-08-06T17:00:05.680838+07:00,Inbound Queue,PT2.33574S,True,Queue,1,Waiting,8196
