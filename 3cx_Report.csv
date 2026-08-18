@@ -15227,3 +15227,4 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-08-18T15:06:27.467988+07:00,Inbound Queue,PT2.184197S,True,Queue,1,Waiting,8196
 2026-08-18T15:01:32.22787+07:00,Inbound,PT6M40.161337S,True,Extension,1,Answered,0114
 2026-08-18T15:01:32.100509+07:00,Inbound Queue,PT3.192253S,True,Queue,1,Waiting,8196
+2026-08-18T17:06:08.337844+07:00,Internal,PT3.503025S,True,System,1,Answered,*31
