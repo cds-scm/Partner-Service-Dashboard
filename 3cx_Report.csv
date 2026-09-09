@@ -17326,3 +17326,11 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-09-08T14:50:41.593829+07:00,Inbound Queue,PT1M33.333537S,True,Queue,1,Waiting,8196
 2026-09-08T18:01:44.636555+07:00,Internal,PT3.490653S,True,System,1,Answered,*31
 2026-09-08T17:08:00.956868+07:00,Internal,PT3.412248S,True,System,1,Answered,*31
+2026-09-09T10:00:23.036976+07:00,Internal,PT3.502352S,True,System,1,Answered,*31
+2026-09-09T09:58:34.008816+07:00,Internal,PT3.313022S,True,System,1,Answered,*30
+2026-09-09T09:49:26.201693+07:00,Inbound,PT7M36.93447S,True,Extension,1,Answered,0112
+2026-09-09T09:49:25.971235+07:00,Inbound Queue,PT1.860488S,True,Queue,1,Waiting,8196
+2026-09-09T09:25:18.727564+07:00,Inbound Queue,PT6.610575S,True,Queue,1,Waiting,8048
+2026-09-09T09:24:52.528745+07:00,Inbound,PT24.028355S,True,Extension,1,Answered,0112
+2026-09-09T09:24:52.294931+07:00,Inbound Queue,PT2.40192S,True,Queue,1,Waiting,8196
+2026-09-09T08:55:13.100826+07:00,Internal,PT3.413384S,True,System,1,Answered,*30
