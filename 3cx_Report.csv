@@ -17585,3 +17585,4 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-09-10T15:13:52.66036+07:00,Inbound Queue,PT2.728932S,True,Queue,1,Waiting,8196
 2026-09-10T15:04:36.08012+07:00,Inbound,PT1M18.124607S,True,Extension,1,Answered,0112
 2026-09-10T15:04:35.976836+07:00,Inbound Queue,PT2.850301S,True,Queue,1,Waiting,8196
+2026-09-10T17:57:29.923343+07:00,Internal,PT3.399571S,True,System,1,Answered,*31
