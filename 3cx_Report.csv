@@ -17724,3 +17724,11 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-09-11T17:12:32.541354+07:00,Outbound,PT3M12.487608S,True,External,1,Answered,10009
 2026-09-11T17:06:04.146779+07:00,Internal,PT3.412653S,True,System,1,Answered,*31
 2026-09-11T17:05:46.206505+07:00,Internal,PT3.514078S,True,System,1,Answered,*31
+2026-09-14T09:40:00.450257+07:00,Internal,PT0.817443S,True,System,1,Answered,*30
+2026-09-14T09:39:54.295923+07:00,Inbound,PT12M21.802746S,True,Extension,1,Answered,0113
+2026-09-14T09:39:54.144819+07:00,Inbound Queue,PT2.521483S,True,Queue,1,Waiting,8196
+2026-09-14T09:31:56.924145+07:00,Internal,PT3.519217S,True,System,1,Answered,*31
+2026-09-14T09:19:01.947053+07:00,Inbound,PT33.860175S,True,Extension,1,Answered,0113
+2026-09-14T09:19:01.789823+07:00,Inbound Queue,PT2.040666S,True,Queue,1,Waiting,8196
+2026-09-14T08:55:15.458193+07:00,Internal,PT3.423125S,True,System,1,Answered,*30
+2026-09-14T08:41:31.056993+07:00,Internal,PT3.414371S,True,System,1,Answered,*30
