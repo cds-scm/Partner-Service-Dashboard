@@ -18508,3 +18508,6 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-09-21T15:13:27.909067+07:00,Internal,PT0S,False,System,1,Unanswered,EndCall
 2026-09-21T15:11:19.874218+07:00,Internal,PT3.302572S,True,System,1,Answered,*30
 2026-09-21T15:11:19.491677+07:00,Internal,PT3.5121S,True,System,1,Answered,*31
+2026-09-21T17:17:34.78502+07:00,Internal,PT8.318199S,True,System,1,Answered,*31
+2026-09-21T17:17:25.884804+07:00,Internal,PT2.530663S,True,System,1,Answered,*3
+2026-09-21T17:17:25.712713+07:00,Internal,PT3.414315S,True,System,1,Answered,*31
