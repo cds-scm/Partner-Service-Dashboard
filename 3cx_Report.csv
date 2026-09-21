@@ -18340,3 +18340,11 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-09-18T15:11:13.974837+07:00,Inbound Queue,PT2.048169S,True,Queue,1,Waiting,8196
 2026-09-18T17:40:00.992151+07:00,Internal,PT3.48343S,True,System,1,Answered,*31
 2026-09-18T17:09:42.745312+07:00,Internal,PT3.491081S,True,System,1,Answered,*31
+2026-09-21T09:49:05.514327+07:00,Internal,PT1.027982S,True,System,1,Answered,*30
+2026-09-21T09:51:54.580661+07:00,Inbound Queue,PT2.789315S,True,Queue,1,Waiting,8048
+2026-09-21T09:48:59.698585+07:00,Inbound,PT2M52.99804S,True,Extension,1,Answered,0113
+2026-09-21T09:48:59.539292+07:00,Inbound Queue,PT2.011739S,True,Queue,1,Waiting,8196
+2026-09-21T09:46:21.02251+07:00,Internal,PT0.45577S,True,System,1,Answered,*31
+2026-09-21T09:01:16.698543+07:00,Internal,PT3.414487S,True,System,1,Answered,*30
+2026-09-21T08:58:25.611776+07:00,Internal,PT3.313128S,True,System,1,Answered,*30
+2026-09-21T08:56:33.712585+07:00,Internal,PT3.412469S,True,System,1,Answered,*30
