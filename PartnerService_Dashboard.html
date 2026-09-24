@@ -1285,7 +1285,7 @@ body.has-data #tab-bar{display:flex!important}
   <!-- CALL -->
   <div id="mv-call">
     <div class="m-kpi-row" id="m-call-kpi"></div>
-    <div class="m-sec"><div class="dot" style="background:#0D9488"></div><span id="m-call-level-title">Case Level ตามแผนก รายเดือน — Call</span></div>
+    <div class="m-sec"><div class="dot" style="background:#0D9488"></div><span id="m-call-level-title">1st Contact Resolution ตามแผนก รายเดือน — Call</span></div>
     <div class="m-card" style="padding:14px 16px"><div id="m-call-level-chart"></div></div>
     <div class="m-card" style="overflow-x:auto;margin-top:-8px"><div id="m-call-dept-level-tbl"></div></div>
     <div class="m-g2">
@@ -1336,7 +1336,7 @@ body.has-data #tab-bar{display:flex!important}
   <div id="mv-mail" style="display:none">
     <div class="m-month-pills-container"></div>
     <div class="m-kpi-row" id="m-mail-kpi"></div>
-    <div class="m-sec"><div class="dot" style="background:#0D9488"></div>Case Level ตามแผนก รายเดือน — Mail</div>
+    <div class="m-sec"><div class="dot" style="background:#0D9488"></div>1st Contact Resolution ตามแผนก รายเดือน — Mail</div>
     <div class="m-card" style="padding:14px 16px"><div id="m-mail-level-chart"></div></div>
     <div class="m-card" style="overflow-x:auto;margin-top:-8px"><div id="m-mail-dept-level-tbl"></div></div>
     <div class="m-g2">
@@ -7705,7 +7705,7 @@ function renderMonthly(){
   const modeLabel=isAll?'Call + Mail':'Call';
   const el_title1=document.getElementById('m-call-level-title');
   const el_title2=document.getElementById('m-call-tbl-title');
-  if(el_title1) el_title1.textContent=`Case Level ตามแผนก รายเดือน — ${modeLabel}`;
+  if(el_title1) el_title1.textContent=`1st Contact Resolution ตามแผนก รายเดือน — ${modeLabel}`;
   if(el_title2) el_title2.textContent=`ตารางเปรียบเทียบรายเดือน — ${modeLabel}`;
   // หัวเรื่อง section ตาราง Resolution Time ตามแผนก — เปลี่ยนตามโหมด
   const el_resSec=document.getElementById('m-resdept-sec');
