@@ -901,6 +901,48 @@ body.has-data #tab-bar{display:flex!important}
       (เติม [style] เพื่อให้ specificity สูงกว่าข้อ 2) */
 #page-mgmt .mgmt-rank[style]{font-size:16px!important}
 /* ═══ จบบล็อก NON-FCR FONT +2px ═══ */
+
+/* ═══════════════════════════════════════════════════════════════
+   กราฟรายเดือนแบบ DYNAMIC — กล่องบอกค่า + แถบสรุปตามเดือน
+   ต้องการกลับเป็นแบบเดิม: ลบบล็อกนี้ + ลบ opts.live ที่จุดเรียกกราฟ
+   ═══════════════════════════════════════════════════════════════ */
+.mc-tip{position:fixed;pointer-events:none;z-index:9999;opacity:0;
+  transform:translate(-50%,-100%);transition:opacity .1s;
+  background:#fff;border:1px solid #D8D6F5;border-radius:10px;
+  box-shadow:0 8px 24px rgba(30,27,58,.18);padding:8px 12px;min-width:132px;
+  font-family:'CPN','Inter',sans-serif;line-height:1.45}
+.mc-tip.on{opacity:1}
+.mc-tip.below{transform:translate(-50%,14px)}
+.mc-tip .mc-tip-m{font-size:10px;font-weight:700;letter-spacing:.06em;color:#9A9A96;
+  text-transform:uppercase}
+.mc-tip .mc-tip-v{font-size:20px;font-weight:700;line-height:1.15}
+.mc-tip .mc-tip-d{font-size:11px;font-weight:600;margin-top:1px}
+.mc-tip .mc-tip-g{font-size:10.5px;margin-top:4px;padding-top:4px;border-top:1px solid #EEF2F7}
+.mc-tip .mc-tip-h{font-size:10px;color:#9A9A96;margin-top:4px}
+
+.m-pick{margin:10px 0 14px}
+.m-pick-bar{display:flex;align-items:center;gap:9px;width:100%;cursor:pointer;
+  background:#fff;border:1px solid var(--border);border-radius:10px;padding:9px 13px;
+  font-family:'CPN','Inter',sans-serif;font-size:12px;font-weight:700;color:#5F5E5A;
+  letter-spacing:.03em;text-align:left}
+.m-pick-bar:hover{border-color:#C5BBF4}
+.m-pick-bar .caret{margin-left:auto;font-size:10px;color:#9A9A96;transition:transform .2s}
+.m-pick.closed .caret{transform:rotate(-90deg)}
+.m-pick.closed .m-pick-body{display:none}
+.m-pick-bar .pill{background:#F1EEFE;color:#4A3FBF;border-radius:20px;padding:2px 9px;font-size:11px}
+.m-pick-body{margin-top:9px}
+.m-pick-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.m-pick-cell{border:1px solid var(--border);border-left-width:4px;border-radius:10px;
+  padding:10px 12px;background:#fff}
+.m-pick-cell .pl{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#9A9A96}
+.m-pick-cell .pv{font-size:23px;font-weight:700;line-height:1.15;margin-top:1px}
+.m-pick-cell .pd{font-size:11px;font-weight:600;margin-top:1px}
+.m-pick-cell .pg{font-size:10.5px;margin-top:3px}
+.m-pick-empty{font-size:12px;color:#9A9A96;text-align:center;padding:12px 0}
+/* ═══ จบบล็อก DYNAMIC ═══ */
+
+/* ยุบช่องว่างของป้ายกำกับใต้หัวข้อกราฟเมื่อไม่มีข้อความ */
+#m-abn-note:empty,#m-reach-note:empty{padding:0!important;height:0;line-height:0}
 </style>
 </head>
 <body>
@@ -1249,13 +1291,13 @@ body.has-data #tab-bar{display:flex!important}
     <div class="m-g2">
       <div class="m-card" style="padding:14px 0 10px">
         <div class="m-card-title" style="padding:0 14px">
-          <div class="dot" style="background:#3b82f6"></div><span id="m-fcr-title">1st Contact Resolution</span>
+          <div class="dot" style="background:#29C6C0"></div><span id="m-fcr-title">1st Contact Resolution</span>
         </div>
         <div id="m-call-chart" style="overflow-x:auto;padding-right:14px"></div>
       </div>
       <div class="m-card" style="padding:14px 0 10px">
         <div class="m-card-title" style="padding:0 14px">
-          <div class="dot" style="background:#ef4444"></div><span id="m-abn-title">Abandon</span>
+          <div class="dot" style="background:#EF7C6B"></div><span id="m-abn-title">Abandon</span>
         </div>
         <div id="m-abn-note" style="padding:0 14px 4px"></div>
         <div id="m-abn-chart" style="overflow-x:auto;padding-right:14px"></div>
@@ -1263,7 +1305,7 @@ body.has-data #tab-bar{display:flex!important}
     </div>
     <div class="m-g2">
       <div class="m-card" style="padding:14px 0 10px">
-        <div class="m-card-title" style="padding:0 14px"><div class="dot" style="background:#22c55e"></div>Call Reach Rate</div>
+        <div class="m-card-title" style="padding:0 14px"><div class="dot" style="background:#0EA5E9"></div>Call Reach Rate</div>
         <div id="m-reach-note" style="padding:0 14px 4px"></div>
         <div id="m-reach-chart" style="overflow-x:auto;padding-right:14px"></div>
       </div>
@@ -1272,6 +1314,8 @@ body.has-data #tab-bar{display:flex!important}
         <div id="m-res-call-chart" style="overflow-x:auto;padding-right:14px"></div>
       </div></div>
     <!-- end m-g2 reach+res row -->
+    <!-- แถบสรุปตามเดือน (คลิกจุดบนกราฟเพื่อเลือกเดือน) -->
+    <div class="m-pick" id="m-pick"></div>
     <div class="m-sec"><div class="dot" style="background:#FFA940"></div><span id="m-resdept-sec">Avg. Resolution Time ตามแผนก รายเดือน -Call+Mail (วัน)</span></div>
     <div class="m-card" style="padding:14px">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
@@ -1298,7 +1342,7 @@ body.has-data #tab-bar{display:flex!important}
     <div class="m-g2">
       <div class="m-card" style="padding:14px 0 10px">
         <div class="m-card-title" style="padding:0 14px">
-          <div class="dot" style="background:#a855f7"></div><span id="m-mail-fcr-title">1st Contact Resolution — Mail</span>
+          <div class="dot" style="background:#8B7CF8"></div><span id="m-mail-fcr-title">1st Contact Resolution — Mail</span>
         </div>
         <div id="m-mail-chart" style="overflow-x:auto;padding-right:14px"></div>
       </div>
@@ -3450,6 +3494,98 @@ const MONTH_ORDER={'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'Jun':6,'Jul':7,'Aug'
 const sortMonths=ms=>[...ms].sort((a,b)=>(MONTH_ORDER[a]||99)-(MONTH_ORDER[b]||99));
 let MONTHLY_MODE='all';
 
+// ══════════════════════════════════════════════════════════════
+//  แถบสรุปตามเดือน — คลิกจุดบนกราฟเส้นรายเดือนเพื่อเลือกเดือน
+//  ซ่อน/คลี่ได้ และจำสถานะไว้ระหว่างการใช้งาน
+// ══════════════════════════════════════════════════════════════
+let M_PICK=null;            // เดือนที่เลือกอยู่ (null = ยังไม่เลือก)
+let M_PICK_OPEN=true;       // แถบสรุปคลี่อยู่หรือไม่
+let M_METRICS=[];           // ตัวชี้วัดของกราฟเส้นทั้งหมดในรอบวาดล่าสุด
+let M_DRAW=null;            // ฟังก์ชันวาดกราฟเส้นใหม่ (ไม่ต้องคำนวณทั้งหน้า)
+
+function mPickMonth(m){
+  M_PICK=(M_PICK===m)?null:m;
+  if(M_PICK) M_PICK_OPEN=true;
+  if(typeof M_DRAW==='function') M_DRAW();
+}
+function mTogglePick(){
+  M_PICK_OPEN=!M_PICK_OPEN;
+  const box=document.getElementById('m-pick');
+  if(box) box.classList.toggle('closed',!M_PICK_OPEN);
+}
+
+function renderMonthPick(){
+  const box=document.getElementById('m-pick');
+  if(!box)return;
+  const mets=M_METRICS.filter(x=>x.data&&x.data.length);
+  box.textContent='';
+  box.classList.toggle('closed',!M_PICK_OPEN);
+
+  // แถบหัว (กดเพื่อซ่อน/คลี่)
+  const bar=document.createElement('button');
+  bar.type='button'; bar.className='m-pick-bar';
+  bar.setAttribute('aria-expanded',String(M_PICK_OPEN));
+  const dot=document.createElement('span');
+  dot.style.cssText='width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0';
+  bar.appendChild(dot);
+  bar.appendChild(document.createTextNode(
+    M_PICK?('สรุปเดือน '+M_PICK+' — ทุกตัวชี้วัด'):'สรุปตามเดือน'));
+  if(M_PICK){
+    const pill=document.createElement('span'); pill.className='pill';
+    pill.textContent=M_PICK; bar.appendChild(pill);
+  }
+  const car=document.createElement('span'); car.className='caret'; car.textContent='▼';
+  bar.appendChild(car);
+  bar.addEventListener('click',mTogglePick);
+  box.appendChild(bar);
+
+  const body=document.createElement('div'); body.className='m-pick-body';
+  if(!M_PICK||!mets.length){
+    const e=document.createElement('div'); e.className='m-pick-empty';
+    e.textContent='— คลิกจุดบนกราฟเส้นด้านบน เพื่อดูสรุปของเดือนนั้นพร้อมกันทุกตัวชี้วัด —';
+    body.appendChild(e); box.appendChild(body); return;
+  }
+
+  const grid=document.createElement('div'); grid.className='m-pick-grid';
+  mets.forEach(mt=>{
+    const i=mt.months.indexOf(M_PICK);
+    if(i<0)return;
+    const v=mt.data[i];
+    if(v===null||v===undefined)return;
+    // เดือนก่อนหน้าที่มีข้อมูล
+    let pi=i-1, pv=null, pm='';
+    while(pi>=0){ if(mt.data[pi]!==null&&mt.data[pi]!==undefined){pv=mt.data[pi];pm=mt.months[pi];break;} pi--; }
+    const fv=x=>(mt.dec!==undefined?Number(x).toFixed(mt.dec):x)+mt.suffix;
+    const ok=(mt.good==='high')?(v>=mt.target):(v<=mt.target);
+
+    const cell=document.createElement('div'); cell.className='m-pick-cell';
+    cell.style.borderLeftColor=mt.color;
+    const l=document.createElement('div'); l.className='pl'; l.textContent=mt.label;
+    const val=document.createElement('div'); val.className='pv'; val.style.color=mt.color;
+    val.textContent=fv(v);
+    cell.append(l,val);
+    if(pv!==null){
+      const diff=+(v-pv).toFixed(2);
+      const better=(mt.good==='high')?diff>0:diff<0;
+      const d=document.createElement('div'); d.className='pd';
+      d.style.color=diff===0?'#9A9A96':(better?'#15803D':'#B91C1C');
+      d.textContent=diff===0?('= เท่า '+pm)
+        :((diff>0?'▲ +':'▼ ')+(mt.dec!==undefined?Math.abs(diff).toFixed(mt.dec):Math.abs(diff))+mt.suffix+' จาก '+pm);
+      cell.appendChild(d);
+    }
+    if(mt.target!==undefined&&mt.target!==null){
+      const g=document.createElement('div'); g.className='pg';
+      g.style.color=ok?'#15803D':'#B45309';
+      g.textContent=(ok?'✓ ผ่านเป้า ':'⚠ ยังไม่ถึงเป้า ')
+        +'('+(mt.good==='low'?'≤ ':'')+mt.target+mt.suffix+')';
+      cell.appendChild(g);
+    }
+    grid.appendChild(cell);
+  });
+  body.appendChild(grid);
+  box.appendChild(body);
+}
+
 function setMonthlyMode(m){
   MONTHLY_MODE=m;
   document.getElementById('mv-call').style.display=(m==='call'||m==='all')?'':'none';
@@ -3674,10 +3810,48 @@ function makeAreaBarCombo(elId, all12, dataMonths, fcrData, nfcrData, areaColor,
 
 
 // ─── Clean Line + Dot Chart (style: thin line, circle dots, value labels) ───
-function makeCleanBarChart(elId, months, dataMonths, series, yMax, unit){
+// ══════════════════════════════════════════════════════════════
+//  โหมดสเกลแกน Y ของกราฟเส้นรายเดือน
+//   AUTO_PCT = ฐานอยู่ที่ 0 เสมอ แต่ลด "เพดาน" ให้พอดีข้อมูล (ใช้กับค่าที่เล็ก เช่น Abandon)
+//   FIT_PCT  = ปรับทั้งฐานและเพดานให้พอดีข้อมูล (ใช้กับค่าที่สูง ๆ เช่น FCR / Reach Rate)
+// ══════════════════════════════════════════════════════════════
+const AUTO_PCT='auto', FIT_PCT='fit';
+// ช่วงแกนคงที่สำหรับค่าที่อยู่สูง (FCR / Reach Rate) — ฐาน 75% ขีดทุก 5%
+// ฐานคงที่ทำให้เทียบรูปร่างกราฟข้ามเดือน/ข้ามแผนกได้ตรง ๆ
+const PCT_75_100={min:75,max:100,step:5};
+
+// เลือกช่วงแกนเป็น "เลขกลม ๆ" ที่พอดีกับข้อมูล (ได้ 3–6 ช่วง)
+function _niceRange(vals, floorZero){
+  const v=vals.filter(x=>x!==null&&x!==undefined&&isFinite(x));
+  if(!v.length) return {min:0,max:100,step:25};
+  let lo=Math.min(...v), hi=Math.max(...v);
+  if(lo===hi){ lo=lo-Math.max(Math.abs(lo)*0.1,0.5); hi=hi+Math.max(Math.abs(hi)*0.1,0.5); }
+  const pad=Math.max((hi-lo)*0.25,(Math.abs(hi)||1)*0.02);
+  let w0=lo-pad, w1=hi+pad;
+  if(floorZero||w0<0) w0=0;
+  const CAND=[0.05,0.1,0.2,0.25,0.5,1,2,2.5,5,10,20,25,50];
+  let best=null;
+  CAND.forEach(st=>{
+    const mn=Math.max(0,Math.floor(w0/st)*st), mx=Math.ceil(w1/st)*st;
+    const cnt=Math.round((mx-mn)/st);
+    if(cnt>=3&&cnt<=6&&mx>mn){
+      const span=mx-mn;
+      if(!best||span<best.span) best={min:+mn.toFixed(4),max:+mx.toFixed(4),step:st,span};
+    }
+  });
+  return best||{min:0,max:100,step:25};
+}
+
+// opts (ไม่ใส่ = ทำงานเหมือนเดิมทุกอย่าง):
+//   target   เลขเป้าหมาย → วาดเส้นประ + จุดกลวงในเดือนที่ไม่ถึงเป้า
+//   good     'high' = ยิ่งมากยิ่งดี | 'low' = ยิ่งน้อยยิ่งดี
+//   live     true = เปิดชี้แล้วบอกค่า / คลิกเลือกเดือน / เคลื่อนไหว
+function makeCleanBarChart(elId, months, dataMonths, series, yMax, unit, opts){
   const el=document.getElementById(elId);if(!el)return;
+  opts=opts||{};
   const hasDataSet=new Set(dataMonths||[]);
-  const isPct=unit==='%'||(yMax===100&&!unit);
+  const _fixedRange=(yMax&&typeof yMax==='object')?yMax:null;
+  const isPct=unit==='%'||(yMax===100&&!unit)||yMax===AUTO_PCT||yMax===FIT_PCT||!!_fixedRange;
   const unitLabel=unit||'';
 
   const pts=months.map(m=>({
@@ -3690,21 +3864,64 @@ function makeCleanBarChart(elId, months, dataMonths, series, yMax, unit){
   }));
 
   const n=months.length;
-  const PL=36,PR=16,PT=32,PB=32;
+  const PL=36,PR=16,PT=18,PB=32;   // PT เดิม 32 → 18 : ตัดช่องว่างด้านบนที่ไม่ได้ใช้
   const SVG_H=185,CHART_H=SVG_H-PT-PB;
   const SVG_W=Math.max(360,PL+PR+n*60+20);
   const xStep=(SVG_W-PL-PR-20)/(Math.max(n-1,1));
 
-  let niceMax=yMax||100;
-  if(!isPct){
-    const allV=pts.flatMap(p=>p.vals).filter(v=>v!==null&&v>0);
+  let niceMin=0;
+  let niceMax=(yMax===AUTO_PCT||yMax===FIT_PCT)?100:(_fixedRange?_fixedRange.max:(yMax||100));
+  let autoTicks=null;
+  const _allVals=pts.flatMap(p=>p.vals).filter(v=>v!==null&&v!==undefined);
+  if(opts.target!==undefined&&opts.target!==null) _allVals.push(opts.target);
+  if(_fixedRange){
+    // ช่วงแกนคงที่ (เทียบข้ามเดือน/ข้ามแผนกได้ตรง ๆ)
+    // ถ้ามีเดือนไหนต่ำกว่าฐาน จะขยายฐานลงอัตโนมัติ เพื่อไม่ให้ค่าหลุดกราฟ
+    const st=_fixedRange.step;
+    const lo=_allVals.length?Math.min(..._allVals):_fixedRange.min;
+    niceMin=Math.max(0,Math.min(_fixedRange.min,Math.floor((lo-st*0.5)/st)*st));
+    niceMax=_fixedRange.max;
+    autoTicks=[];
+    for(let t=niceMin;t<=niceMax+1e-9;t+=st) autoTicks.push(+t.toFixed(4));
+    // ถ้าขีดเยอะเกินไป (ฐานถูกขยายลงมาก) ให้เว้นขีด
+    if(autoTicks.length>7){
+      const keep=Math.ceil(autoTicks.length/6);
+      autoTicks=autoTicks.filter((_,i)=>i%keep===0||i===autoTicks.length-1);
+    }
+  } else if(yMax===FIT_PCT||(!isPct&&yMax==null)){
+    // ปรับทั้งฐานและเพดานให้พอดีข้อมูล (หน่วย "วัน" บังคับฐาน 0)
+    const R=_niceRange(_allVals, !isPct);
+    niceMin=R.min; niceMax=isPct?Math.min(100,R.max):R.max;   // % ไม่เกิน 100
+    autoTicks=[];
+    for(let t=niceMin;t<=niceMax+1e-9;t+=R.step) autoTicks.push(+t.toFixed(4));
+    if(autoTicks.length<2){ autoTicks=[niceMin,niceMax]; }
+  } else if(yMax===AUTO_PCT){
+    // ── สเกล % แบบยืดหยุ่น: ฐานยังเริ่มที่ 0 (ไม่บิดเบือน) แต่ลด "เพดาน"
+    //    ให้พอดีกับค่าจริง → เส้นสูงขึ้น อ่านการขึ้นลงได้ชัด
+    //    เลือกระยะห่างขีดจากชุดเลขกลม ๆ ให้ได้ 4–5 ช่วง
+    const allV=_allVals.filter(v=>v>0);
+    const mx=allV.length?Math.max(...allV):1;
+    const CAND=[0.1,0.2,0.25,0.5,1,2,2.5,5,10,20,25,50,100];
+    const need=mx*1.08;              // เผื่อที่ว่างเหนือจุดสูงสุด ~8%
+    let step=25,cnt=4,best=Infinity; // เลือกคู่ที่ให้ "เพดานต่ำสุด" ที่ยังครอบค่าได้
+    CAND.forEach(c=>{
+      [4,5,6].forEach(k=>{
+        const top=c*k;
+        if(top>=need && top<best){ best=top; step=c; cnt=k; }
+      });
+    });
+    niceMax=Math.min(100,+(step*cnt).toFixed(2));
+    autoTicks=Array.from({length:cnt+1},(_,i)=>+(step*i).toFixed(2)).filter(t=>t<=niceMax+1e-9);
+  } else if(!isPct){
+    const allV=_allVals.filter(v=>v>0);
     const mx=allV.length?Math.max(...allV):1;
     const mag=Math.pow(10,Math.floor(Math.log10(mx||1)));
     niceMax=Math.ceil(mx*1.3/mag)*mag||1;
   }
-  const sc=v=>CHART_H*(1-Math.min(Math.max(+v||0,0),niceMax)/niceMax);
-  const ticks=isPct?[0,25,50,75,100]:
-    Array.from({length:5},(_,i)=>+(niceMax*i/4).toFixed(2)*1);
+  const _span=(niceMax-niceMin)||1;
+  const sc=v=>CHART_H*(1-(Math.min(Math.max(+v||0,niceMin),niceMax)-niceMin)/_span);
+  const ticks=autoTicks||(isPct?[0,25,50,75,100]:
+    Array.from({length:5},(_,i)=>+(niceMax*i/4).toFixed(2)*1));
 
   const uid='cl'+elId;
   let svg=`<svg viewBox="0 0 ${SVG_W} ${SVG_H}"
@@ -3712,17 +3929,35 @@ function makeCleanBarChart(elId, months, dataMonths, series, yMax, unit){
     font-family="Inter,sans-serif">`;
 
   // grid ticks
-  ticks.forEach(t=>{
+  ticks.forEach((t,ti)=>{
     const y=(PT+sc(t)).toFixed(1);
+    const base=ti===0;
     svg+=`<line x1="${PL}" y1="${y}" x2="${SVG_W-PR}" y2="${y}"
-      stroke="${+t===0?'#CBD5E1':'#EEF2F7'}" stroke-width="${+t===0?1.5:1}"/>`;
+      stroke="${base?'#CBD5E1':'#EEF2F7'}" stroke-width="${base?1.5:1}"/>`;
     svg+=`<text x="${PL-5}" y="${+y+4}" text-anchor="end"
       font-size="9.5" fill="#94A3B8">${t}${isPct?'%':unitLabel}</text>`;
   });
 
+  // ── เส้นเป้าหมาย (เส้นประ) ──
+  const _tgt=opts.target;
+  const _good=opts.good||'high';
+  const _pass=v=>(_good==='high')?(v>=_tgt):(v<=_tgt);
+  if(_tgt!==undefined&&_tgt!==null&&_tgt>=niceMin&&_tgt<=niceMax){
+    const ty=(PT+sc(_tgt)).toFixed(1);
+    svg+=`<line x1="${PL}" y1="${ty}" x2="${SVG_W-PR}" y2="${ty}"
+      stroke="#94A3B8" stroke-width="1.6" stroke-dasharray="6 5"/>`;
+    // ป้ายเป้าหมาย: อยู่ "เหนือ" เส้นประ และชิดขวา เพื่อไม่ชนตัวเลขบนจุด
+    const tLbl=(_good==='low'?'≤ ':'')+_tgt+(isPct?'%':unitLabel);
+    svg+=`<text x="${SVG_W-PR}" y="${(+ty-6).toFixed(1)}" text-anchor="end"
+      font-size="9.5" font-weight="700"
+      paint-order="stroke" stroke="#fff" stroke-width="3.2" stroke-linejoin="round"
+      fill="#64748B">เป้าหมาย ${tLbl}</text>`;
+  }
+
   const yBase=PT+CHART_H;
   // X positions of each month
   const xPos=pts.map((_,i)=>PL+10+(n===1?((SVG_W-PL-PR)/2):i*xStep));
+  let _hitPts=[];
 
   // draw per series
   series.forEach((s,si)=>{
@@ -3736,6 +3971,7 @@ function makeCleanBarChart(elId, months, dataMonths, series, yMax, unit){
     })).filter(p=>p.y!==null&&p.has);
 
     if(validPts.length<1)return;
+    if(si===0) _hitPts=validPts;
 
     // line connecting dots
     if(validPts.length>1){
@@ -3754,16 +3990,24 @@ function makeCleanBarChart(elId, months, dataMonths, series, yMax, unit){
       // dot outer (white border)
       svg+=`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${dotR+2}"
         fill="white"/>`;
-      // dot inner (color)
-      svg+=`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${dotR}"
-        fill="${s.color}" opacity="0.92"/>`;
+      // dot inner — ถ้ามีเป้าหมายและเดือนนี้ไม่ถึงเป้า ให้เป็น "จุดกลวง"
+      const _miss=(_tgt!==undefined&&_tgt!==null&&!_pass(p.v));
+      svg+= _miss
+        ? `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${dotR-0.6}"
+             fill="#fff" stroke="${s.color}" stroke-width="2.4"/>`
+        : `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${dotR}"
+             fill="${s.color}" opacity="0.92"/>`;
       // value label - อยู่เหนือ dot เสมอ
       // s.dec = จำนวนตำแหน่งทศนิยมของป้ายตัวเลข (ไม่ใส่ = แสดงตามค่าเดิม)
       const vStr=(s.dec!==undefined&&p.v!==null&&p.v!==undefined)?Number(p.v).toFixed(s.dec):p.v;
       const dispV=isPct?(vStr+'%'):(unitLabel?vStr+unitLabel:vStr);
-      const lblY=(p.y-dotR-7).toFixed(1);
+      // ย้ายป้ายไปอยู่ "ใต้" จุด เฉพาะกรณีที่วางข้างบนแล้วตัวหนังสือจะโดนตัดจริง ๆ
+      // (ตัวเลขสูง 13px → เส้นฐานต้องอยู่ต่ำกว่า 12.5px จากขอบบนถึงจะพ้น)
+      const _above=(p.y-dotR-7)>=12.5;
+      const lblY=(_above?(p.y-dotR-7):(p.y+dotR+13)).toFixed(1);
       svg+=`<text x="${p.x.toFixed(1)}" y="${lblY}"
         text-anchor="middle" font-size="11" font-weight="700"
+        paint-order="stroke" stroke="#fff" stroke-width="3.2" stroke-linejoin="round"
         fill="${s.color}">${dispV}</text>`;
     });
   });
@@ -3796,6 +4040,139 @@ function makeCleanBarChart(elId, months, dataMonths, series, yMax, unit){
   </div>`:'';
 
   el.innerHTML=svg+legend;
+
+  // ── ชั้น Dynamic: เคลื่อนไหว + ชี้แล้วบอกค่า + คลิกเลือกเดือน ──
+  if(opts.live && _hitPts.length){
+    _wireLiveChart(el, {
+      SVG_W, SVG_H, PL, PR, PT, CHART_H, yBase,
+      pts:_hitPts, color:series[0].color, dec:series[0].dec,
+      suffix:isPct?'%':(unitLabel||''), label:opts.label||series[0].label,
+      target:_tgt, good:_good, pass:_pass, pickable:opts.pickable!==false
+    });
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  ชั้น Dynamic ของกราฟเส้นรายเดือน
+//   • เส้นวิ่งตอนวาดใหม่
+//   • ชี้เมาส์ → เส้นแนวตั้งจับเดือน + กล่องบอกค่า (เทียบเดือนก่อน + สถานะเป้าหมาย)
+//   • คลิกเดือน → ไฮไลต์พร้อมกันทุกกราฟ + แถบสรุปด้านล่าง
+//  ต้องการปิดทั้งหมด: ลบ opts.live ออกจากจุดที่เรียก makeCleanBarChart
+// ══════════════════════════════════════════════════════════════
+function _wireLiveChart(el, C){
+  const svg=el.querySelector('svg'); if(!svg)return;
+  const NSV='http://www.w3.org/2000/svg';
+  const mk=(t,a)=>{const e=document.createElementNS(NSV,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
+  el.style.position='relative';
+
+  // เส้นวิ่ง
+  const path=svg.querySelector('path');
+  if(path){
+    try{
+      const len=path.getTotalLength()||1200;
+      path.style.transition='none';
+      path.setAttribute('stroke-dasharray',len);
+      path.setAttribute('stroke-dashoffset',len);
+      requestAnimationFrame(()=>{
+        path.style.transition='stroke-dashoffset .75s ease-out';
+        path.setAttribute('stroke-dashoffset',0);
+      });
+    }catch(e){}
+  }
+
+  const g=mk('g',{}); svg.appendChild(g);
+  const cross=mk('line',{x1:0,y1:C.PT-6,x2:0,y2:C.yBase,stroke:'#6C5CE7',
+    'stroke-width':1.3,'stroke-dasharray':'4 4',opacity:0});
+  const halo=mk('circle',{r:9,fill:'none',stroke:C.color,'stroke-width':2.4,opacity:0});
+  const lock=mk('circle',{r:9,fill:'none',stroke:'#6C5CE7','stroke-width':2,opacity:0});
+  g.append(cross,halo,lock);
+
+  // ไฮไลต์เดือนที่ถูกเลือกไว้ (ค้างไว้)
+  if(M_PICK){
+    const pp=C.pts.find(q=>q.m===M_PICK);
+    if(pp){
+      lock.setAttribute('cx',pp.x); lock.setAttribute('cy',pp.y); lock.setAttribute('opacity',.95);
+      cross.setAttribute('x1',pp.x); cross.setAttribute('x2',pp.x); cross.setAttribute('opacity',.3);
+    }
+  }
+
+  // กล่องบอกค่า
+  let tip=el.querySelector('.mc-tip');
+  if(!tip){ tip=document.createElement('div'); tip.className='mc-tip'; el.appendChild(tip); }
+
+  const fmtV=v=>(C.dec!==undefined?Number(v).toFixed(C.dec):v)+C.suffix;
+  const place=(p)=>{
+    // ใช้พิกัดหน้าจอจริง (position:fixed) → กล่องไม่ถูกกรอบกราฟตัดขอบ
+    const sr=svg.getBoundingClientRect();
+    const L=sr.left+(p.x/C.SVG_W)*sr.width;
+    const T=sr.top +(p.y/C.SVG_H)*sr.height;
+    const w=tip.offsetWidth||150, h=tip.offsetHeight||90;
+    // ไม่พอที่ด้านบน → พลิกไปอยู่ใต้จุดแทน
+    const below=(T-h-14)<6;
+    tip.classList.toggle('below',below);
+    tip.style.left=Math.max(w/2+6,Math.min(window.innerWidth-w/2-6,L))+'px';
+    tip.style.top =(below?Math.min(window.innerHeight-h-8,T):Math.max(h+8,T-10))+'px';
+  };
+  const fill=(p,i)=>{
+    const prev=i>0?C.pts[i-1]:null;
+    tip.textContent='';
+    const h=document.createElement('div'); h.className='mc-tip-m'; h.textContent=p.m; tip.appendChild(h);
+    const v=document.createElement('div'); v.className='mc-tip-v'; v.style.color=C.color;
+    v.textContent=fmtV(p.v); tip.appendChild(v);
+    if(prev){
+      const diff=+(p.v-prev.v).toFixed(2);
+      const better=(C.good==='high')?diff>0:diff<0;
+      const d=document.createElement('div'); d.className='mc-tip-d';
+      d.style.color=diff===0?'#9A9A96':(better?'#15803D':'#B91C1C');
+      d.textContent=diff===0?('= เท่า '+prev.m)
+        :((diff>0?'▲ +':'▼ ')+(C.dec!==undefined?Math.abs(diff).toFixed(C.dec):Math.abs(diff))+C.suffix+' จาก '+prev.m);
+      tip.appendChild(d);
+    }
+    if(C.target!==undefined&&C.target!==null){
+      const ok=C.pass(p.v);
+      const t=document.createElement('div'); t.className='mc-tip-g';
+      t.style.color=ok?'#15803D':'#B45309';
+      t.textContent=(ok?'✓ ':'⚠ ')+'เป้าหมาย '+(C.good==='low'?'≤ ':'')+C.target+C.suffix;
+      tip.appendChild(t);
+    }
+    if(C.pickable){
+      const hint=document.createElement('div'); hint.className='mc-tip-h';
+      hint.textContent=(M_PICK===p.m)?'คลิกอีกครั้งเพื่อยกเลิก':'คลิกเพื่อดูสรุปเดือนนี้';
+      tip.appendChild(hint);
+    }
+  };
+
+  const bw=C.pts.length>1?(C.pts[1].x-C.pts[0].x):60;
+  C.pts.forEach((p,i)=>{
+    const r=mk('rect',{x:(p.x-bw/2).toFixed(1),y:C.PT-10,width:bw,height:C.CHART_H+18,
+      fill:'transparent',style:'cursor:'+(C.pickable?'pointer':'default'),tabindex:0});
+    r.setAttribute('role','button');
+    r.setAttribute('aria-label',p.m+' '+fmtV(p.v));
+    const show=()=>{
+      window._FMT_PAUSE=true;
+      cross.setAttribute('x1',p.x);cross.setAttribute('x2',p.x);cross.setAttribute('opacity',.8);
+      halo.setAttribute('cx',p.x);halo.setAttribute('cy',p.y);halo.setAttribute('opacity',.95);
+      fill(p,i); tip.classList.add('on'); place(p);
+    };
+    const hide=()=>{
+      halo.setAttribute('opacity',0);
+      const pp=M_PICK?C.pts.find(q=>q.m===M_PICK):null;
+      if(pp){cross.setAttribute('x1',pp.x);cross.setAttribute('x2',pp.x);cross.setAttribute('opacity',.3);}
+      else cross.setAttribute('opacity',0);
+      tip.classList.remove('on');
+      setTimeout(()=>{window._FMT_PAUSE=false;},120);
+    };
+    r.addEventListener('pointerenter',show);
+    r.addEventListener('pointermove',show);
+    r.addEventListener('focus',show);
+    r.addEventListener('blur',hide);
+    r.addEventListener('pointerleave',hide);
+    if(C.pickable){
+      r.addEventListener('click',()=>mPickMonth(p.m));
+      r.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();mPickMonth(p.m);}});
+    }
+    g.appendChild(r);
+  });
 }
 
 
@@ -6238,6 +6615,7 @@ function _fmtPass(){
 }
 function startThousandsFormatter(){
   _fmtObs=new MutationObserver(()=>{
+    if(window._FMT_PAUSE)return;   // ขณะชี้เมาส์บนกราฟ ไม่ต้องจัดรูปแบบใหม่
     clearTimeout(_fmtTimer);
     _fmtTimer=setTimeout(_fmtPass,40);
   });
@@ -7342,15 +7720,18 @@ function renderMonthly(){
   // 1st Contact Resolution — แสดงเฉพาะ FCR% เป็นกราฟเส้น (รูปแบบเดียวกับกราฟ Abandon)
   const el_fcrT=document.getElementById('m-fcr-title');
   if(el_fcrT) el_fcrT.textContent=`1st Contact Resolution — ${modeLabel}`;
-  makeCleanBarChart('m-call-chart', ALL12, chartMonths,
-    [{label:'1st Contact Resolution (%)', data:chartMonths.map(fcrPctM), color:'#29C6C0'}], 100, '%');
+  M_METRICS=[];
+  M_METRICS.push({el:'m-call-chart', label:'1st Contact Resolution', color:'#29C6C0',
+    suffix:'%', dec:undefined, scale:PCT_75_100, unit:'%',
+    months:chartMonths, data:chartMonths.map(fcrPctM)});
   // Abandon — ไม่แสดงป้ายแหล่งข้อมูล (แหล่งสลับอัตโนมัติอยู่เบื้องหลัง), ทศนิยม 1 ตำแหน่ง
   const el_abnT=document.getElementById('m-abn-title');
   if(el_abnT) el_abnT.textContent='Abandon';
   const el_abnN=document.getElementById('m-abn-note');
   if(el_abnN) el_abnN.innerHTML='';
-  makeCleanBarChart('m-abn-chart', ALL12, chartMonths,
-    [{label:'Abandon % vs Total Call', data:chartMonths.map(abnPctM), color:'#EF7C6B', dec:1}], 100, '%');
+  M_METRICS.push({el:'m-abn-chart', label:'Abandon', color:'#EF7C6B',
+    suffix:'%', dec:1, scale:AUTO_PCT, unit:'%',
+    months:chartMonths, data:chartMonths.map(abnPctM)});
 
   // Call Reach Rate — 3CX ไม่มีข้อมูลแผนก จึงแยกรายแผนกไม่ได้
   // ยังแสดงกราฟของทุกแผนกตามเดิม แต่ติดป้ายบอกให้ชัดเมื่อมีการกรองแผนก
@@ -7359,12 +7740,14 @@ function renderMonthly(){
     ? `<span style="font-size:10.5px;color:#B45309;background:#FEF3C7;border:1px solid #FDE68A;
          border-radius:6px;padding:2px 8px;display:inline-block">⚠ ไม่สามารถแสดงข้อมูลรายแผนกได้ (3CX ไม่มีข้อมูลแผนก) — กราฟนี้เป็นภาพรวมทุกแผนก</span>`
     : '';
-  makeCleanBarChart('m-reach-chart', ALL12, chartMonths,
-    [{label:'Call Reach Rate (%)', data:chartMonths.map(m=>rr(m)), color:'#0EA5E9'}], 100);
+  M_METRICS.push({el:'m-reach-chart', label:'Call Reach Rate', color:'#0EA5E9',
+    suffix:'%', dec:undefined, scale:PCT_75_100, unit:'%',
+    months:chartMonths, data:chartMonths.map(m=>rr(m))});
   const el_arT=document.getElementById('m-res-title');
   if(el_arT) el_arT.textContent=`Avg. Resolution Time — ${modeLabel}`;
-  makeCleanBarChart('m-res-call-chart', ALL12, chartMonths,
-    [{label:'Avg Resolution Time', data:chartMonths.map(arActive), color:'#FFA940', dec:1}], null, 'วัน');
+  M_METRICS.push({el:'m-res-call-chart', label:'Avg. Resolution Time', color:'#FFA940',
+    suffix:'วัน', dec:1, scale:null, unit:'วัน',
+    months:chartMonths, data:chartMonths.map(arActive)});
   makeDeptLevelChart('m-call-level-chart',chartMonths,activeFn,'call');
   makeDeptLevelTable('m-call-dept-level-tbl',chartMonths,activeFn);
   makeResDeptChart('m-call-res-dept-chart',chartMonths,activeFn);
@@ -7392,10 +7775,24 @@ function renderMonthly(){
   // 1st Contact Resolution (Mail) — เส้นเดียว แสดงเฉพาะ Mail (mailFn) รูปแบบเดียวกับฝั่ง Call
   const el_fmrT=document.getElementById('m-mail-fcr-title');
   if(el_fmrT) el_fmrT.textContent='1st Contact Resolution — Mail';
-  makeCleanBarChart('m-mail-chart', ALL12, chartMonths,
-    [{label:'1st Contact Resolution (%) — Mail', data:chartMonths.map(fmrPctM), color:'#8B7CF8'}], 100, '%');
-  makeCleanBarChart('m-res-mail-chart', ALL12, chartMonths,
-    [{label:'Avg Resolution Time', data:chartMonths.map(arM), color:'#FFA940', dec:1}], null, 'วัน');
+  M_METRICS.push({el:'m-mail-chart', label:'1st Contact Res. — Mail', color:'#8B7CF8',
+    suffix:'%', dec:undefined, scale:PCT_75_100, unit:'%',
+    months:chartMonths, data:chartMonths.map(fmrPctM)});
+  M_METRICS.push({el:'m-res-mail-chart', label:'Avg. Resolution Time — Mail', color:'#FFA940',
+    suffix:'วัน', dec:1, scale:null, unit:'วัน',
+    months:chartMonths, data:chartMonths.map(arM)});
+
+  // ── วาดกราฟเส้นรายเดือนทั้งหมด (เรียกซ้ำได้ตอนคลิกเลือกเดือน) ──
+  M_DRAW=function(){
+    M_METRICS.forEach(mt=>{
+      makeCleanBarChart(mt.el, ALL12, mt.months,
+        [{label:mt.label, data:mt.data, color:mt.color, dec:mt.dec}],
+        mt.scale, mt.unit,
+        {target:mt.target, good:mt.good, live:true, label:mt.label});
+    });
+    renderMonthPick();
+  };
+  M_DRAW();
   makeDeptLevelChart('m-mail-level-chart',chartMonths,mailFn,'mail');
   makeDeptLevelTable('m-mail-dept-level-tbl',chartMonths,mailFn);
   makeResDeptChart('m-mail-res-dept-chart',chartMonths,mailFn);
