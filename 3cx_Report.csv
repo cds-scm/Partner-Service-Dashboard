@@ -18930,3 +18930,9 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-09-24T15:21:56.215941+07:00,Inbound Queue,PT20.086459S,True,Queue,1,Waiting,8196
 2026-09-24T15:17:34.655485+07:00,Outbound,PT12.074519S,True,External,1,Answered,10009
 2026-09-24T15:08:06.665011+07:00,Internal,PT3.41333S,True,System,1,Answered,*30
+2026-09-25T09:52:38.518584+07:00,Internal,PT3.514314S,True,System,1,Answered,*31
+2026-09-25T09:52:07.384056+07:00,Internal,PT3.412912S,True,System,1,Answered,*30
+2026-09-25T09:17:38.994327+07:00,Internal,PT3.413794S,True,System,1,Answered,*31
+2026-09-25T09:12:04.577545+07:00,Internal,PT3.414008S,True,System,1,Answered,*30
+2026-09-25T09:11:22.794097+07:00,Internal,PT0.796656S,True,System,1,Answered,*30
+2026-09-25T08:59:29.113221+07:00,Internal,PT3.413913S,True,System,1,Answered,*30
