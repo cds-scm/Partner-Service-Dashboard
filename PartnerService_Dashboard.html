@@ -6323,129 +6323,88 @@ function processCXData(data){
 
 
 // ══ PPTX Styles ══
+// ══ PPTX Theme — มีชุดเดียว: ชุดเดียวกับสไลด์นำเสนอ (พื้นขาว · ฟอนต์ CPN) ══
 const PPTX_STYLES=[
-  {id:'corporate_dark',name:'Corporate Dark',desc:'เป็นทางการ Board Meeting',preview:'#1E1B3A',accent:'#FCD34D',tags:['ทางการ','Board'],
-   C:{header_bg:'1E1B3A',header_text:'FFFFFF',accent:'FCD34D',accent_dark:'F59E0B',primary:'6C5CE7',primary_light:'EDE9FE',body_bg:'FFFFFF',body_bg2:'F9FAFB',text_dark:'111827',text_gray:'6B7280',text_light:'FFFFFF',border:'E5E7EB',status_green:'059669',status_amber:'D97706',status_red:'DC2626',status_blue:'2563EB'}},
-  {id:'fresh_teal',name:'Fresh Teal',desc:'สดใส Team Meeting',preview:'#0F766E',accent:'#99F6E4',tags:['สดใส','ทีม'],
-   C:{header_bg:'0F766E',header_text:'FFFFFF',accent:'99F6E4',accent_dark:'0D9488',primary:'0891B2',primary_light:'E0F2FE',body_bg:'FFFFFF',body_bg2:'F0FDFA',text_dark:'134E4A',text_gray:'6B7280',text_light:'FFFFFF',border:'99F6E4',status_green:'059669',status_amber:'D97706',status_red:'DC2626',status_blue:'0891B2'}},
-  {id:'minimal_light',name:'Minimal Light',desc:'เรียบง่าย Print/Email',preview:'#475569',accent:'#3B82F6',tags:['เรียบ','Print'],
-   C:{header_bg:'F8FAFC',header_text:'1E293B',accent:'3B82F6',accent_dark:'1D4ED8',primary:'475569',primary_light:'F1F5F9',body_bg:'FFFFFF',body_bg2:'F8FAFC',text_dark:'0F172A',text_gray:'64748B',text_light:'FFFFFF',border:'CBD5E1',status_green:'16A34A',status_amber:'CA8A04',status_red:'DC2626',status_blue:'2563EB'}},
-  {id:'bold_purple',name:'Bold Purple',desc:'CDS Brand องค์กร',preview:'#4C1D95',accent:'#DDD6FE',tags:['CDS','องค์กร'],
-   C:{header_bg:'4C1D95',header_text:'FFFFFF',accent:'DDD6FE',accent_dark:'7C3AED',primary:'7C3AED',primary_light:'F5F3FF',body_bg:'FFFFFF',body_bg2:'FAF5FF',text_dark:'1E1B3A',text_gray:'6B7280',text_light:'FFFFFF',border:'DDD6FE',status_green:'059669',status_amber:'D97706',status_red:'DC2626',status_blue:'2563EB'}},
-  {id:'dynamic_purple',name:'Dynamic Purple',desc:'Visual Impact สูง',preview:'#8B5CF6',accent:'#F59E0B',tags:['Impact','Modern'],
-   C:{header_bg:'8B5CF6',header_text:'FFFFFF',accent:'F59E0B',accent_dark:'D97706',primary:'7C3AED',primary_light:'EDE9FE',body_bg:'FFFFFF',body_bg2:'FAF5FF',text_dark:'1F2937',text_gray:'6B7280',text_light:'FFFFFF',border:'DDD6FE',status_green:'10B981',status_amber:'F59E0B',status_red:'EF4444',status_blue:'3B82F6'}},
+  {id:'presentation_white',name:'Presentation White',desc:'ชุดเดียวกับสไลด์นำเสนอ · พื้นขาว',preview:'#796AE9',accent:'#29C6C0',tags:['พื้นขาว','นำเสนอ','แนะนำ'],
+   C:{light:true,header_bg:'FFFFFF',header_text:'1E1B3A',accent:'29C6C0',accent_text:'1B9E99',accent_dark:'17726F',title:'1E1B3A',subtitle:'5F5E5A',card_bg2:'F1EEFE',card_bg3:'EAF8F7',primary:'796AE9',primary_light:'E4DFFB',primary_light2:'D8D0FB',body_bg:'FFFFFF',body_bg2:'FFFFFF',text_dark:'1E1B3A',text_dark2:'3A3570',text_gray:'5F5E5A',text_soft:'8C8B87',text_light:'FFFFFF',border:'E2E1DC',ink:'1E1B3A',ink_soft:'8C86B8',card_bg:'F4F5F7',mail:'1B9E99',mail_light:'EAF8F7',mail_border:'A9E6E3',status_green:'2E9E5B',status_green_light:'E4F3EA',status_green_dark:'237A47',status_amber:'D97706',status_amber_dark:'B45309',status_amber_light:'FDF3E3',status_red:'DC2626',status_red_light:'FBE7E7',status_blue:'2A2652'}},
 ];
-let _selectedStyle='corporate_dark';
+let _selectedStyle='presentation_white';
 function getActiveThemeColors(){return(PPTX_STYLES.find(s=>s.id===_selectedStyle)||PPTX_STYLES[0]).C;}
 function selectPptxStyle(id){
-  _selectedStyle=id;
-  PPTX_STYLES.forEach(s=>{const c=document.getElementById('style-card-'+s.id);if(!c)return;
-    if(s.id===id){c.style.border='2px solid '+s.preview;c.style.background=s.preview+'18';}
-    else{c.style.border='1.5px solid #E8EAED';c.style.background='#fff';}
-  });
+  // มีธีมเดียว — รับค่าไว้เพื่อความเข้ากันได้กับโค้ดเดิมเท่านั้น
+  if(PPTX_STYLES.some(s=>s.id===id)) _selectedStyle=id;
 }
 
-// ══ PPTX Templates ══
-const PPTX_TEMPLATES=[
-  {id:'cds_dashboard_report',name:'CDS Dashboard Report',desc:'ต้นฉบับ — ตรงกับ PDF output จริง',slides:8,color:'#7C3AED',bg:'#EDE9FE',border:'#DDD6FE',tags:['Default','ต้นฉบับ','8 slides'],audience:'ทุกระดับ',duration:'10-15 นาที',
-   preview:[{label:'Cover (ม่วง+เหลือง)',color:'#7C3AED'},{label:'ภาพรวม KPI (5+5 cards)',color:'#1E1B3A'},{label:'FCR (2 panel)',color:'#10B981'},{label:'สรุปแผนก (table)',color:'#7C3AED'},{label:'FCR vs Non-FCR (bars)',color:'#0EA5E9'},{label:'Top 10 Issue (ranked)',color:'#7C3AED'},{label:'Resolution Time',color:'#10B981'},{label:'Case ค้าง',color:'#F59E0B'}]},
-  {id:'monthly_report',name:'Monthly Report',desc:'รายงานประจำเดือน ครบถ้วน',slides:8,color:'#6C5CE7',bg:'#F5F3FF',border:'#DDD6FE',tags:['ครบถ้วน','ประจำเดือน'],audience:'ทีมงาน/หัวหน้าแผนก',duration:'15-20 นาที',
-   preview:[{label:'หน้าปก',color:'#1E1B3A'},{label:'KPI Overview',color:'#6C5CE7'},{label:'FCR Detail',color:'#29C6C0'},{label:'สรุปแผนก',color:'#6C5CE7'},{label:'Top Issues',color:'#F59E0B'},{label:'Pending',color:'#EF4444'},{label:'จุดแข็ง/ปรับปรุง',color:'#6C5CE7'},{label:'Recommendation',color:'#059669'}]},
-  {id:'weekly_summary',name:'Weekly Summary',desc:'สรุปรายสัปดาห์ กระชับ',slides:5,color:'#0891B2',bg:'#E0F2FE',border:'#BAE6FD',tags:['กระชับ','รายสัปดาห์'],audience:'ทีมงาน',duration:'5-10 นาที',
-   preview:[{label:'Cover',color:'#0891B2'},{label:'Week KPI',color:'#0891B2'},{label:'Daily Trend',color:'#29C6C0'},{label:'Highlights',color:'#F59E0B'},{label:'Next Week',color:'#059669'}]},
-  {id:'executive_brief',name:'Executive Brief',desc:'สรุปสั้นสำหรับผู้บริหาร',slides:3,color:'#1E1B3A',bg:'#F1F0F9',border:'#C4C2D4',tags:['สั้น','ผู้บริหาร'],audience:'ผู้บริหาร/C-Level',duration:'5 นาที',
-   preview:[{label:'Cover',color:'#1E1B3A'},{label:'Scorecard',color:'#374151'},{label:'Action Required',color:'#DC2626'}]},
-];
-let _selectedTemplate='cds_dashboard_report';
-
-function selectPptxTemplate(id){
-  _selectedTemplate=id;
-  PPTX_TEMPLATES.forEach(t=>{
-    const card=document.getElementById('tmpl-card-'+t.id);if(!card)return;
-    if(t.id===id){card.style.border='2px solid '+t.color;card.style.background=t.bg;const ck=card.querySelector('.tmpl-check');if(ck)ck.style.display='flex';}
-    else{card.style.border='1.5px solid #E8EAED';card.style.background='#fff';const ck=card.querySelector('.tmpl-check');if(ck)ck.style.display='none';}
-  });
-  const tDef=PPTX_TEMPLATES.find(t=>t.id===id);
-  const badge=document.getElementById('slide-count-badge');if(badge&&tDef)badge.textContent=tDef.slides+' slides';
-  renderStandardSlides();
+// ══ ไอคอนเส้นบางสำหรับสไลด์ (วาดเองในเบราว์เซอร์ → PNG ฝังลง PPTX ไม่ต้องต่อเน็ต) ══
+const PPTX_ICONS={
+  phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
+  mail:'<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>',
+  check:'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/>',
+  clock:'<circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/>',
+  phoneOff:'<path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><line x1="23" y1="1" x2="1" y2="23"/>',
+  target:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+  calendar:'<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+  alert:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
+  chart:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
+  database:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>',
+  refresh:'<polyline points="23,4 23,10 17,10"/><polyline points="1,20 1,14 7,14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>',
+  monitor:'<rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>',
+  layers:'<polygon points="12,2 2,7 12,12 22,7 12,2"/><polyline points="2,17 12,22 22,17"/><polyline points="2,12 12,17 22,12"/>',
+  users:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+};
+const _ICON_CACHE={};
+async function pptxIconPng(name,hex,px){
+  px=px||128; hex=String(hex||'000000').replace('#','');
+  const key=name+'|'+hex+'|'+px;
+  if(_ICON_CACHE[key]) return _ICON_CACHE[key];
+  const inner=PPTX_ICONS[name];
+  if(!inner) return null;
+  const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+px+'" height="'+px+'" viewBox="0 0 24 24" '
+    +'fill="none" stroke="#'+hex+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+inner+'</svg>';
+  const url='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+  try{
+    const img=new Image();
+    await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej(new Error('icon load'));img.src=url;});
+    const cv=document.createElement('canvas'); cv.width=px; cv.height=px;
+    cv.getContext('2d').drawImage(img,0,0,px,px);
+    const out=cv.toDataURL('image/png').replace(/^data:/,'');
+    _ICON_CACHE[key]=out;
+    return out;
+  }catch(e){ console.warn('[icon]',name,e.message); return null; }
 }
 
-function showTemplatePreview(id){
-  const tDef=PPTX_TEMPLATES.find(t=>t.id===id);if(!tDef)return;
-  const panel=document.getElementById('tmpl-preview-panel');if(!panel)return;
-  const vis=panel.style.display==='block';
-  panel.innerHTML=`<div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px">ตัวอย่าง — ${tDef.name} (${tDef.slides} slides)</div>
-    <div style="display:flex;flex-direction:column;gap:3px">${tDef.preview.map((s,i)=>`<div style="display:flex;align-items:center;gap:8px">
-      <div style="width:20px;height:20px;border-radius:4px;background:${s.color};display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:700">${i+1}</div>
-      <div style="font-size:11px;color:#374151;background:#F8F9FB;border-radius:4px;padding:2px 8px;flex:1">${s.label}</div></div>`).join('')}</div>
-    <div style="margin-top:8px;font-size:10.5px;color:#6B7280">ผู้รับ: ${tDef.audience} · เวลา: ${tDef.duration}</div>`;
-  panel.style.display=vis?'none':'block';
+// ══ ช่วงเวลา / ขอบเขต ที่เลือกอยู่บน Dashboard (ใช้แสดงบนสไลด์) ══
+function pptxMMSS(sec){
+  if(!sec) return '—';
+  const t=Math.round(sec);
+  return `${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}`;
+}
+function pptxPeriodLabel(){
+  const _d=id=>document.getElementById(id)?.value||'';
+  const dfrom=_d('f-from'), dto=_d('f-to');
+  const fmt=v=>{const x=new Date(String(v).slice(0,10)+'T00:00:00');
+    return isNaN(x.getTime())?String(v):x.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'});};
+  if(typeof SEL_DAY!=='undefined'&&SEL_DAY) return fmt(SEL_DAY);
+  if(dfrom&&dto) return `${fmt(dfrom)} – ${fmt(dto)}`;
+  if(dfrom) return `ตั้งแต่ ${fmt(dfrom)}`;
+  if(dto)   return `ถึง ${fmt(dto)}`;
+  if(typeof SEL_MONTHS!=='undefined'&&SEL_MONTHS.length) return SEL_MONTHS.join(' · ');
+  // ไม่ได้ตั้งตัวกรองเวลา → ใช้ช่วงจริงของข้อมูลที่กำลังแสดง
+  const ds=(FILTERED||[]).map(r=>r.dateLog).filter(v=>v&&String(v).length>=10).sort();
+  if(ds.length) return `${fmt(ds[0])} – ${fmt(ds[ds.length-1])}`;
+  return 'ทั้งหมด';
+}
+function pptxScopeLabel(){
+  const out=[];
+  if(typeof SEL_DEPTS!=='undefined'&&SEL_DEPTS.length)
+    out.push(SEL_DEPTS.length<=2?SEL_DEPTS.join(', '):`${SEL_DEPTS.length} แผนก`);
+  const fl=document.getElementById('f-level')?.value||''; if(fl) out.push(fl);
+  if(typeof MODE!=='undefined'&&MODE&&MODE!=='all') out.push(MODE==='call'?'เฉพาะ Call':MODE==='mail'?'เฉพาะ Mail':String(MODE));
+  return out.join(' · ');
 }
 
-// ══ Slide Mode ══
-let _slideMode='standard';
-let _mergeSet=new Set();
-
-function setSlideMode(mode){
-  _slideMode=mode;
-  const btnS=document.getElementById('mode-btn-standard'),btnC=document.getElementById('mode-btn-custom');
-  const secS=document.getElementById('mode-standard'),secC=document.getElementById('mode-custom');
-  if(!btnS||!btnC)return;
-  if(mode==='standard'){
-    btnS.style.cssText='flex:1;padding:8px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;border:2px solid #6C5CE7;background:#6C5CE7;color:#fff;';
-    btnC.style.cssText='flex:1;padding:8px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;border:2px solid #E8EAED;background:#fff;color:#6B7280;';
-    if(secS)secS.style.display='block';if(secC)secC.style.display='none';
-  }else{
-    btnC.style.cssText='flex:1;padding:8px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;border:2px solid #6C5CE7;background:#6C5CE7;color:#fff;';
-    btnS.style.cssText='flex:1;padding:8px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;border:2px solid #E8EAED;background:#fff;color:#6B7280;';
-    if(secS)secS.style.display='none';if(secC)secC.style.display='block';
-    renderCustomSlides();
-  }
-}
-
-function renderStandardSlides(){
-  const tDef=PPTX_TEMPLATES.find(t=>t.id===_selectedTemplate);
-  const el=document.getElementById('standard-slide-list');if(!el||!tDef)return;
-  el.innerHTML=tDef.preview.map((s,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:3px 0">
-    <div style="width:18px;height:18px;border-radius:3px;background:${s.color};display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:700">${i+1}</div>
-    <div style="font-size:11px;color:#374151">${s.label}</div></div>`).join('');
-}
-
-function renderCustomSlides(){
-  const container=document.getElementById('slide-options');if(!container)return;
-  const tick=`<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  container.innerHTML=SLIDE_DEFS.map((s,i)=>{
-    const isMerged=_mergeSet.has(s.id);const isLast=i===SLIDE_DEFS.length-1;
-    return`<div><div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1.5px solid ${isMerged?'#FCD34D':'#E8EAED'};border-radius:10px;cursor:pointer;background:${isMerged?'#FFFBEB':'#fff'}" onclick="toggleSlide('${s.id}',this)">
-      <div id="chk-${s.id}" data-selected="1" style="width:18px;height:18px;border-radius:5px;border:2px solid #6C5CE7;background:#6C5CE7;display:flex;align-items:center;justify-content:center;flex-shrink:0">${tick}</div>
-      <span style="font-size:12px;color:#1E1B3A;flex:1">${s.icon} ${s.label}</span>
-      ${!isLast?`<button onclick="event.stopPropagation();toggleMerge('${s.id}')" style="font-size:10px;padding:2px 8px;border-radius:6px;cursor:pointer;white-space:nowrap;border:1px solid ${isMerged?'#F59E0B':'#DDD6FE'};background:${isMerged?'#FEF3C7':'#F5F3FF'};color:${isMerged?'#92400E':'#6C5CE7'};font-weight:600">${isMerged?'✦ รวมแล้ว':'⤵ รวมถัดไป'}</button>`:''}</div>
-      ${isMerged?`<div style="padding:1px 10px 0;display:flex;align-items:center;gap:5px"><div style="width:1px;height:12px;background:#FCD34D;margin-left:7px"></div><div style="font-size:10px;color:#92400E">รวมกับ slide ถัดไป</div></div>`:''}</div>`;
-  }).join('');
-}
-
-function toggleMerge(id){if(_mergeSet.has(id))_mergeSet.delete(id);else _mergeSet.add(id);renderCustomSlides();}
-
-function toggleSlide(id){
-  const chk=document.getElementById('chk-'+id);if(!chk)return;
-  const curSel=chk.dataset.selected!=='0';
-  const tick=`<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  const newSel=!curSel;chk.dataset.selected=newSel?'1':'0';
-  chk.style.background=newSel?'#6C5CE7':'#fff';chk.style.borderColor=newSel?'#6C5CE7':'#D1D5DB';chk.innerHTML=newSel?tick:'';
-}
-
-function toggleAllSlides(){
-  const chk=document.getElementById('chk-all');if(!chk)return;
-  const newOn=chk.dataset.selected==='0';
-  const tick=`<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  chk.dataset.selected=newOn?'1':'0';chk.style.background=newOn?'#6C5CE7':'#fff';chk.innerHTML=newOn?tick:'';
-  SLIDE_DEFS.forEach(s=>{const c=document.getElementById('chk-'+s.id);if(c){c.dataset.selected=newOn?'1':'0';c.style.background=newOn?'#6C5CE7':'#fff';c.innerHTML=newOn?tick:'';}});
-}
-
-function getSelectedSlides(){
-  if(_slideMode==='standard')return SLIDE_DEFS.map(s=>s.id);
-  return SLIDE_DEFS.filter(s=>{const c=document.getElementById('chk-'+s.id);return c&&c.dataset.selected!=='0';}).map(s=>s.id);
-}
+// ชุดรูปแบบมีแบบเดียว — คงชื่อไว้ให้ส่วนวิเคราะห์ของ Claude อ้างอิงได้
+const _selectedTemplate='cds_dashboard_report';
 
 // ══ Claude AI ══
 let _claudeAIEnabled=false;
@@ -6488,7 +6447,7 @@ function buildKpiSnapshot(){
   const deptMap={};src.forEach(r=>{if(r.typeDept)deptMap[r.typeDept]=(deptMap[r.typeDept]||0)+1;});
   return{template_type:_selectedTemplate,style_id:_selectedStyle,period:fm,totalCall:kpiCallN,totalMail:mailN,fcrPct,fmrPct,
     abandonPct:kpiCallN>0?(((cx.abn_3cx||abandonN)/kpiCallN)*100).toFixed(1):'—',
-    callReachRatePct:cx.sla_pct??'—',avgTalkTime:cx.avg_talk_sec?`${Math.floor(cx.avg_talk_sec/60)}:${String(Math.round(cx.avg_talk_sec%60)).padStart(2,'0')}`:'—',
+    callReachRatePct:cx.sla_pct??'—',avgTalkTime:pptxMMSS(cx.avg_talk_sec),
     pendingCases:pendingN,c2TransferPct:c2Pct,
     topDepts:Object.entries(deptMap).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([d,n])=>`${d}:${n}`).join(', ')};
 }
@@ -6496,7 +6455,7 @@ async function generateClaudeNarrative(kpi){
   // ── Fetch Skill files จาก GitHub ──
   const SKILL_BASE=`${PAGES_BASE}/partner-service-skill`;
   const tmplId=kpi.template_type||'cds_dashboard_report';
-  const styleId=kpi.style_id||'corporate_dark';
+  const styleId=kpi.style_id||'presentation_white';
   let systemPrompt='';
   try{
     const [skill,tmpl,style]=await Promise.all([
@@ -6665,76 +6624,75 @@ window.addEventListener('DOMContentLoaded',()=>{
 // ══════════════════════════════════════════════════════
 // ── SLIDE definitions (label, id, icon) ──
 const SLIDE_DEFS=[
-  {id:'cover',     label:'หน้าปก (Cover)',              icon:'🎯'},
-  {id:'kpi',       label:'ภาพรวม KPI',                  icon:'📊'},
-  {id:'resolution',label:'1st Contact Resolution (FCR)',  icon:'✅'},
-  {id:'dept',      label:'สรุป Case ทุกแผนก',           icon:'🏢'},
-  {id:'fcr_dept',  label:'FCR vs Non-FCR ตามแผนก',      icon:'🎯'},
-  {id:'top10',     label:'Top 10 Issue',                icon:'🔍'},
-  {id:'res_time',  label:'Resolution Time ตามแผนก',     icon:'⏱'},
-  {id:'pending',   label:'Case ค้าง (Pending/Open)',       icon:'⏳'},
+  {id:'cover',  no:'',   color:'#1E1B3A', label:'หน้าปก',
+   desc:'ชื่อหน่วยงาน · ช่วงเวลาที่กรอง · KPI สรุป 4 ตัว'},
+  {id:'kpi',    no:'01', color:'#796AE9', label:'ภาพรวม KPI',
+   desc:'ยอด Call / Mail · FCR · Talk Time · Abandon · Reach Rate · Resolution · Case ค้าง'},
+  {id:'detail', no:'02', color:'#1B9E99', label:'FCR · รายแผนก · Top Issue · Case ค้าง',
+   desc:'การ์ดสรุป 5 ตัว · ตารางรายแผนก 8 คอลัมน์ · Top 10 Issue Detail'},
+  {id:'trend',  no:'03', color:'#D97706', label:'แนวโน้มรายเดือน',
+   desc:'กราฟเส้น 4 ตัวชี้วัด — FCR · Abandon · Reach Rate · Resolution Time'},
 ];
+
+// ── ตัวเลือกสไลด์: เป็นทั้งตัวเลือกและตัวอย่าง ตรงกับสิ่งที่จะได้จริง ──
+const _slideSel={};
+SLIDE_DEFS.forEach(d=>{_slideSel[d.id]=true;});
+
+function getSelectedSlides(){
+  return SLIDE_DEFS.filter(d=>_slideSel[d.id]!==false).map(d=>d.id);
+}
+function _slideTick(on){
+  return on
+    ? `<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+    : '';
+}
+function toggleSlide(id){
+  _slideSel[id]=!(_slideSel[id]!==false);
+  renderSlidePicker();
+}
+function toggleAllSlides(){
+  const allOn=SLIDE_DEFS.every(d=>_slideSel[d.id]!==false);
+  SLIDE_DEFS.forEach(d=>{_slideSel[d.id]=!allOn;});
+  renderSlidePicker();
+}
+function renderSlidePicker(){
+  const el=document.getElementById('slide-options'); if(!el) return;
+  el.innerHTML=SLIDE_DEFS.map(d=>{
+    const on=_slideSel[d.id]!==false;
+    const badge=d.no
+      ? `<div style="width:26px;height:26px;border-radius:7px;background:${on?d.color:'#E2E1DC'};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">${d.no}</div>`
+      : `<div style="width:26px;height:26px;border-radius:7px;background:${on?d.color:'#E2E1DC'};display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div>`;
+    return `<div onclick="toggleSlide('${d.id}')" style="display:flex;align-items:flex-start;gap:10px;padding:9px 11px;border:1.5px solid ${on?'#D8D0FB':'#EDECE8'};border-radius:11px;cursor:pointer;background:${on?'#FFFFFF':'#FAFAF9'};transition:.15s">
+      <div style="width:18px;height:18px;border-radius:5px;border:2px solid ${on?'#796AE9':'#D1CFC9'};background:${on?'#796AE9':'#fff'};display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:3px">${_slideTick(on)}</div>
+      ${badge}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:700;color:${on?'#1E1B3A':'#9A988F'};line-height:1.35">${d.label}</div>
+        <div style="font-size:10.5px;color:${on?'#5F5E5A':'#B5B3AC'};margin-top:2px;line-height:1.4">${d.desc}</div>
+      </div>
+    </div>`;
+  }).join('');
+  const n=getSelectedSlides().length;
+  const badge=document.getElementById('slide-count-badge');
+  if(badge) badge.textContent=n+' สไลด์';
+  const all=document.getElementById('chk-all');
+  if(all){
+    const allOn=SLIDE_DEFS.every(d=>_slideSel[d.id]!==false);
+    all.style.background=allOn?'#796AE9':'#fff';
+    all.style.borderColor=allOn?'#796AE9':'#D1CFC9';
+    all.innerHTML=_slideTick(allOn);
+  }
+  const btn=document.getElementById('btn-do-export');
+  if(btn){ btn.disabled=n===0; btn.style.opacity=n===0?'.45':'1'; }
+}
 
 function openExportModal(){
   if(!RAW.length){showErr('ไม่มีข้อมูล กรุณาโหลดข้อมูลก่อน');return;}
-  const tick=`<svg width="9" height="9" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  // Style cards
-  const sc=document.getElementById('style-cards');
-  if(sc) sc.innerHTML=PPTX_STYLES.map(s=>`<div id="style-card-${s.id}" onclick="selectPptxStyle('${s.id}')"
-    style="border:${s.id===_selectedStyle?'2px solid '+s.preview:'1.5px solid #E8EAED'};border-radius:10px;padding:8px 10px;cursor:pointer;background:${s.id===_selectedStyle?s.preview+'18':'#fff'}">
-    <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">
-      <div style="width:22px;height:22px;border-radius:6px;background:${s.preview};border:3px solid ${s.accent};flex-shrink:0"></div>
-      <div><div style="font-size:11px;font-weight:700;color:#1E1B3A">${s.name}</div><div style="font-size:10px;color:#6B7280">${s.desc}</div></div>
-    </div><div style="display:flex;gap:3px;margin-left:29px">${s.tags.map(t=>`<span style="font-size:9px;padding:1px 6px;border-radius:20px;background:${s.preview}22;color:${s.preview};border:1px solid ${s.preview}44;font-weight:600">${t}</span>`).join('')}</div>
-  </div>`).join('');
-  // Template cards
-  const tc=document.getElementById('tmpl-cards');
-  if(tc) tc.innerHTML=PPTX_TEMPLATES.map(t=>`<div id="tmpl-card-${t.id}" onclick="selectPptxTemplate('${t.id}')"
-    style="border:${t.id===_selectedTemplate?'2px solid '+t.color:'1.5px solid #E8EAED'};border-radius:11px;padding:10px 12px;cursor:pointer;background:${t.id===_selectedTemplate?t.bg:'#fff'}">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-      <div style="flex:1">
-        <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">
-          <div style="width:24px;height:24px;border-radius:7px;background:${t.color};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px">📋</div>
-          <div><div style="font-size:12px;font-weight:700;color:#1E1B3A">${t.name}</div><div style="font-size:10px;color:#6B7280">${t.slides} slides · ${t.audience}</div></div>
-        </div>
-        <div style="font-size:11px;color:#4B5563;margin-left:31px">${t.desc}</div>
-        <div style="display:flex;gap:4px;margin-top:4px;margin-left:31px">${t.tags.map(tg=>`<span style="font-size:9.5px;padding:1px 7px;border-radius:20px;background:${t.bg};color:${t.color};border:1px solid ${t.border};font-weight:600">${tg}</span>`).join('')}</div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">
-        <div class="tmpl-check" style="display:${t.id===_selectedTemplate?'flex':'none'};width:18px;height:18px;border-radius:50%;background:${t.color};align-items:center;justify-content:center">${tick}</div>
-        <button onclick="event.stopPropagation();showTemplatePreview('${t.id}')" style="font-size:10px;padding:2px 9px;border-radius:5px;border:1px solid ${t.border};background:${t.bg};color:${t.color};cursor:pointer;font-weight:600;white-space:nowrap">ดูตัวอย่าง</button>
-      </div>
-    </div></div>`).join('');
+  renderSlidePicker();
   document.getElementById('export-modal').style.display='flex';
-  setSlideMode('standard');renderStandardSlides();
 }
 
 function closeExportModal(){
   document.getElementById('export-modal').style.display='none';
-}
-
-function toggleSlide(id,row){
-  const chk=document.getElementById('chk-'+id);
-  const isOn=chk.dataset.selected==='1';
-  const tick=`<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  chk.dataset.selected=isOn?'0':'1';
-  chk.style.background=isOn?'#fff':'#1976D2';
-  chk.style.borderColor='#1976D2';
-  chk.innerHTML=isOn?'':tick;
-}
-
-function toggleAllSlides(el){
-  const chk=document.getElementById('chk-all');
-  const isOn=chk.dataset.selected==='1';
-  const newOn=!isOn;
-  const tick=`<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  chk.dataset.selected=newOn?'1':'0';
-  chk.style.background=newOn?'#1976D2':'#fff';
-  chk.innerHTML=newOn?tick:'';
-  SLIDE_DEFS.forEach(s=>{
-    const c=document.getElementById('chk-'+s.id);
-    if(c){c.dataset.selected=newOn?'1':'0';c.style.background=newOn?'#1976D2':'#fff';c.innerHTML=newOn?tick:'';}
-  });
 }
 
 async function doExportPPTX(){
@@ -6762,22 +6720,101 @@ async function doExportPPTX(){
     // ── Theme Colors จาก Style ที่เลือก ──
     const _tc=typeof getActiveThemeColors==='function'?getActiveThemeColors():{};
     const C={
-      b1:_tc.primary||'5B21B6', b2:_tc.primary||'7C3AED', b3:_tc.primary||'8B5CF6',
-      b4:(_tc.primary||'7C3AED')+'88', b5:_tc.primary_light||'C4B5FD',
-      primary:_tc.primary||'7C3AED', primaryD:_tc.accent_dark||'5B21B6',
-      primaryL:_tc.primary_light||'EDE9FE',
-      teal:'0EA5E9', tealD:'0284C7', tealL:'E0F2FE',
-      green:_tc.status_green||'10B981', greenL:'D1FAE5',
-      amber:_tc.status_amber||'F59E0B', amberL:'FEF3C7',
-      red:_tc.status_red||'EF4444', redL:'FEE2E2',
-      blue:'3B82F6', purple:_tc.primary||'7C3AED',
-      yellow:_tc.accent||'FCD34D', yellowD:_tc.accent_dark||'F59E0B',
-      white:'FFFFFF', offW:_tc.body_bg2||'F9FAFB',
-      dark:_tc.text_dark||'111827', gray:_tc.text_gray||'6B7280', grayL:_tc.border||'E5E7EB',
-      headerBg:_tc.header_bg||'1E1B3A', headerTxt:_tc.header_text||'FFFFFF',
-      accentY:_tc.accent||'FCD34D',
+      // ── โครงสร้าง ──
+      white:'FFFFFF',
+      ink:_tc.ink||'1E1B3A',            inkSoft:_tc.ink_soft||'8C86B8',
+      title:_tc.title||'1E1B3A',        subtitle:_tc.subtitle||'5F5E5A',
+      dark:_tc.text_dark||'1E1B3A',     dark2:_tc.text_dark2||'3A3570',
+      gray:_tc.text_gray||'5F5E5A',     graySoft:_tc.text_soft||'8C8B87',
+      grayL:_tc.border||'E2E1DC',
+      // ── พื้นการ์ด ──
+      cardBg:_tc.card_bg||'F4F5F7',
+      cardBg2:_tc.card_bg2||_tc.card_bg||'F1EEFE',
+      cardBg3:_tc.card_bg3||_tc.card_bg||'EAF8F7',
+      // ── สีแบรนด์ ──
+      primary:_tc.primary||'796AE9',    primaryD:_tc.accent_dark||'17726F',
+      primaryL:_tc.primary_light||'E4DFFB',
+      primaryL2:_tc.primary_light2||'D8D0FB',
+      accent2:_tc.accent||'29C6C0',
+      accentTxt:_tc.accent_text||_tc.accent||'1B9E99',
+      mail:_tc.mail||'1B9E99',          mailL:_tc.mail_light||'EAF8F7',
+      mailBd:_tc.mail_border||'A9E6E3', teal:_tc.mail||'1B9E99',
+      // ── สีบอกสถานะ ──
+      green:_tc.status_green||'2E9E5B', greenL:_tc.status_green_light||'E4F3EA',
+      greenD:_tc.status_green_dark||'237A47',
+      amber:_tc.status_amber||'D97706', amberD:_tc.status_amber_dark||_tc.status_amber||'B45309',
+      amberL2:_tc.status_amber_light||'FDF3E3',
+      red:_tc.status_red||'DC2626',     redL:_tc.status_red_light||'FBE7E7',
+      blue:_tc.status_blue||'2A2652',
     };
     const F={head:'CPN', body:'CPN'};
+    // ── ช่วงเวลา/ขอบเขตที่เลือกอยู่บน Dashboard — ใช้กับทุกสไลด์ ──
+    const _PERIOD=(typeof pptxPeriodLabel==='function')?pptxPeriodLabel():'ทั้งหมด';
+    const _SCOPE =(typeof pptxScopeLabel==='function')?pptxScopeLabel():'';
+
+    // แยกหน่วยที่เป็นคำ (เช่น "0.1 วัน") ออกจากตัวเลข เพื่อไม่ให้ความยาวของหน่วย
+    // ไปกดขนาดตัวเลขให้เล็กกว่าการ์ดอื่น — หน่วยแสดงเป็นตัวเล็กต่อท้าย
+    const _splitUnit=v=>{
+      const t=String(v); const m=t.match(/^(.+?)\s+(\S+)$/);
+      return m?{head:m[1],unit:m[2]}:{head:t,unit:''};
+    };
+    const _valRuns=(v,ac,baseFs)=>{
+      const {head,unit}=_splitUnit(v);
+      const fs=head.length<=4?baseFs:head.length<=6?baseFs-3:baseFs-6;
+      const runs=[{text:head,options:{fontSize:fs,bold:true,color:ac}}];
+      if(unit) runs.push({text:' '+unit,options:{fontSize:Math.max(7,Math.round(fs*0.6)),bold:true,color:ac}});
+      return runs;
+    };
+
+    // ══ ชุดการ์ด/ป้าย สไตล์เดียวกับไฟล์นำเสนอ (พื้นอ่อน มุมโค้ง แถบสีซ้าย ป้ายตัวเล็ก) ══
+    // ป้ายหัวข้อกลุ่ม — แบบ "Data flow" ในสไลด์นำเสนอ
+    function _secLabel(s,y,txt,ac,x0,wTot){
+      const X=(x0===undefined?0.28:x0), W=(wTot===undefined?9.44:wTot);
+      const lw=Math.min(3.10,Math.max(wTot===undefined?2.10:0.34,0.22+String(txt).length*0.115));
+      s.addShape(pptx.shapes.RECTANGLE,{x:X,y:y+0.085,w:0.05,h:0.13,fill:{color:ac},line:{color:ac}});
+      s.addText(txt,{x:X+0.16,y:y,w:lw,h:0.30,fontSize:9.5,bold:true,color:C.inkSoft,
+        charSpacing:2.2,valign:'middle',margin:0,fontFace:F.head});
+      const rx=X+0.16+lw;
+      s.addShape(pptx.shapes.RECTANGLE,{x:rx,y:y+0.142,w:Math.max(0.20,X+W-rx),h:0.018,
+        fill:{color:C.grayL},line:{color:C.grayL}});
+    }
+    // การ์ดพื้นอ่อน — ตัวเลขเป็นสีของตัวชี้วัด
+    function _softCard(s,x,y,w,h,val,label,sub,ac,bg){
+      s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x,y,w,h,fill:{color:bg||C.cardBg},
+        line:{color:C.grayL,width:0.75},rectRadius:0.10});
+      s.addShape(pptx.shapes.RECTANGLE,{x,y:y+0.18,w:0.055,h:h-0.36,fill:{color:ac},line:{color:ac}});
+      s.addText(label,{x:x+0.18,y:y+0.13,w:w-0.28,h:0.22,fontSize:7.5,bold:true,
+        color:C.inkSoft,charSpacing:0.8,valign:'middle',margin:0,fontFace:F.head});
+      const vs=String(val), fs=vs.length<=4?26:vs.length<=6?21:17;
+      s.addText(vs,{x:x+0.18,y:y+0.33,w:w-0.28,h:h-0.64,fontSize:fs,bold:true,
+        color:ac,valign:'middle',margin:0,fontFace:F.head});
+      if(sub) s.addText(sub,{x:x+0.18,y:y+h-0.36,w:w-0.28,h:0.26,fontSize:8,
+        color:C.graySoft,valign:'middle',margin:0,fontFace:F.body});
+    }
+    // การ์ดพื้นเข้ม — ตัวชูโรง เหมือนแถบผลลัพธ์ท้ายสไลด์นำเสนอ
+    function _heroCard(s,x,y,w,h,val,label,sub,bg){
+      s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x,y,w,h,fill:{color:bg},line:{color:bg},rectRadius:0.10});
+      const vs=String(val), fs=vs.length<=4?30:vs.length<=6?24:19;
+      s.addText(vs,{x:x+0.18,y:y+0.14,w:w-0.28,h:h*0.44,fontSize:fs,bold:true,
+        color:'FFFFFF',valign:'middle',margin:0,fontFace:F.head});
+      s.addText(label,{x:x+0.18,y:y+h*0.56,w:w-0.28,h:0.26,fontSize:9,bold:true,
+        color:'FFFFFF',valign:'middle',margin:0,fontFace:F.head});
+      if(sub) s.addText(sub,{x:x+0.18,y:y+h*0.76,w:w-0.28,h:0.24,fontSize:7.5,
+        color:'D9D7EC',valign:'middle',margin:0,fontFace:F.body});
+    }
+    // หัวตาราง — โหมดพื้นขาวใช้พื้นม่วงอ่อน ตัวหนังสือเข้ม
+    function _tblHead(s,x,y,w,h,cols,ac){
+      s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x,y,w,h,fill:{color:C.primaryL},
+        line:{color:C.primaryL2,width:0.75},rectRadius:0.07});
+      s.addShape(pptx.shapes.RECTANGLE,{x,y:y+0.08,w:0.05,h:h-0.16,fill:{color:ac},line:{color:ac}});
+      
+      let hx=x+0.16;
+      cols.forEach(c=>{
+        s.addText(c.h,{x:hx,y:y+0.04,w:c.w,h:h-0.08,fontSize:7.5,bold:true,
+          color:C.title,charSpacing:0.5,margin:0,fontFace:F.head,valign:'middle'});
+        hx+=c.w;
+      });
+    }
 
     // ── Header builder (v5: fixed overlaps) ──
     // Brand bar: y=0.00  h=0.42
@@ -6785,46 +6822,31 @@ async function doExportPPTX(){
     // Content zone starts at y=1.00
     function addHeader(s,num,title,accent){
       const ac=accent||C.primary;
-      const hBg=C.headerBg||'1E1B3A';
-      const hTxt=C.headerTxt||'FFFFFF';
-      const aY=C.accentY||C.yellow||'FCD34D';
-      s.background={color:C.white||'FFFFFF'};
-      // ── Brand bar (h=0.42) ──
-      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:0,w:10,h:0.42,fill:{color:hBg}});
-      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:0,w:0.06,h:0.42,fill:{color:aY}});
-      s.addText('CDS SCM Partner Service',{x:0.14,y:0,w:5.0,h:0.42,fontSize:8.5,color:hTxt,bold:true,valign:'middle',margin:0,fontFace:F.head});
-      s.addShape(pptx.shapes.OVAL,{x:9.46,y:0.04,w:0.34,h:0.34,fill:{color:aY},line:{color:aY}});
-      for(let r=0;r<2;r++) for(let c=0;c<3;c++)
-        s.addShape(pptx.shapes.OVAL,{x:8.84+c*0.12,y:0.06+r*0.12,w:0.07,h:0.07,fill:{color:C.b4},line:{color:C.b4}});
-      // ── Title bar (y=0.44 h=0.50) ──
-      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:0.44,w:0.06,h:0.50,fill:{color:ac}});
-      s.addShape(pptx.shapes.RECTANGLE,{x:0.06,y:0.44,w:9.94,h:0.50,fill:{color:'FAFAFA'}});
-      s.addText(title,{x:0.16,y:0.44,w:9.6,h:0.50,fontSize:18,color:C.dark,bold:true,valign:'middle',margin:0,fontFace:F.head});
+      s.background={color:'FFFFFF'};
+      s.addText('CDS SCM  ·  PARTNER SERVICE',{x:0.28,y:0.14,w:4.6,h:0.24,fontSize:8.5,
+        bold:true,color:C.inkSoft,charSpacing:1.6,valign:'middle',margin:0,fontFace:F.head});
+      // ป้ายช่วงเวลาที่เลือกไว้บน Dashboard
+      const _pTxt='ช่วงเวลา  ·  '+_PERIOD+(_SCOPE?'   |   '+_SCOPE:'');
+      const _pW=Math.min(4.86,0.34+_pTxt.length*0.077);
+      s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:9.72-_pW,y:0.12,w:_pW,h:0.28,
+        fill:{color:C.primaryL},line:{color:C.primaryL2,width:0.75},rectRadius:0.07});
+      s.addText(_pTxt,{x:9.72-_pW+0.10,y:0.12,w:_pW-0.20,h:0.28,fontSize:8.5,bold:true,
+        color:C.primary,align:'center',valign:'middle',margin:0,fontFace:F.head});
+      s.addText(title,{x:0.28,y:0.42,w:8.10,h:0.46,fontSize:21,color:C.title,bold:true,
+        valign:'middle',margin:0,fontFace:F.head});
+      if(num) s.addText(String(num),{x:8.60,y:0.42,w:1.12,h:0.46,fontSize:26,bold:true,
+        color:C.primaryL2,align:'right',valign:'middle',margin:0,fontFace:F.head});
+      s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:0.895,w:0.62,h:0.045,fill:{color:ac},line:{color:ac}});
+      s.addShape(pptx.shapes.RECTANGLE,{x:0.90,y:0.908,w:8.82,h:0.018,fill:{color:C.grayL},line:{color:C.grayL}});
     }
 
     // ── Footer ──
     function addFooter(s){
       const today=new Date().toLocaleDateString('th-TH',{day:'2-digit',month:'long',year:'numeric'});
-      const hBg=C.headerBg||'1E1B3A';
-      const hTxt=C.headerTxt||'FFFFFF';
-      const aY=C.accentY||C.yellow||'FCD34D';
-      s.addShape(pptx.shapes.RECTANGLE,{x:0,y:5.38,w:10,h:0.245,fill:{color:hBg}});
-      s.addText(`CDS SCM Partner Service  ·  ${today}  ·  ข้อมูล ${RAW.length.toLocaleString()} รายการ`,
-        {x:0.3,y:5.395,w:8.9,h:0.22,fontSize:8,color:hTxt,margin:0,fontFace:'CPN'});
-      s.addShape(pptx.shapes.OVAL,{x:9.55,y:5.395,w:0.19,h:0.19,fill:{color:aY},line:{color:aY}});
-    }
-
-    // ── KPI box helper ──
-    function addKpiBox(s,x,y,w,h,label,val,sub,accentColor){
-      s.addShape(pptx.shapes.RECTANGLE,{x,y,w,h,fill:{color:C.white},
-        line:{color:C.grayL,width:1},shadow:{type:'outer',blur:6,offset:2,angle:135,color:'000000',opacity:0.06}});
-      s.addShape(pptx.shapes.RECTANGLE,{x,y,w:0.06,h,fill:{color:accentColor}});
-      s.addText(label,{x:x+0.14,y:y+0.12,w:w-0.18,h:0.26,fontSize:8.5,bold:true,
-        color:accentColor,margin:0,fontFace:'CPN',charSpacing:1});
-      s.addText(val,{x:x+0.14,y:y+0.38,w:w-0.18,h:h-0.62,fontSize:26,bold:true,
-        color:C.dark,margin:0,fontFace:'CPN'});
-      s.addText(sub,{x:x+0.14,y:y+h-0.28,w:w-0.18,h:0.24,fontSize:8.5,
-        color:C.gray,margin:0,fontFace:'CPN'});
+      s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:5.325,w:9.44,h:0.018,fill:{color:C.grayL},line:{color:C.grayL}});
+      s.addText(`CDS SCM Partner Service  ·  ${today}  ·  ช่วงเวลา ${_PERIOD}  ·  แสดง ${FILTERED.length.toLocaleString()} / ${RAW.length.toLocaleString()} รายการ`,
+        {x:0.28,y:5.375,w:8.8,h:0.21,fontSize:8,color:C.graySoft,margin:0,fontFace:'CPN',valign:'middle'});
+      s.addShape(pptx.shapes.OVAL,{x:9.50,y:5.415,w:0.15,h:0.15,fill:{color:C.accent2},line:{color:C.accent2}});
     }
 
     const src=FILTERED;
@@ -6841,74 +6863,109 @@ async function doExportPPTX(){
     const today2=new Date().toLocaleDateString('th-TH',{day:'2-digit',month:'long',year:'numeric'});
 
     // ══════════════════════════════════════
-    // SLIDE: COVER
+    // SLIDE: COVER — 4 โซน: หัวเรื่อง · ข้อมูลรายงาน · KPI · แหล่งข้อมูล
     // ══════════════════════════════════════
     if(selected.has('cover')){
       const s=pptx.addSlide();
-      // พื้นม่วงเต็ม slide
-      s.background={color:C.primary||'7C3AED'};
+      s.background={color:'FFFFFF'};
 
-      // Yellow circle solid มุมขวาบน (ตาม PDF)
-      s.addShape(pptx.shapes.OVAL,{x:9.0,y:-0.1,w:1.0,h:1.0,
-        fill:{color:C.yellow},line:{color:C.yellow}});
+      // ───────── เตรียมไอคอน ─────────
+      const CI={};
+      for(const [nm,hx] of [
+        ['chart',C.primary],['calendar',C.primary],['layers',C.mail],['users',C.blue],
+        ['phone',C.primary],['mail',C.mail],['check',C.primary],['check',C.mail],
+        ['database',C.graySoft],['refresh',C.graySoft],['monitor',C.graySoft],
+      ]) CI[nm+'|'+hx]=await pptxIconPng(nm,hx,144);
+      const _ci=(nm,hx)=>CI[nm+'|'+hx];
 
-      // Dot grid 3×4 ตรงกลาง-ขวา
-      for(let r=0;r<3;r++) for(let c=0;c<4;c++)
-        s.addShape(pptx.shapes.OVAL,{x:6.2+c*0.28,y:0.55+r*0.28,w:0.14,h:0.14,
-          fill:{color:'C4B5FD'},line:{color:'C4B5FD'}});
+      const ML=0.40, MR=9.72, MW=MR-ML;   // ระยะขอบซ้าย-ขวา
 
-      // Badge เหลือง + stars (ตาม PDF)
-      s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:0.9,y:0.75,w:3.2,h:0.50,
-        fill:{color:C.yellow},line:{color:C.yellow},rectRadius:0.25});
-      s.addText('CDS SCM  Partner Service',{x:0.9,y:0.75,w:3.2,h:0.50,fontSize:11,
-        bold:true,color:'4C1D95',align:'center',valign:'middle',margin:0,fontFace:F.head});
-      s.addText('✶',{x:0.35,y:0.78,w:0.5,h:0.44,fontSize:18,color:C.yellow,align:'center',margin:0});
-      s.addText('✶',{x:4.1,y:0.78,w:0.5,h:0.44,fontSize:18,color:C.yellow,align:'center',margin:0});
+      // ═══ โซน 1 — หัวเรื่อง ═══
+      s.addShape(pptx.shapes.OVAL,{x:ML,y:0.50,w:0.46,h:0.46,
+        fill:{color:C.primaryL},line:{color:C.primaryL}});
+      const _mk=_ci('chart',C.primary);
+      if(_mk) s.addImage({data:_mk,x:ML+0.115,y:0.615,w:0.23,h:0.23});
+      s.addText('PERFORMANCE REPORT',{x:ML+0.60,y:0.50,w:5.4,h:0.46,fontSize:9.5,bold:true,
+        color:C.accentTxt,charSpacing:2.6,valign:'middle',margin:0,fontFace:F.head});
+      s.addText([
+        {text:'CDS SCM',        options:{color:C.title}},
+        {text:'   ·   ',        options:{color:C.accent2}},
+        {text:'PARTNER SERVICE',options:{color:C.primary}},
+      ],{x:ML-0.04,y:1.06,w:MW,h:0.86,fontSize:32,bold:true,
+        align:'left',valign:'middle',margin:0,fontFace:F.head});
+      s.addShape(pptx.shapes.RECTANGLE,{x:ML,y:2.02,w:1.10,h:0.05,
+        fill:{color:C.accent2},line:{color:C.accent2}});
+      s.addText('สรุปผลการดำเนินงานการรับแจ้งและแก้ปัญหาให้บริษัทคู่ค้า — ผ่านโทรศัพท์และอีเมล',
+        {x:ML,y:2.15,w:MW,h:0.28,fontSize:11.5,color:C.subtitle,valign:'middle',margin:0,fontFace:F.body});
 
-      // Title: DASHBOARD (ขาว) + REPORT (เหลือง)
-      s.addText('DASHBOARD',{x:0.35,y:1.45,w:9.3,h:1.15,fontSize:72,
-        color:'FFFFFF',bold:true,align:'left',valign:'middle',margin:0,fontFace:F.head});
-      s.addText('REPORT',{x:0.35,y:2.55,w:6.0,h:1.05,fontSize:72,
-        color:C.yellow,bold:true,align:'left',valign:'middle',margin:0,fontFace:F.head});
-
-      // เส้น divider เทา
-      s.addShape(pptx.shapes.RECTANGLE,{x:0.35,y:3.72,w:5.5,h:0.03,fill:{color:'9F7AEA'}});
-
-      // KPI pills 4 ใบ เรียงแถว — ตาม PDF: ม่วงอ่อน, ม่วงอ่อน, เหลือง, ม่วงอ่อนมาก
-      const pillDefs=[
-        {v:kpiCallN.toLocaleString(), l:'KPI Call',    bg:'EDE9FE', tc:'7C3AED'},
-        {v:mailN.toLocaleString(),    l:'Mail',         bg:'DDD6FE', tc:'7C3AED'},
-        {v:fcrPct+'%',               l:'FCR (Call)',   bg:C.yellow, tc:'1E1B3A'},
-        {v:fmrPct+'%',               l:'FCR (Mail)',   bg:'E9E2FF', tc:'6D28D9'},
+      // ═══ โซน 2 — ข้อมูลรายงาน 3 ช่อง ═══
+      const IW=(MW-0.32)/3, IY=2.62, IH=0.76;
+      const infos=[
+        {ic:'calendar', ac:C.primary, l:'ช่วงเวลาที่แสดง', v:_PERIOD},
+        {ic:'layers',   ac:C.mail,    l:'จำนวนรายการ',    v:`${FILTERED.length.toLocaleString()} / ${RAW.length.toLocaleString()} รายการ`},
+        {ic:'users',    ac:C.blue,    l:'ขอบเขตข้อมูล',   v:(_SCOPE||'ทุกแผนก · Call + Mail')},
       ];
-      const pW=2.3, pGap=0.05, pX0=0.35, pY=3.84, pH=0.88;
-      pillDefs.forEach((p,i)=>{
-        const px=pX0+i*(pW+pGap);
-        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:px,y:pY,w:pW,h:pH,
-          fill:{color:p.bg},line:{color:p.bg},rectRadius:0.12});
-        s.addText(p.v,{x:px+0.06,y:pY+0.08,w:pW-0.12,h:pH*0.56,fontSize:26,bold:true,
-          color:p.tc,align:'center',valign:'middle',margin:0,fontFace:F.head});
-        s.addText(p.l,{x:px+0.06,y:pY+pH*0.62,w:pW-0.12,h:pH*0.36,fontSize:9,
-          color:p.tc+'BB',align:'center',valign:'middle',margin:0,fontFace:F.body});
+      infos.forEach((k,i)=>{
+        const ix=ML+i*(IW+0.16);
+        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:ix,y:IY,w:IW,h:IH,
+          fill:{color:C.cardBg},line:{color:C.grayL,width:0.75},rectRadius:0.09});
+        s.addShape(pptx.shapes.OVAL,{x:ix+0.16,y:IY+0.21,w:0.34,h:0.34,
+          fill:{color:'FFFFFF'},line:{color:C.grayL,width:0.75}});
+        const im=_ci(k.ic,k.ac);
+        if(im) s.addImage({data:im,x:ix+0.245,y:IY+0.295,w:0.175,h:0.175});
+        s.addText(k.l,{x:ix+0.60,y:IY+0.14,w:IW-0.72,h:0.19,fontSize:6.5,bold:true,
+          color:C.inkSoft,charSpacing:0.6,valign:'middle',margin:0,fontFace:F.head});
+        const vs=String(k.v), vf=vs.length<=22?11.5:vs.length<=30?10:8.5;
+        s.addText(vs,{x:ix+0.60,y:IY+0.34,w:IW-0.72,h:0.30,fontSize:vf,bold:true,
+          color:C.ink,valign:'middle',margin:0,fontFace:F.head});
       });
 
-      // Meta ล่างซ้าย — yellow circle เล็ก + ข้อความ (ตาม PDF)
-      s.addShape(pptx.shapes.OVAL,{x:0.35,y:4.88,w:0.28,h:0.28,
-        fill:{color:C.yellow},line:{color:C.yellow}});
-      s.addText(`Generated: ${today2}`,{x:0.68,y:4.84,w:5.0,h:0.26,fontSize:9.5,
-        color:'DDD6FE',italic:true,align:'left',margin:0,fontFace:F.body});
-      s.addText('Presented By: Partner Service Team',{x:0.68,y:5.08,w:5.0,h:0.24,fontSize:9.5,
-        color:'DDD6FE',align:'left',margin:0,fontFace:F.body});
+      // ═══ โซน 3 — KPI 4 ช่อง ═══
+      const KW=(MW-0.42)/4, KY=3.56, KH=1.06;
+      const kcards=[
+        {ic:'phone', ac:C.primary, l:'KPI CALL',    v:kpiCallN.toLocaleString()},
+        {ic:'mail',  ac:C.mail,    l:'MAIL',        v:mailN.toLocaleString()},
+        {ic:'check', ac:C.primary, l:'FCR (CALL)',  v:fcrPct+'%'},
+        {ic:'check', ac:C.mail,    l:'FCR (MAIL)',  v:fmrPct+'%'},
+      ];
+      kcards.forEach((k,i)=>{
+        const kx=ML+i*(KW+0.14);
+        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:kx,y:KY,w:KW,h:KH,
+          fill:{color:'FFFFFF'},line:{color:C.grayL,width:0.9},rectRadius:0.11});
+        s.addShape(pptx.shapes.RECTANGLE,{x:kx,y:KY+0.22,w:0.05,h:KH-0.44,
+          fill:{color:k.ac},line:{color:k.ac}});
+        s.addShape(pptx.shapes.OVAL,{x:kx+0.20,y:KY+0.33,w:0.40,h:0.40,
+          fill:{color:k.ac===C.mail?C.mailL:C.primaryL},line:{color:k.ac===C.mail?C.mailL:C.primaryL}});
+        const im=_ci(k.ic,k.ac);
+        if(im) s.addImage({data:im,x:kx+0.295,y:KY+0.425,w:0.21,h:0.21});
+        s.addText(k.l,{x:kx+0.70,y:KY+0.26,w:KW-0.84,h:0.20,fontSize:7,bold:true,
+          color:C.inkSoft,charSpacing:0.7,valign:'middle',margin:0,fontFace:F.head});
+        s.addText(k.v,{x:kx+0.70,y:KY+0.46,w:KW-0.84,h:0.42,fontSize:23,bold:true,
+          color:C.ink,valign:'middle',margin:0,fontFace:F.head});
+      });
 
-      // Page badge มุมขวาล่าง (ตาม PDF)
-      s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:8.8,y:5.22,w:0.72,h:0.28,
-        fill:{color:'1E1B3A'},line:{color:'1E1B3A'},rectRadius:0.06});
-      s.addText('PAGE',{x:8.8,y:5.22,w:0.48,h:0.28,fontSize:7,bold:true,
-        color:'FFFFFF',align:'center',valign:'middle',margin:0,fontFace:F.head});
-      s.addShape(pptx.shapes.OVAL,{x:9.28,y:5.18,w:0.38,h:0.38,
-        fill:{color:C.yellow},line:{color:C.yellow}});
-      s.addText('1',{x:9.28,y:5.18,w:0.38,h:0.38,fontSize:11,bold:true,
-        color:'1E1B3A',align:'center',valign:'middle',margin:0,fontFace:F.head});
+      // ═══ โซน 4 — แหล่งข้อมูล + ผู้จัดทำ ═══
+      const FY=4.88, FH=0.54;
+      s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:ML,y:FY,w:MW,h:FH,
+        fill:{color:C.cardBg},line:{color:C.grayL,width:0.75},rectRadius:0.09});
+      s.addText('แหล่งข้อมูล',{x:ML+0.18,y:FY,w:0.80,h:FH,fontSize:6.5,bold:true,
+        color:C.inkSoft,charSpacing:0.6,valign:'middle',margin:0,fontFace:F.head});
+      const srcs=[
+        {ic:'database', t:'SharePoint List · 3CX'},
+        {ic:'refresh',  t:'Power Automate (RPA)'},
+        {ic:'monitor',  t:'Dashboard (HTML)'},
+      ];
+      let sx=ML+1.04;
+      srcs.forEach(k=>{
+        const im=_ci(k.ic,C.graySoft);
+        if(im) s.addImage({data:im,x:sx,y:FY+0.185,w:0.17,h:0.17});
+        s.addText(k.t,{x:sx+0.23,y:FY,w:1.62,h:FH,fontSize:8,color:C.gray,
+          valign:'middle',margin:0,fontFace:F.body});
+        sx+=1.92;
+      });
+      s.addText(`Partner Service Team  ·  ${today2}`,
+        {x:MR-3.00,y:FY,w:2.82,h:FH,fontSize:8,color:C.graySoft,align:'right',
+         valign:'middle',margin:0,fontFace:F.body});
     }
 
     // ══════════════════════════════════════
@@ -6916,7 +6973,7 @@ async function doExportPPTX(){
     // ══════════════════════════════════════
     if(selected.has('kpi')){
       const s=pptx.addSlide();
-      s.background={color:C.offW};
+      s.background={color:'FFFFFF'};
       addHeader(s,'01','ภาพรวม KPI');
       addFooter(s);
 
@@ -6945,545 +7002,328 @@ async function doExportPPTX(){
       const _mailP=_gN?Math.round(_mailN/_gN*100):0;
       const _fwdP=0;
       const _atSec=_cx.avg_talk_sec;
-      const _atStr=_atSec?`${Math.floor(_atSec/60)}:${String(Math.round(_atSec%60)).padStart(2,'0')}`:'—';
+      const _atStr=pptxMMSS(_atSec);
 
-      // ──── วาด KPI ตาม PDF จริง ────
-      // helper: solid color card (ตาม PDF)
-      const _solidCard=(s,x,y,w,h,bg,val,sfx,label,sub)=>{
+      const _pendN=FILTERED.filter(r=>r.status==='Pending'||r.status==='Open').length;
+
+      // ───────── เตรียมไอคอน (PNG) ─────────
+      const _needIcons=[
+        ['phone',   'FFFFFF'], ['mail',    'FFFFFF'],
+        ['check',    C.primary], ['clock',   C.ink],
+        ['phoneOff', C.red],     ['target',  C.green],
+        ['check',    C.mail],    ['clock',   C.amber],
+        ['calendar', C.blue],    ['alert',   C.red],
+      ];
+      const ICO={};
+      for(const [nm,hx] of _needIcons){
+        ICO[nm+'|'+hx]=await pptxIconPng(nm,hx,144);
+      }
+      const _ic=(nm,hx)=>ICO[nm+'|'+hx];
+
+      // ───────── ตัวช่วยวาดการ์ด ─────────
+      // ป้ายหัวกลุ่ม พร้อมไอคอน
+      const _bandLabel=(y,txt,ac,icoName)=>{
+        const im=_ic(icoName,ac);
+        if(im) s.addImage({data:im,x:0.30,y:y+0.055,w:0.19,h:0.19});
+        s.addText(txt,{x:0.56,y:y,w:1.60,h:0.30,fontSize:9.5,bold:true,color:C.inkSoft,
+          charSpacing:2.2,valign:'middle',margin:0,fontFace:F.head});
+        s.addShape(pptx.shapes.RECTANGLE,{x:2.10,y:y+0.142,w:7.62,h:0.018,
+          fill:{color:C.grayL},line:{color:C.grayL}});
+      };
+      // การ์ดตัวชูโรง (พื้นเข้ม)
+      const _hero=(x,y,w,h,bg,chip,icoName,label,val,sub,subCol)=>{
         s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x,y,w,h,
-          fill:{color:bg},line:{color:bg},rectRadius:0.14});
-        const valStr=String(val);
-        const fs=valStr.length<=3?32:valStr.length<=5?26:20;
-        s.addText(valStr+(sfx||''),{x:x+0.06,y:y+0.14,w:w-0.12,h:h*0.55,
-          fontSize:fs,bold:true,color:'FFFFFF',align:'center',valign:'middle',
-          margin:0,fontFace:F.head});
-        s.addText(label,{x:x+0.06,y:y+h*0.62,w:w-0.12,h:h*0.22,
-          fontSize:9,bold:true,color:'FFFFFFDD',align:'center',margin:0,fontFace:F.head});
-        if(sub) s.addText(sub,{x:x+0.06,y:y+h*0.82,w:w-0.12,h:h*0.16,
-          fontSize:7.5,color:'FFFFFFAA',align:'center',margin:0,fontFace:F.body,italic:true});
+          fill:{color:bg},line:{color:bg},rectRadius:0.11});
+        s.addShape(pptx.shapes.OVAL,{x:x+0.18,y:y+0.18,w:0.46,h:0.46,
+          fill:{color:chip},line:{color:chip}});
+        const im=_ic(icoName,'FFFFFF');
+        if(im) s.addImage({data:im,x:x+0.30,y:y+0.30,w:0.22,h:0.22});
+        s.addText(label,{x:x+0.18,y:y+0.72,w:w-0.32,h:0.22,fontSize:8,bold:true,
+          color:subCol,charSpacing:1.2,valign:'middle',margin:0,fontFace:F.head});
+        const vs=String(val), vfs=vs.length<=5?32:vs.length<=7?26:21;
+        s.addText(vs,{x:x+0.18,y:y+0.90,w:w-0.32,h:0.54,fontSize:vfs,bold:true,
+          color:'FFFFFF',valign:'middle',margin:0,fontFace:F.head});
+        s.addText(sub,{x:x+0.18,y:y+1.44,w:w-0.32,h:0.20,fontSize:7.5,
+          color:subCol,valign:'middle',margin:0,fontFace:F.body});
+      };
+      // การ์ดตัวชี้วัด (พื้นอ่อน + ไอคอนในวงกลม)
+      const _metric=(x,y,w,h,icoName,ac,chip,label,val,sub)=>{
+        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x,y,w,h,
+          fill:{color:C.cardBg},line:{color:C.grayL,width:0.75},rectRadius:0.10});
+        s.addShape(pptx.shapes.OVAL,{x:x+0.15,y:y+0.15,w:0.40,h:0.40,
+          fill:{color:chip},line:{color:chip}});
+        const im=_ic(icoName,ac);
+        if(im) s.addImage({data:im,x:x+0.245,y:y+0.245,w:0.21,h:0.21});
+        s.addText(label,{x:x+0.15,y:y+0.62,w:w-0.28,h:0.20,fontSize:7,bold:true,
+          color:C.inkSoft,charSpacing:0.5,valign:'middle',margin:0,fontFace:F.head});
+        s.addText(_valRuns(val,ac,19),{x:x+0.15,y:y+0.82,w:w-0.28,h:0.48,
+          valign:'middle',margin:0,fontFace:F.head});
+        s.addText(sub,{x:x+0.15,y:y+1.34,w:w-0.28,h:0.20,fontSize:7,
+          color:C.graySoft,valign:'middle',margin:0,fontFace:F.body});
       };
 
-      // ── CALL section ──
-      // Label
-      s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:0.98,w:9.44,h:0.28,fill:{color:'EDE9FE'}});
-      s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:0.98,w:0.06,h:0.28,fill:{color:C.primary}});
-      s.addText('C A L L',{x:0.38,y:0.98,w:2,h:0.28,fontSize:10,bold:true,
-        color:C.primary,charSpacing:3,margin:0,fontFace:F.head,valign:'middle'});
+      // ───────── ตำแหน่ง ─────────
+      const HW=2.24, MW=1.67, GAP=0.13, CH_=1.70;
+      const MX=[2.65,4.45,6.25,8.05];
 
-      // CALL 5 cards สีตาม PDF: ม่วงอ่อน, ม่วง, ดำ, แดง, เขียว
-      const callDefs=[
-        {bg:'EDE9FE',tc:C.primary, v:String(_kpiN),      sfx:'',  l:'Call ทั้งหมด',  sub:'KPI Call'},
-        {bg:C.primary,             v:String(_fcrP),       sfx:'%', l:'FCR (Call)',     sub:`${_fcrN}/${_kpiN}`},
-        {bg:'1E1B3A',              v:_atStr,              sfx:'',  l:'Avg. Talk Time', sub:'นาที:วินาที'},
-        {bg:'EF4444',              v:String(_abnPct),     sfx:'%', l:'Abandon Rate',   sub:`3CX: ${_cbN}`},
-        {bg:'10B981',              v:_slaPct!==null?String(_slaPct):'—', sfx:_slaPct!==null?'%':'', l:'Call Reach Rate', sub:'≤20วินาที'},
-      ];
-      // card 1 สีอ่อน ตัวเลขเป็นสีม่วง
-      const cW5=9.44/5, cY1=1.32, cH1=1.66;
-      callDefs.forEach((k,i)=>{
-        const cx=0.28+i*cW5;
-        if(i===0){
-          // Total Call — light purple card
-          s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:cx+0.03,y:cY1,w:cW5-0.06,h:cH1,
-            fill:{color:'EDE9FE'},line:{color:'DDD6FE',width:0.5},rectRadius:0.14});
-          const vStr=String(_kpiN); const fs=vStr.length<=4?32:26;
-          s.addText(vStr,{x:cx+0.03,y:cY1+0.14,w:cW5-0.06,h:cH1*0.55,
-            fontSize:fs,bold:true,color:C.primary,align:'center',valign:'middle',margin:0,fontFace:F.head});
-          s.addText('Call ทั้งหมด',{x:cx+0.03,y:cY1+cH1*0.62,w:cW5-0.06,h:cH1*0.22,
-            fontSize:9,bold:true,color:C.primary,align:'center',margin:0,fontFace:F.head});
-          s.addText('KPI Call',{x:cx+0.03,y:cY1+cH1*0.82,w:cW5-0.06,h:cH1*0.16,
-            fontSize:7.5,color:C.gray,align:'center',margin:0,fontFace:F.body,italic:true});
-        } else {
-          _solidCard(s,cx+0.03,cY1,cW5-0.06,cH1,k.bg,k.v,k.sfx,k.l,k.sub);
-        }
-      });
+      // ══ CALL ══
+      _bandLabel(0.98,'C A L L',C.primary,'phone');
+      _hero(0.28,1.32,HW,CH_,C.ink,'3A3570','phone','CALL ทั้งหมด',
+        _kpiN.toLocaleString(),'KPI Call · '+_callP+'% ของทั้งหมด','BFBCE0');
+      _metric(MX[0],1.32,MW,CH_,'check',C.primary,C.primaryL,'FCR (CALL)',
+        _fcrP+'%',_fcrN.toLocaleString()+'/'+_kpiN.toLocaleString());
+      _metric(MX[1],1.32,MW,CH_,'clock',C.ink,'E7E6F0','AVG. TALK TIME',
+        _atStr,'นาที:วินาที');
+      _metric(MX[2],1.32,MW,CH_,'phoneOff',C.red,C.redL,'ABANDON RATE',
+        _abnPct+'%','3CX: '+_abnVal.toLocaleString()+' สาย');
+      _metric(MX[3],1.32,MW,CH_,'target',C.green,C.greenL,'CALL REACH RATE',
+        _slaPct!==null?_slaPct+'%':'—','รับสายภายใน 20 วิ.');
 
-      // ── MAIL section ──
-      s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:3.06,w:9.44,h:0.28,fill:{color:'E0F2FE'}});
-      s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:3.06,w:0.06,h:0.28,fill:{color:'0EA5E9'}});
-      s.addText('M A I L',{x:0.38,y:3.06,w:2,h:0.28,fontSize:10,bold:true,
-        color:'0EA5E9',charSpacing:3,margin:0,fontFace:F.head,valign:'middle'});
-
-      const pendingN=FILTERED.filter(r=>r.status==='Pending'||r.status==='Open').length;
-      // MAIL 5 cards: ฟ้าอ่อน, ฟ้า, เหลือง, น้ำเงิน, แดง
-      const mailDefs=[
-        {bg:'DBEAFE',tc:'0EA5E9', v:String(_mailN), sfx:'', l:'Mail ทั้งหมด', sub:'standalone'},
-        {bg:'0EA5E9',             v:String(_fmrP),   sfx:'%', l:'FCR (Mail)', sub:`${_fmrN}/${_mailN}`},
-        {bg:'F59E0B',             v:_avgRC!==null?String(_avgRC):'—', sfx:_avgRC!==null?' วัน':'', l:'Avg. Resolution (Call)', sub:'Call'},
-        {bg:'2563EB',             v:_avgRM!==null?String(_avgRM):'—', sfx:_avgRM!==null?' วัน':'', l:'Avg. Resolution (Mail)', sub:'Mail'},
-        {bg:'EF4444',             v:String(pendingN), sfx:'', l:'Case ค้าง', sub:'Pending+Open'},
-      ];
-      const cY2=3.40, cH2=1.76;
-      mailDefs.forEach((k,i)=>{
-        const cx=0.28+i*cW5;
-        if(i===0){
-          s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:cx+0.03,y:cY2,w:cW5-0.06,h:cH2,
-            fill:{color:'DBEAFE'},line:{color:'BAE6FD',width:0.5},rectRadius:0.14});
-          const vStr=String(_mailN); const fs=vStr.length<=4?32:26;
-          s.addText(vStr,{x:cx+0.03,y:cY2+0.14,w:cW5-0.06,h:cH2*0.55,
-            fontSize:fs,bold:true,color:'0EA5E9',align:'center',valign:'middle',margin:0,fontFace:F.head});
-          s.addText('Mail ทั้งหมด',{x:cx+0.03,y:cY2+cH2*0.62,w:cW5-0.06,h:cH2*0.22,
-            fontSize:9,bold:true,color:'0EA5E9',align:'center',margin:0,fontFace:F.head});
-          s.addText('standalone',{x:cx+0.03,y:cY2+cH2*0.82,w:cW5-0.06,h:cH2*0.16,
-            fontSize:7.5,color:C.gray,align:'center',margin:0,fontFace:F.body,italic:true});
-        } else {
-          _solidCard(s,cx+0.03,cY2,cW5-0.06,cH2,k.bg,k.v,k.sfx,k.l,k.sub);
-        }
-      });
+      // ══ MAIL ══
+      _bandLabel(3.12,'M A I L',C.mail,'mail');
+      _hero(0.28,3.46,HW,CH_,C.primaryD,'23B0AA','mail','MAIL ทั้งหมด',
+        _mailN.toLocaleString(),'standalone · '+_mailP+'% ของทั้งหมด','C6EEEC');
+      _metric(MX[0],3.46,MW,CH_,'check',C.mail,C.mailL,'FCR (MAIL)',
+        _fmrP+'%',_fmrN.toLocaleString()+'/'+_mailN.toLocaleString());
+      _metric(MX[1],3.46,MW,CH_,'clock',C.amber,C.amberL2,'RESOLUTION — CALL',
+        _avgRC!==null?_avgRC+' วัน':'—','เฉลี่ยต่อเคส');
+      _metric(MX[2],3.46,MW,CH_,'calendar',C.blue,'E7E6F0','RESOLUTION — MAIL',
+        _avgRM!==null?_avgRM+' วัน':'—','เฉลี่ยต่อเคส');
+      _metric(MX[3],3.46,MW,CH_,'alert',C.red,C.redL,'CASE ค้าง',
+        _pendN.toLocaleString(),'Pending + Open');
     }
 
     // ══════════════════════════════════════
-    // SLIDE: 1ST RESOLUTION
+    // SLIDE: รายละเอียด — FCR · รายแผนก · Top Issue · Case ค้าง (รวมหน้าเดียว)
     // ══════════════════════════════════════
-    if(selected.has('resolution')){
-      const s=pptx.addSlide();
-      s.background={color:C.offW};
-      addHeader(s,'02','1st Contact Resolution (FCR)',C.teal);
-      addFooter(s);
-      // FCR card
-      const fcrC=fcrPct>=90?C.teal:fcrPct>=75?C.amber:C.red;
-      const fmrC=fmrPct>=90?C.teal:fmrPct>=75?C.amber:C.red;
-      // FCR cards: content y=1.00..5.25, card h=4.25
-      [[fcrPct,fcrN,kpiCallN,'FCR','Call+Transfer',fcrC,0.28],
-       [fmrPct,fmrN,mailN,'FCR (Mail)','ESCALATED',fmrC,5.22]].forEach(([pct,n,tot,lbl,sublbl,ac,x])=>{
-        s.addShape(pptx.shapes.RECTANGLE,{x,y:1.00,w:4.5,h:4.25,fill:{color:C.white},
-          line:{color:C.grayL,width:1},shadow:{type:'outer',blur:8,offset:3,angle:135,color:'000000',opacity:0.07}});
-        s.addShape(pptx.shapes.RECTANGLE,{x,y:1.00,w:4.5,h:0.06,fill:{color:ac}});
-        s.addText(lbl,{x:x+0.2,y:1.14,w:4.1,h:0.34,fontSize:11,bold:true,
-          color:ac,margin:0,fontFace:'CPN',charSpacing:2});
-        s.addText(pct+'%',{x:x+0.2,y:1.54,w:4.1,h:1.52,fontSize:76,bold:true,
-          color:C.dark,align:'center',valign:'middle',margin:0,fontFace:'CPN'});
-        s.addText(`Level 1: ${n} / ${tot} ${sublbl}`,{x:x+0.2,y:3.16,w:4.1,h:0.30,
-          fontSize:11,color:C.gray,align:'center',margin:0,fontFace:'CPN'});
-        // progress bar
-        s.addShape(pptx.shapes.RECTANGLE,{x:x+0.3,y:3.54,w:3.9,h:0.14,fill:{color:C.grayL}});
-        s.addShape(pptx.shapes.RECTANGLE,{x:x+0.3,y:3.54,w:Math.min(3.9,3.9*pct/100),h:0.14,fill:{color:ac}});
-        const badge=pct>=90?'✅ ดีมาก':pct>=75?'⚠️ พอใช้':'🔴 ต่ำกว่าเกณฑ์';
-        s.addText(badge,{x:x+0.2,y:3.80,w:4.1,h:0.30,fontSize:11,bold:true,
-          color:ac,align:'center',margin:0,fontFace:'CPN'});
-      });
-    }
-
-    // ══════════════════════════════════════
-    // SLIDE: สรุป CASE ทุกแผนก
-    // ══════════════════════════════════════
-    if(selected.has('dept')){
+    if(selected.has('detail')){
       const s=pptx.addSlide();
       s.background={color:'FFFFFF'};
-      addHeader(s,'03','สรุป Case ทุกแผนก',C.primary);
+      addHeader(s,'02','FCR  ·  รายแผนก  ·  Top Issue  ·  Case ค้าง',C.primary);
       addFooter(s);
+
+      // ───────── ข้อมูล ─────────
       const kpiSrcF=src.filter(r=>!r._referredMail&&r.logType!=='Call Back');
-      const total=kpiSrcF.length||1;
+      const resSrcF=src.filter(r=>r.resolutionTime!==null&&r.logType!=='Call Back'&&r.logType!=='Transfer');
+      const _isL1=r=>!!(r.caseLevel&&r.caseLevel.includes('Level 1'));
+      const pendSrc=src.filter(r=>(r.status==='Pending'||r.status==='Open')
+        &&!r._referredMail&&r.logType!=='Call Back');
+      const pendN=pendSrc.length;
+      const _pendByDept={};
+      pendSrc.forEach(r=>{const d=r.typeDept||'(ไม่ระบุ)';_pendByDept[d]=(_pendByDept[d]||0)+1;});
+      const _ptVals=pendSrc.map(r=>r.pendingTime).filter(x=>x!==null&&x>=0);
+      const avgPt=_ptVals.length?+(avg(_ptVals).toFixed(1)):null;
+      const maxPt=_ptVals.length?Math.max(..._ptVals):null;
+
       const deptData=depts.map(dept=>{
         const di=kpiSrcF.filter(r=>r.typeDept===dept);
-        const calls=di.filter(isKpiCall).length;
-        const mails=di.filter(isMail).length;
-        const kc=di.filter(isKpiCall).length;
-        const fcr1=di.filter(r=>r.caseLevel?.includes('Level 1')&&isKpiCall(r)).length;
-        const fcrPctD=kc?Math.round(fcr1/kc*100):null;
-        return{dept,n:di.length,pct:Math.round(di.length/total*100),calls,mails,fcrPct:fcrPctD};
+        const ca=di.filter(isKpiCall), ma=di.filter(isMail);
+        const ri=resSrcF.filter(r=>r.typeDept===dept).map(r=>r.resolutionTime);
+        return{dept, n:di.length, fcrAll:di.filter(_isL1).length,
+          calls:ca.length, fcrCall:ca.filter(_isL1).length,
+          mails:ma.length, fcrMail:ma.filter(_isL1).length,
+          fcrPct:di.length?Math.round(di.filter(_isL1).length/di.length*100):null,
+          avgRes:ri.length?+(avg(ri).toFixed(1)):null,
+          pend:_pendByDept[dept]||0};
       }).sort((a,b)=>b.n-a.n);
 
-      const ROWS=Math.min(deptData.length,6);
-      // Layout — table เริ่ม y=0.98, header 0.46, rows แบ่งสม่ำเสมอจนถึง y=5.18
-      const TBL_X=0.28, TBL_W=9.44;
-      const HDR_Y=0.98, HDR_H=0.46;
-      const BODY_TOP=HDR_Y+HDR_H;
-      const BODY_BOT=5.18;
-      const ROW_H=(BODY_BOT-BODY_TOP)/Math.max(ROWS,1);
+      const issueSrc=src.filter(r=>!r._referredMail&&r.logType!=='Call Back'&&!isForward(r));
+      const _cnt={};
+      issueSrc.forEach(r=>{const v=getIssue(r)||'(ไม่ระบุ)';_cnt[v]=(_cnt[v]||0)+1;});
+      const topIssue=Object.entries(_cnt).sort((a,b)=>b[1]-a[1]).slice(0,10);
+      const issueTotal=issueSrc.length||1;
+      const issueMax=topIssue[0]?topIssue[0][1]:1;
+      const colorRes=v=>v<=0.5?C.mail:v<=1.0?C.green:v<=3?C.amber:C.red;
 
-      // column widths — รวม = 9.44
-      const COL=[
-        {h:'แผนก',    w:2.10},
-        {h:'Total',   w:1.10},
-        {h:'%',       w:0.72},
-        {h:'Call',    w:1.00},
-        {h:'Mail',    w:1.00},
-        {h:'FCR%',    w:1.88},
-        {h:'สถานะ',  w:1.64},
+      // ═══════ แถบ 1 — ตัวเลขหลัก 5 ใบ (FCR + Case ค้าง) ═══════
+      const K_Y=1.00, K_H=0.72, K_G=0.10, K_W=(9.44-4*K_G)/5;
+      const kpis=[
+        {l:'FCR (CALL)',    v:fcrPct+'%',                            sb:`${fcrN.toLocaleString()}/${kpiCallN.toLocaleString()}`, ac:C.primary},
+        {l:'FCR (MAIL)',    v:fmrPct+'%',                            sb:`${fmrN.toLocaleString()}/${mailN.toLocaleString()}`,   ac:C.mail},
+        {l:'CASE ค้าง',     v:pendN.toLocaleString(),                sb:'Pending + Open',  ac:C.amber},
+        {l:'AVG. PENDING',  v:avgPt!==null?avgPt+' วัน':'—',         sb:'เฉลี่ย',           ac:C.red},
+        {l:'MAX PENDING',   v:maxPt!==null?maxPt+' วัน':'—',         sb:'นานสุด',          ac:C.blue},
       ];
-
-      // Table header ม่วง rounded
-      s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:TBL_X,y:HDR_Y,w:TBL_W,h:HDR_H,
-        fill:{color:C.primary},line:{color:C.primary},rectRadius:0.08});
-      let hx=TBL_X+0.10;
-      COL.forEach(({h,w})=>{
-        s.addText(h,{x:hx,y:HDR_Y+0.06,w:w,h:HDR_H-0.12,fontSize:10.5,bold:true,
-          color:'FFFFFF',margin:0,fontFace:F.head,valign:'middle'});
-        hx+=w;
+      kpis.forEach((k,i)=>{
+        const kx=0.28+i*(K_W+K_G);
+        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:kx,y:K_Y,w:K_W,h:K_H,
+          fill:{color:C.cardBg},line:{color:C.grayL,width:0.75},rectRadius:0.09});
+        s.addShape(pptx.shapes.RECTANGLE,{x:kx,y:K_Y+0.12,w:0.05,h:K_H-0.24,
+          fill:{color:k.ac},line:{color:k.ac}});
+        s.addText(k.l,{x:kx+0.15,y:K_Y+0.04,w:K_W-0.22,h:0.17,fontSize:5.5,bold:true,
+          color:C.inkSoft,charSpacing:0.6,valign:'middle',margin:0,fontFace:F.head});
+        s.addText(_valRuns(k.v,k.ac,15),{x:kx+0.15,y:K_Y+0.20,w:K_W-0.22,h:0.31,
+          valign:'middle',margin:0,fontFace:F.head});
+        s.addText(k.sb,{x:kx+0.15,y:K_Y+0.51,w:K_W-0.22,h:0.17,fontSize:5.5,
+          color:C.graySoft,valign:'middle',margin:0,fontFace:F.body});
       });
 
-      // Rows
-      deptData.slice(0,ROWS).forEach((d,i)=>{
-        const ry=BODY_TOP+i*ROW_H;
-        const bg=i%2===0?'FFFFFF':'EDE9FE';
-        const fColor=d.fcrPct!==null?(d.fcrPct>=85?'10B981':d.fcrPct>=70?'F59E0B':'EF4444'):'6B7280';
-        const statusIcon=d.fcrPct===null?'—':d.fcrPct>=85?'✅':'⚠️';
-        const statusTxt=d.fcrPct===null?'':d.fcrPct>=85?'ดี':'พอใช้';
-        const statusColor=d.fcrPct===null?'6B7280':d.fcrPct>=85?'059669':'D97706';
-
-        // row bg
-        s.addShape(pptx.shapes.RECTANGLE,{x:TBL_X,y:ry,w:TBL_W,h:ROW_H,fill:{color:bg}});
-        // left accent
-        s.addShape(pptx.shapes.RECTANGLE,{x:TBL_X,y:ry,w:0.04,h:ROW_H,
-          fill:{color:fColor}});
-
-        const cells=[d.dept, d.n, d.pct+'%', d.calls, d.mails];
-        let vx=TBL_X+0.10;
-        COL.slice(0,5).forEach(({w},vi)=>{
-          s.addText(String(cells[vi]),{x:vx,y:ry,w:w,h:ROW_H,fontSize:11,
-            color:vi===0?'111827':'374151',bold:vi===0,
-            margin:0,fontFace:vi===0?F.head:F.body,valign:'middle'});
-          vx+=w;
+      // ═══════ แถบ 2 — ตารางรายแผนก (เต็มความกว้าง) ═══════
+      _secLabel(s,1.82,'รายแผนก',C.primary);
+      const TBL_X=0.28, TBL_W=9.44, HDR_Y=2.14, HDR_H=0.26;
+      const AROWS=Math.min(deptData.length,6);
+      const AROW_H=Math.min(0.225,(3.64-(HDR_Y+HDR_H))/Math.max(AROWS,1));
+      const COL=[
+        {h:'แผนก',      w:1.42},
+        {h:'Total',     w:1.32},
+        {h:'Call',      w:1.20},
+        {h:'Mail',      w:1.10},
+        {h:'FCR%',      w:1.56},
+        {h:'Avg. Res.', w:0.94},
+        {h:'ค้าง',      w:0.70},
+        {h:'สถานะ',    w:1.20},
+      ];
+      _tblHead(s,TBL_X,HDR_Y,TBL_W,HDR_H,COL,C.primary);
+      deptData.slice(0,AROWS).forEach((d,i)=>{
+        const ry=HDR_Y+HDR_H+i*AROW_H;
+        const fColor=d.fcrPct!==null?(d.fcrPct>=85?C.green:d.fcrPct>=70?C.amber:C.red):C.gray;
+        const stTxt=d.fcrPct===null?'':d.fcrPct>=85?'ดี':'พอใช้';
+        const stCol=d.fcrPct===null?C.gray:d.fcrPct>=85?C.greenD:C.amberD;
+        if(i%2===1) s.addShape(pptx.shapes.RECTANGLE,{x:TBL_X,y:ry,w:TBL_W,h:AROW_H,
+          fill:{color:C.cardBg},line:{color:C.cardBg}});
+        const _fa=(a,b)=>`${a.toLocaleString()}/${b.toLocaleString()}`;
+        const cells=[d.dept,_fa(d.fcrAll,d.n),_fa(d.fcrCall,d.calls),_fa(d.fcrMail,d.mails)];
+        let vx=TBL_X+0.14;
+        COL.slice(0,4).forEach((c,vi)=>{
+          s.addText(String(cells[vi]),{x:vx,y:ry,w:c.w,h:AROW_H,fontSize:vi===0?7:6.5,
+            color:vi===0?C.dark:C.dark2,bold:vi===0,margin:0,
+            fontFace:vi===0?F.head:F.body,valign:'middle'});
+          vx+=c.w;
         });
-
-        // FCR% + progress bar
-        const fcrColW=COL[5].w;
-        // ตัวเลข FCR%
-        s.addText(d.fcrPct!==null?d.fcrPct+'%':'—',{
-          x:vx,y:ry,w:fcrColW*0.42,h:ROW_H*0.52,
-          fontSize:11,bold:true,color:fColor,
-          margin:0,fontFace:F.head,valign:'bottom'});
-        // progress bar
-        const barW=fcrColW-0.08, barX=vx, barY=ry+ROW_H*0.56, barH=0.13;
+        s.addText(d.fcrPct!==null?d.fcrPct+'%':'—',{x:vx,y:ry,w:0.44,h:AROW_H,
+          fontSize:7,bold:true,color:fColor,margin:0,fontFace:F.head,valign:'middle'});
+        const barX=vx+0.48, barW=COL[4].w-0.56, barH=0.095, barY=ry+AROW_H/2-barH/2;
         s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:barX,y:barY,w:barW,h:barH,
-          fill:{color:'E5E7EB'},line:{color:'E5E7EB'},rectRadius:barH/2});
+          fill:{color:C.grayL},line:{color:C.grayL},rectRadius:barH/2});
         if(d.fcrPct!==null){
           const fw=barW*(Math.min(d.fcrPct,100)/100);
           if(fw>0.05) s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:barX,y:barY,w:fw,h:barH,
             fill:{color:fColor},line:{color:fColor},rectRadius:barH/2});
         }
-        vx+=fcrColW;
-
-        // สถานะ: icon + text
+        vx+=COL[4].w;
+        s.addText(d.avgRes!==null?d.avgRes+' วัน':'—',{x:vx,y:ry,w:COL[5].w,h:AROW_H,
+          fontSize:6.5,bold:true,color:d.avgRes!==null?colorRes(d.avgRes):C.graySoft,
+          margin:0,fontFace:F.head,valign:'middle'});
+        vx+=COL[5].w;
+        s.addText(d.pend?String(d.pend):'—',{x:vx,y:ry,w:COL[6].w,h:AROW_H,fontSize:6.5,
+          bold:d.pend>0,color:d.pend>0?C.amberD:C.graySoft,margin:0,fontFace:F.head,valign:'middle'});
+        vx+=COL[6].w;
         if(d.fcrPct!==null){
-          s.addText(statusIcon,{x:vx,y:ry,w:0.34,h:ROW_H,fontSize:14,
-            margin:0,fontFace:F.body,valign:'middle',align:'center'});
-          s.addText(statusTxt,{x:vx+0.32,y:ry,w:COL[6].w-0.34,h:ROW_H,fontSize:11,
-            bold:true,color:statusColor,margin:0,fontFace:F.head,valign:'middle'});
+          s.addShape(pptx.shapes.OVAL,{x:vx+0.03,y:ry+AROW_H/2-0.045,w:0.09,h:0.09,
+            fill:{color:stCol},line:{color:stCol}});
+          s.addText(stTxt,{x:vx+0.18,y:ry,w:COL[7].w-0.20,h:AROW_H,fontSize:6.5,
+            bold:true,color:stCol,margin:0,fontFace:F.head,valign:'middle'});
         }
+      });
+
+      // ═══════ แถบ 3 — Top 10 Issue Detail (2 คอลัมน์ × 5 อันดับ) ═══════
+      _secLabel(s,3.74,'TOP 10 ISSUE DETAIL',C.amber);
+      const IT=4.06, IB=5.26, IROW=(IB-IT)/5, IBAR=Math.min(0.165,IROW*0.68);
+      const ICOL_W=4.62, ICOL_X=[0.28,5.10];
+      // ช่องชื่อกว้างขึ้นมากเพื่อให้เห็นคำเต็ม · แท่งบาร์สั้นลง · จำนวนย้ายมาอยู่นอกแท่ง
+      const I_NUM_W=0.22, I_LBL_X=0.24, I_LBL_W=2.62;
+      const I_BAR_X=2.92, I_BAR_W=1.02;
+      const I_CNT_X=3.98, I_CNT_W=0.32, I_PCT_X=4.32, I_PCT_W=0.28;
+      topIssue.forEach(([label,n],i)=>{
+        const cIdx=i<5?0:1, rIdx=i%5;
+        const x0=ICOL_X[cIdx];
+        const mid=IT+rIdx*IROW+IROW/2, by=mid-IBAR/2;
+        const p=Math.round(n/issueTotal*100);
+        const fw=(n/issueMax)*I_BAR_W;
+        const bc=[C.primary,C.primary,C.mail,C.mail,C.blue,C.blue,C.amber,C.amber,C.dark2,C.dark2][i]||C.dark2;
+        s.addText(`${i+1}.`,{x:x0,y:by,w:I_NUM_W,h:IBAR,fontSize:6.5,
+          color:C.graySoft,margin:0,fontFace:'CPN',valign:'middle'});
+        // ช่องกว้าง ~2.62 นิ้ว รองรับราว 58 ตัวอักษรที่ 6.5pt — ตัดเฉพาะที่ยาวเกินจริง
+        const lt=String(label).length>52?String(label).slice(0,51).trim()+'…':String(label);
+        s.addText(lt,{x:x0+I_LBL_X,y:by,w:I_LBL_W,h:IBAR,fontSize:6.5,bold:i<2,
+          color:C.dark,margin:0,fontFace:'CPN',valign:'middle'});
+        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:x0+I_BAR_X,y:by,w:I_BAR_W,h:IBAR,
+          fill:{color:C.primaryL},line:{color:C.primaryL},rectRadius:IBAR/2});
+        if(fw>=0.06) s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:x0+I_BAR_X,y:by,w:fw,h:IBAR,
+          fill:{color:bc},line:{color:bc},rectRadius:IBAR/2});
+        s.addText(String(n),{x:x0+I_CNT_X,y:by,w:I_CNT_W,h:IBAR,fontSize:6.5,bold:true,
+          color:bc,align:'right',margin:0,fontFace:'CPN',valign:'middle'});
+        s.addText(p+'%',{x:x0+I_PCT_X,y:by,w:I_PCT_W,h:IBAR,fontSize:6.5,
+          color:C.graySoft,align:'right',margin:0,fontFace:'CPN',valign:'middle'});
       });
     }
 
     // ══════════════════════════════════════
-    // SLIDE: FCR vs Non-FCR ตามแผนก
+    // SLIDE: แนวโน้มรายเดือน — 4 กราฟเส้น (ชุดเดียวกับหน้ารายเดือนบน Dashboard)
     // ══════════════════════════════════════
-    if(selected.has('fcr_dept')){
-      const s=pptx.addSlide();
-      s.background={color:'FFFFFF'};
-      addHeader(s,'04','FCR vs Non-FCR ตามแผนก',C.teal);
-      addFooter(s);
+    if(selected.has('trend')){
+      // ใช้ชุดข้อมูลเดียวกับกราฟบนหน้า "รายเดือน" เพื่อให้ตัวเลขตรงกันแน่นอน
+      // หมายเหตุ: M_METRICS ประกาศด้วย let จึงไม่อยู่บน window — อ้างถึงตัวแปรตรง ๆ
+      const _haveMT=()=>{try{return Array.isArray(M_METRICS)&&M_METRICS.length>0;}catch(e){return false;}};
+      if(!_haveMT()){
+        try{ if(typeof renderMonthly==='function') renderMonthly(); }catch(e){ console.warn('renderMonthly:',e); }
+      }
+      const MT=_haveMT()?M_METRICS.slice(0,4):[];
+      if(MT.length){
+        const s=pptx.addSlide();
+        s.background={color:'FFFFFF'};
+        addHeader(s,'03','แนวโน้มรายเดือน — Monthly Trend',C.mail);
+        addFooter(s);
+        const MONTHS12=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-      const fcrSrc=src.filter(r=>isKpiCall(r)&&r.logType!=='Call Back');
-      const deptsSorted=[...depts].sort((a,b)=>
-        fcrSrc.filter(r=>r.typeDept===b).length - fcrSrc.filter(r=>r.typeDept===a).length
-      );
-      const rows=deptsSorted.slice(0,6);
-      const n=rows.length;
+        const CW=4.62, CH=1.86, CX=[0.28,5.10], CY=[1.14,3.12];
+        MT.forEach((mt,i)=>{
+          const x=CX[i%2], y=CY[i<2?0:1];
+          const col=String(mt.color||'#796AE9').replace('#','').toUpperCase();
+          const suf=mt.suffix||'';
+          const dec=(mt.dec===undefined||mt.dec===null)?0:mt.dec;
 
-      // Layout constants — ให้พอดีใน y=1.05..5.05
-      const CONTENT_TOP=1.05, CONTENT_BOT=5.05;
-      const ROW_H=(CONTENT_BOT-CONTENT_TOP)/n;    // ความสูงต่อ row
-      const BAR_H=0.38;                            // ความสูง bar
-      const LBL_W=1.55;                            // ความกว้าง label
-      const LBL_X=0.28;
-      const BAR_X=LBL_X+LBL_W+0.05;              // bar เริ่มต้น
-      const NUM_W=0.88;
-      const BAR_W=10.0-BAR_X-NUM_W-0.20;          // bar กว้างเต็ม
+          // การ์ดครอบกราฟ
+          s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x,y,w:CW,h:CH,
+            fill:{color:'FFFFFF'},line:{color:C.grayL,width:0.75},rectRadius:0.09});
+          s.addShape(pptx.shapes.OVAL,{x:x+0.14,y:y+0.115,w:0.09,h:0.09,
+            fill:{color:col},line:{color:col}});
+          s.addText(String(mt.label||'').toUpperCase(),{x:x+0.30,y:y+0.05,w:CW-0.40,h:0.22,
+            fontSize:8,bold:true,color:col,charSpacing:1.2,valign:'middle',margin:0,fontFace:F.head});
 
-      rows.forEach((dept,i)=>{
-        const rowMid=CONTENT_TOP+i*ROW_H+ROW_H/2;
-        const barY=rowMid-BAR_H/2;
-        const di=fcrSrc.filter(r=>r.typeDept===dept);
-        const tot=di.length;
-        const lv1=di.filter(r=>r.caseLevel?.includes('Level 1')).length;
-        const lv2=di.filter(r=>r.caseLevel?.includes('Level 2')).length;
-        const fPct=tot?Math.round(lv1/tot*100):0;
-        const fColor=fPct>=85?'10B981':fPct>=70?'F59E0B':'EF4444';
+          // เรียงข้อมูลตามเดือน ม.ค.–ธ.ค. (เดือนที่ไม่มีข้อมูลเว้นว่าง)
+          const byMonth={};
+          (mt.months||[]).forEach((m,k)=>{byMonth[m]=(mt.data||[])[k];});
+          const vals=MONTHS12.map(m=>{
+            const v=byMonth[m];
+            return (v===undefined||v===null||isNaN(v))?null:Number(v);
+          });
+          const seen=vals.filter(v=>v!==null);
+          // ช่วงแกน: % ที่อยู่สูงใช้ฐาน 75 · ที่เหลือคำนวณจากข้อมูล
+          let vMin, vMax;
+          if(seen.length){
+            const lo=Math.min(...seen), hi=Math.max(...seen);
+            if(suf==='%'&&lo>=75){ vMin=75; vMax=100; }
+            else if(suf==='%'){ vMin=0; vMax=Math.max(1,Math.ceil(hi*1.25)); }
+            else { vMin=0; vMax=Math.max(0.1,+(hi*1.35).toFixed(1)); }
+          } else { vMin=0; vMax=1; }
 
-        // label
-        s.addText(dept,{x:LBL_X,y:barY,w:LBL_W,h:BAR_H,
-          fontSize:11,bold:true,color:'111827',margin:0,fontFace:'CPN',valign:'middle'});
-
-        // background bar (ม่วงอ่อน) rounded เต็มความกว้าง
-        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{
-          x:BAR_X,y:barY,w:BAR_W,h:BAR_H,
-          fill:{color:'DDD6FE'},line:{color:'DDD6FE'},rectRadius:BAR_H/2});
-
-        if(tot>0){
-          const lv1W=BAR_W*(lv1/tot);
-          const lv2W=BAR_W*(lv2/tot);
-
-          // FCR bar (ฟ้า) — rounded ด้วยกัน
-          if(lv1W>=0.05){
-            s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{
-              x:BAR_X,y:barY,w:lv1W,h:BAR_H,
-              fill:{color:'0EA5E9'},line:{color:'0EA5E9'},rectRadius:BAR_H/2});
-          }
-          // Non-FCR bar (แดง) — ต่อจาก FCR
-          if(lv2W>=0.04){
-            s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{
-              x:BAR_X+lv1W,y:barY,w:lv2W,h:BAR_H,
-              fill:{color:'EF4444'},line:{color:'EF4444'},rectRadius:BAR_H/4});
-          }
-        }
-
-        // n/tot + % ขวาสุด
-        const numX=BAR_X+BAR_W+0.06;
-        s.addText(`${lv1}/${tot}`,{x:numX,y:barY,w:NUM_W,h:BAR_H*0.45,
-          fontSize:8.5,color:'6B7280',align:'right',margin:0,fontFace:'CPN',valign:'bottom'});
-        s.addText(fPct+'%',{x:numX,y:barY+BAR_H*0.45,w:NUM_W,h:BAR_H*0.55,
-          fontSize:11,bold:true,color:fColor,align:'right',margin:0,fontFace:'CPN',valign:'top'});
-      });
-
-      // Legend
-      const legY=5.14;
-      s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:0.28,y:legY+0.03,w:0.26,h:0.17,
-        fill:{color:'0EA5E9'},line:{color:'0EA5E9'},rectRadius:0.08});
-      s.addText('FCR (Level 1)',{x:0.60,y:legY,w:2.0,h:0.24,fontSize:9.5,
-        color:'0EA5E9',margin:0,fontFace:'CPN',valign:'middle'});
-      s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:3.20,y:legY+0.03,w:0.26,h:0.17,
-        fill:{color:'EF4444'},line:{color:'EF4444'},rectRadius:0.08});
-      s.addText('Non-FCR (Level 2)',{x:3.52,y:legY,w:2.2,h:0.24,fontSize:9.5,
-        color:'EF4444',margin:0,fontFace:'CPN',valign:'middle'});
-    }
-
-    // ══════════════════════════════════════
-    // SLIDE: Top 10 Issue
-    // ══════════════════════════════════════
-    if(selected.has('top10')){
-      const s=pptx.addSlide();
-      s.background={color:'FFFFFF'};
-      addHeader(s,'05','Top 10 Issue',C.amber);
-      addFooter(s);
-      const issueSrc=src.filter(r=>!r._referredMail&&r.logType!=='Call Back'&&!isForward(r));
-      const cnt={};
-      issueSrc.forEach(r=>{const v=getDetail(r)||'(ไม่ระบุ)';cnt[v]=(cnt[v]||0)+1;});
-      const top10=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,10);
-      const grandTotal=issueSrc.length||1;
-      const maxN=top10[0]?.[1]||1;
-
-      // Layout
-      const N=top10.length;
-      const CONTENT_TOP=1.02, CONTENT_BOT=5.10;
-      const ROW_H=(CONTENT_BOT-CONTENT_TOP)/N;
-      const BAR_H=ROW_H*0.62;
-      const LBL_NUM_W=0.36, LBL_W=2.0;
-      const LBL_X=0.28;
-      const BAR_X=LBL_X+LBL_NUM_W+LBL_W+0.08;
-      const CUM_W=1.20;
-      const BAR_W_MAX=10.0-BAR_X-CUM_W-0.12;
-
-      // สีวน 5 กลุ่ม ตาม PDF
-      const BAR_COLORS=['7C3AED','7C3AED','0EA5E9','0EA5E9','3B82F6','3B82F6','F59E0B','F59E0B','6B7280','6B7280'];
-
-      let cumPct=0;
-      top10.forEach(([label,n],i)=>{
-        const rowMid=CONTENT_TOP+i*ROW_H+ROW_H/2;
-        const barY=rowMid-BAR_H/2;
-        const p=Math.round(n/grandTotal*100);
-        cumPct+=p;
-        const barFillW=(n/maxN)*BAR_W_MAX;
-        const barColor=BAR_COLORS[i]||'6B7280';
-        const isBold=i<2;
-
-        // rank number
-        s.addText(`${i+1}.`,{x:LBL_X,y:barY,w:LBL_NUM_W,h:BAR_H,
-          fontSize:10,color:'6B7280',margin:0,fontFace:'CPN',valign:'middle'});
-        // label text
-        s.addText(label,{x:LBL_X+LBL_NUM_W,y:barY,w:LBL_W,h:BAR_H,
-          fontSize:10,bold:isBold,color:'111827',margin:0,fontFace:'CPN',valign:'middle'});
-
-        // background bar (ม่วงอ่อนมาก)
-        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{
-          x:BAR_X,y:barY,w:BAR_W_MAX,h:BAR_H,
-          fill:{color:'EDE9FE'},line:{color:'EDE9FE'},rectRadius:BAR_H/2});
-
-        // fill bar
-        if(barFillW>=0.08){
-          s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{
-            x:BAR_X,y:barY,w:barFillW,h:BAR_H,
-            fill:{color:barColor},line:{color:barColor},rectRadius:BAR_H/2});
-          // ตัวเลขในบาร์ (ขาว)
-          if(barFillW>=0.5){
-            s.addText(String(n),{x:BAR_X+0.06,y:barY,w:barFillW-0.12,h:BAR_H,
-              fontSize:10,bold:true,color:'FFFFFF',align:'right',
-              margin:0,fontFace:'CPN',valign:'middle'});
-          }
-        }
-
-        // cumulative % ขวา
-        s.addText(`${p}%  (Σ${cumPct}%)`,{
-          x:BAR_X+BAR_W_MAX+0.06,y:barY,w:CUM_W,h:BAR_H,
-          fontSize:8.5,color:'9CA3AF',align:'left',margin:0,fontFace:'CPN',valign:'middle'});
-      });
-    }
-
-    // ══════════════════════════════════════
-    // SLIDE: Resolution Time
-    // ══════════════════════════════════════
-    if(selected.has('res_time')){
-      const s=pptx.addSlide();
-      s.background={color:'FFFFFF'};
-      addHeader(s,'06','Resolution Time ตามแผนก (วัน)',C.green);
-      addFooter(s);
-
-      const resSrc=src.filter(r=>r.resolutionTime!==null&&r.logType!=='Call Back'&&r.logType!=='Transfer');
-      const deptRes=depts.map(dept=>{
-        const di=resSrc.filter(r=>r.typeDept===dept);
-        return{dept,avgRes:di.length?+(avg(di.map(r=>r.resolutionTime)).toFixed(1)):0,n:di.length};
-      }).filter(d=>d.n>0).sort((a,b)=>(b.avgRes||0)-(a.avgRes||0));
-
-      const maxRes=Math.max(...deptRes.map(d=>d.avgRes),0.01);
-      const N=Math.min(deptRes.length,6);
-      const CONTENT_TOP=1.05, CONTENT_BOT=5.05;
-      const ROW_H=(CONTENT_BOT-CONTENT_TOP)/Math.max(N,1);
-      const BAR_H=ROW_H*0.60;
-      const LBL_X=0.28, LBL_W=1.55;
-      const BAR_X=LBL_X+LBL_W+0.08;
-      const CASE_W=1.10;
-      const BAR_W_MAX=10.0-BAR_X-CASE_W-0.12;
-
-      // สีตาม threshold
-      const colorRes=v=>v<=0.5?'0EA5E9':v<=1.0?'10B981':v<=3?'F59E0B':'EF4444';
-      // background สีเขียวอ่อนมาก (ตาม PDF)
-      const BG_COLOR='D1FAE5';
-
-      deptRes.slice(0,N).forEach((d,i)=>{
-        const rowMid=CONTENT_TOP+i*ROW_H+ROW_H/2;
-        const barY=rowMid-BAR_H/2;
-        const barColor=colorRes(d.avgRes);
-        const fillPct=maxRes>0?d.avgRes/maxRes:0;
-        const fillW=BAR_W_MAX*Math.min(fillPct,1.0);
-
-        // label
-        s.addText(d.dept,{x:LBL_X,y:barY,w:LBL_W,h:BAR_H,
-          fontSize:11,bold:true,color:'111827',margin:0,fontFace:'CPN',valign:'middle'});
-
-        // background bar เขียวอ่อน rounded เต็มความกว้าง
-        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{
-          x:BAR_X,y:barY,w:BAR_W_MAX,h:BAR_H,
-          fill:{color:BG_COLOR},line:{color:BG_COLOR},rectRadius:BAR_H/2});
-
-        // fill bar สีตาม threshold
-        if(fillW>=0.06){
-          s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{
-            x:BAR_X,y:barY,w:fillW,h:BAR_H,
-            fill:{color:barColor},line:{color:barColor},rectRadius:BAR_H/2});
-          // ค่าวัน ในบาร์ขาว
-          s.addText(`${d.avgRes} วัน`,{
-            x:BAR_X+0.06,y:barY,w:Math.max(fillW-0.12,0.5),h:BAR_H,
-            fontSize:10.5,bold:true,color:'FFFFFF',align:'right',
-            margin:0,fontFace:'CPN',valign:'middle'});
-        }
-
-        // (case) ขวาสุด
-        s.addText(`(${d.n} case)`,{
-          x:BAR_X+BAR_W_MAX+0.06,y:barY,w:CASE_W,h:BAR_H,
-          fontSize:9.5,color:'6B7280',align:'left',margin:0,fontFace:'CPN',valign:'middle'});
-      });
-
-      // Legend ล่าง
-      const legs=[{c:'0EA5E9',l:'≤ 0.5 วัน'},{c:'10B981',l:'≤ 1 วัน'},{c:'F59E0B',l:'≤ 3 วัน'},{c:'EF4444',l:'> 3 วัน'}];
-      const legY=5.14;
-      legs.forEach((l,i)=>{
-        const lx=0.28+i*2.36;
-        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:lx,y:legY+0.03,w:0.24,h:0.16,
-          fill:{color:l.c},line:{color:l.c},rectRadius:0.08});
-        s.addText(l.l,{x:lx+0.30,y:legY,w:2.0,h:0.24,fontSize:9.5,
-          color:l.c,margin:0,fontFace:'CPN',valign:'middle'});
-      });
-    }
-
-
-    // ══════════════════════════════════════
-    // SLIDE: Case ค้าง
-    // ══════════════════════════════════════
-    if(selected.has('pending')){
-      const s=pptx.addSlide();
-      s.background={color:'FFFFFF'};
-      addHeader(s,'07','Case ค้าง (Pending / Open)',C.amber);
-      addFooter(s);
-
-      const pendSrc=src.filter(r=>(r.status==='Pending'||r.status==='Open')
-        &&!r._referredMail&&r.logType!=='Call Back');
-      const pendN=pendSrc.length;
-      const byDept={};
-      pendSrc.forEach(r=>{const d=r.typeDept||'(ไม่ระบุ)';byDept[d]=(byDept[d]||0)+1;});
-      const deptPend=Object.entries(byDept).sort((a,b)=>b[1]-a[1]);
-      const _ptVals=pendSrc.map(r=>r.pendingTime).filter(x=>x!==null&&x>=0);
-      const avgPt=_ptVals.length?+(avg(_ptVals).toFixed(1)):null;
-      const maxPt=_ptVals.length?Math.max(..._ptVals):null;
-
-      // ── 3 metric cards (ตาม PDF: เหลือง / แดง / ม่วง) ──
-      const CARD_Y=1.00, CARD_H=1.52, CARD_W=3.06, CARD_GAP=0.08;
-      const cards=[
-        {bg:'F59E0B', v:String(pendN),                      lbl:'Case ค้างทั้งหมด',  sub:'Pending + Open'},
-        {bg:'EF4444', v:avgPt!==null?avgPt+' วัน':'—',      lbl:'Avg. Pending Time', sub:'เฉลี่ย'},
-        {bg:'7C3AED', v:maxPt!==null?maxPt+' วัน':'—',      lbl:'Max Pending Time',  sub:'นานสุด'},
-      ];
-      cards.forEach((k,i)=>{
-        const cx=0.28+i*(CARD_W+CARD_GAP);
-        s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:cx,y:CARD_Y,w:CARD_W,h:CARD_H,
-          fill:{color:k.bg},line:{color:k.bg},rectRadius:0.14});
-        // ตัวเลขใหญ่
-        const fs=String(k.v).length<=4?36:String(k.v).length<=7?28:22;
-        s.addText(k.v,{x:cx+0.1,y:CARD_Y+0.12,w:CARD_W-0.2,h:CARD_H*0.52,
-          fontSize:fs,bold:true,color:'FFFFFF',align:'center',valign:'middle',margin:0,fontFace:F.head});
-        // label
-        s.addText(k.lbl,{x:cx+0.1,y:CARD_Y+CARD_H*0.65,w:CARD_W-0.2,h:CARD_H*0.20,
-          fontSize:10,bold:true,color:'FFFFFF',align:'center',margin:0,fontFace:F.head});
-        // sub label italic
-        s.addText(k.sub,{x:cx+0.1,y:CARD_Y+CARD_H*0.84,w:CARD_W-0.2,h:CARD_H*0.15,
-          fontSize:9,color:'FFFFFFCC',italic:true,align:'center',margin:0,fontFace:F.body});
-      });
-
-      // ── Table header เหลือง ──
-      const TBL_Y=2.66, TBL_H_HDR=0.40;
-      const COLS=[{h:'แผนก',w:4.2},{h:'Case ค้าง',w:2.0},{h:'%',w:1.4},{h:'สถานะ',w:1.84}];
-      s.addShape(pptx.shapes.ROUNDED_RECTANGLE,{x:0.28,y:TBL_Y,w:9.44,h:TBL_H_HDR,
-        fill:{color:'F59E0B'},line:{color:'F59E0B'},rectRadius:0.06});
-      let hx=0.36;
-      COLS.forEach(({h,w})=>{
-        s.addText(h,{x:hx,y:TBL_Y+0.04,w:w,h:TBL_H_HDR-0.08,fontSize:10.5,bold:true,
-          color:'FFFFFF',margin:0,fontFace:F.head,valign:'middle'});
-        hx+=w;
-      });
-
-      // ── Table rows ──
-      const ROW_H=0.52;
-      deptPend.slice(0,6).forEach(([dept,n],i)=>{
-        const ry=TBL_Y+TBL_H_HDR+i*ROW_H;
-        const bg=i%2===0?'FFFFFF':'FFF8F0';
-        const pct=pendN?Math.round(n/pendN*100):0;
-        const isWarn=n>=3;
-        const stIcon=isWarn?'⚠️':'✅';
-        const stTxt=isWarn?'ต้องติดตาม':'ปกติ';
-        const stColor=isWarn?'D97706':'059669';
-
-        s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:ry,w:9.44,h:ROW_H,fill:{color:bg}});
-        // bottom border
-        s.addShape(pptx.shapes.RECTANGLE,{x:0.28,y:ry+ROW_H-0.01,w:9.44,h:0.01,fill:{color:'F3F4F6'}});
-
-        let vx=0.36;
-        // แผนก
-        s.addText(dept,{x:vx,y:ry+0.08,w:COLS[0].w,h:ROW_H-0.16,
-          fontSize:11,bold:true,color:'111827',margin:0,fontFace:F.head,valign:'middle'});
-        vx+=COLS[0].w;
-        // Case ค้าง
-        s.addText(String(n),{x:vx,y:ry+0.08,w:COLS[1].w,h:ROW_H-0.16,
-          fontSize:11,color:'374151',margin:0,fontFace:F.body,valign:'middle'});
-        vx+=COLS[1].w;
-        // %
-        s.addText(pct+'%',{x:vx,y:ry+0.08,w:COLS[2].w,h:ROW_H-0.16,
-          fontSize:11,color:'374151',margin:0,fontFace:F.body,valign:'middle'});
-        vx+=COLS[2].w;
-        // สถานะ: icon + text
-        s.addText(stIcon,{x:vx,y:ry+0.08,w:0.36,h:ROW_H-0.16,
-          fontSize:14,margin:0,fontFace:F.body,valign:'middle',align:'center'});
-        s.addText(stTxt,{x:vx+0.34,y:ry+0.08,w:COLS[3].w-0.36,h:ROW_H-0.16,
-          fontSize:11,bold:true,color:stColor,margin:0,fontFace:F.head,valign:'middle'});
-      });
+          s.addChart(pptx.ChartType.line,
+            [{name:String(mt.label||''), labels:MONTHS12, values:vals}],
+            {x:x+0.06, y:y+0.28, w:CW-0.12, h:CH-0.36,
+             chartColors:[col], lineSize:2.25, lineSmooth:true,
+             lineDataSymbol:'circle', lineDataSymbolSize:7,
+             lineDataSymbolLineColor:col, lineDataSymbolLineSize:1,
+             showLegend:false, showTitle:false,
+             showValue:true, dataLabelColor:col, dataLabelFontSize:7.5,
+             dataLabelFontFace:'CPN', dataLabelFontBold:true,
+             dataLabelPosition:'t', dataLabelFormatCode:'0.'+('0'.repeat(dec))+'"'+suf+'"',
+             valAxisMinVal:vMin, valAxisMaxVal:vMax,
+             valAxisLabelFontSize:7, valAxisLabelFontFace:'CPN', valAxisLabelColor:C.graySoft,
+             valAxisLabelFormatCode:'0.'+('0'.repeat(dec))+'"'+suf+'"',
+             valAxisLineShow:false,
+             catAxisLabelFontSize:7.5, catAxisLabelFontFace:'CPN', catAxisLabelColor:C.graySoft,
+             catAxisLineShow:false,
+             valGridLine:{style:'solid', size:0.5, color:C.grayL},
+             catGridLine:{style:'none'},
+             plotArea:{fill:{color:'FFFFFF'}},
+             border:{pt:0, color:'FFFFFF'},
+            });
+        });
+        // หมายเหตุ: กราฟแนวโน้มแสดงทั้งปีเสมอ เพื่อให้เห็นทิศทาง
+        s.addText('กราฟแนวโน้มไม่ตัดตามเดือนที่ติ๊กเลือก เพื่อให้เห็นทิศทางทั้งช่วง — แต่ยังอยู่ภายใต้ช่วงวันที่และแผนกที่กรองไว้',
+          {x:0.28,y:5.04,w:9.44,h:0.20,fontSize:7.5,color:C.graySoft,margin:0,fontFace:F.body,valign:'middle'});
+      }
     }
 
     // Claude AI
@@ -7494,8 +7334,7 @@ async function doExportPPTX(){
         if(narrative&&typeof addClaudeAnalysisSlide==='function')addClaudeAnalysisSlide(pptx,narrative,kpi,C,F,addHeader,addFooter);
       }catch(e){console.error('Claude:',e);}
     }
-    const _tmplDef=PPTX_TEMPLATES?.find(t=>t.id===_selectedTemplate)||{name:'Dashboard'};
-    const fname=`CDS_SCM_${_tmplDef.name.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.pptx`;
+    const fname=`CDS_SCM_Partner_Service_${new Date().toISOString().slice(0,10)}.pptx`;
     await pptx.writeFile({fileName:fname});
     // แจ้งสำเร็จ
     showDrillToast('✅ Export สำเร็จ: '+fname);
@@ -8519,7 +8358,7 @@ function renderTop10Issue(type){
       <div style="display:flex;align-items:center;justify-content:space-between">
         <div>
           <div style="font-size:15px;font-weight:700;color:#1E1B3A">Export PPTX</div>
-          <div style="font-size:11px;color:#9CA3AF;margin-top:1px">เลือก Style, Template และรูปแบบ Slide</div>
+          <div style="font-size:11px;color:#9CA3AF;margin-top:1px">เลือกสไลด์ที่ต้องการ แล้วกด Export</div>
         </div>
         <button onclick="closeExportModal()" style="width:28px;height:28px;border-radius:8px;border:1.5px solid #E8EAED;background:#fff;cursor:pointer;font-size:15px;color:#9CA3AF">✕</button>
       </div>
@@ -8528,46 +8367,33 @@ function renderTop10Issue(type){
     <!-- Scrollable body -->
     <div style="overflow-y:auto;padding:14px 22px;flex:1;min-height:0">
 
-      <!-- Style -->
-      <div style="font-size:10px;font-weight:700;color:#6C5CE7;letter-spacing:.8px;margin-bottom:7px">STYLE — รูปแบบสี</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px" id="style-cards"></div>
-
-      <!-- Template -->
-      <div style="font-size:10px;font-weight:700;color:#6C5CE7;letter-spacing:.8px;margin-bottom:7px">TEMPLATE</div>
-      <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:6px" id="tmpl-cards"></div>
-      <div id="tmpl-preview-panel" style="display:none;margin-bottom:12px;padding:10px;background:#F8F9FB;border-radius:10px;border:1px solid #E8EAED"></div>
-
-      <!-- Slide mode -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin:12px 0 8px">
-        <div style="font-size:10px;font-weight:700;color:#6C5CE7;letter-spacing:.8px">SLIDES</div>
-        <span id="slide-count-badge" style="font-size:10px;background:#EDE9FE;color:#6C5CE7;padding:2px 10px;border-radius:20px;font-weight:600">8 slides</span>
-      </div>
-      <div style="display:flex;gap:7px;margin-bottom:10px">
-        <button id="mode-btn-standard" onclick="setSlideMode('standard')" style="flex:1;padding:7px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;border:2px solid #6C5CE7;background:#6C5CE7;color:#fff">✅ มาตรฐาน</button>
-        <button id="mode-btn-custom" onclick="setSlideMode('custom')" style="flex:1;padding:7px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;border:2px solid #E8EAED;background:#fff;color:#6B7280">⚙️ กำหนดเอง</button>
-      </div>
-
-      <!-- Standard -->
-      <div id="mode-standard">
-        <div style="padding:10px 12px;background:#F8F9FB;border-radius:10px">
-          <div style="font-size:11px;font-weight:600;color:#374151;margin-bottom:5px">Slides ตาม Template</div>
-          <div id="standard-slide-list"></div>
+      <!-- Theme (ชุดเดียว) -->
+      <div style="font-size:10px;font-weight:700;color:#796AE9;letter-spacing:.8px;margin-bottom:7px">THEME</div>
+      <div style="display:flex;align-items:center;gap:9px;padding:9px 11px;border:1px solid #E2E1DC;border-radius:10px;background:#F4F5F7;margin-bottom:12px">
+        <div style="display:flex;gap:3px;flex-shrink:0">
+          <span style="width:13px;height:22px;border-radius:3px;background:#1E1B3A"></span>
+          <span style="width:13px;height:22px;border-radius:3px;background:#796AE9"></span>
+          <span style="width:13px;height:22px;border-radius:3px;background:#1B9E99"></span>
+          <span style="width:13px;height:22px;border-radius:3px;background:#E4DFFB"></span>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:11.5px;font-weight:700;color:#1E1B3A">Presentation White</div>
+          <div style="font-size:10px;color:#5F5E5A">ชุดเดียวกับสไลด์นำเสนอ · พื้นขาว · ฟอนต์ CPN</div>
         </div>
       </div>
 
-      <!-- Custom -->
-      <div id="mode-custom" style="display:none">
-        <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:#F8F9FB;border-radius:9px;margin-bottom:7px;cursor:pointer" onclick="toggleAllSlides()">
-          <div id="chk-all" data-selected="1" style="width:17px;height:17px;border-radius:4px;border:2px solid #6C5CE7;background:#6C5CE7;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-            <svg width="9" height="9" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <span style="font-size:11px;font-weight:600;color:#1E1B3A">เลือกทั้งหมด</span>
-        </div>
-        <div id="slide-options" style="display:flex;flex-direction:column;gap:5px;margin-bottom:8px"></div>
-        <div style="padding:7px 10px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;font-size:10.5px;color:#92400E;margin-bottom:10px">
-          💡 กด "⤵ รวมถัดไป" เพื่อรวม 2 slides ไว้ใน slide เดียว
-        </div>
+      <!-- Slides — เป็นทั้งตัวเลือกและตัวอย่างของผลลัพธ์จริง -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin:14px 0 8px">
+        <div style="font-size:10px;font-weight:700;color:#796AE9;letter-spacing:.8px">SLIDES</div>
+        <span id="slide-count-badge" style="font-size:10px;background:#E4DFFB;color:#796AE9;padding:2px 10px;border-radius:20px;font-weight:700">4 สไลด์</span>
       </div>
+      <div style="display:flex;align-items:center;gap:9px;padding:7px 11px;background:#F4F5F7;border-radius:9px;margin-bottom:8px;cursor:pointer" onclick="toggleAllSlides()">
+        <div id="chk-all" style="width:18px;height:18px;border-radius:5px;border:2px solid #796AE9;background:#796AE9;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span style="font-size:11.5px;font-weight:700;color:#1E1B3A">เลือกทั้งหมด</span>
+      </div>
+      <div id="slide-options" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px"></div>
 
       <!-- Claude AI -->
       <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:linear-gradient(135deg,#F5F3FF,#EDE9FE);border-radius:11px;margin-bottom:8px;border:1.5px solid #DDD6FE">
