@@ -19366,3 +19366,10 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-09-30T15:16:28.70255+07:00,Inbound Queue,PT3.04047S,True,Queue,1,Waiting,8196
 2026-09-30T15:08:34.960024+07:00,Inbound,PT3M5.340462S,True,Extension,1,Answered,0114
 2026-09-30T15:08:34.906798+07:00,Inbound Queue,PT1.737454S,True,Queue,1,Waiting,8196
+2026-09-30T17:57:06.212233+07:00,Internal,PT4.014979S,True,System,1,Answered,*33
+2026-09-30T17:34:11.102247+07:00,Outbound,PT3.564354S,True,External,1,Answered,10009
+2026-09-30T17:33:55.331781+07:00,Outbound,PT5.872696S,True,External,1,Answered,10009
+2026-09-30T17:08:37.001657+07:00,Internal,PT3.518135S,True,System,1,Answered,*31
+2026-09-30T17:00:22.862175+07:00,Inbound Queue,PT2.940523S,True,Queue,1,Waiting,8048
+2026-09-30T16:59:31.320626+07:00,Inbound,PT49.727837S,True,Extension,1,Answered,0113
+2026-09-30T16:59:31.122877+07:00,Inbound Queue,PT2.06522S,True,Queue,1,Waiting,8196
