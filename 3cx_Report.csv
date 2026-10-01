@@ -19373,3 +19373,11 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-09-30T17:00:22.862175+07:00,Inbound Queue,PT2.940523S,True,Queue,1,Waiting,8048
 2026-09-30T16:59:31.320626+07:00,Inbound,PT49.727837S,True,Extension,1,Answered,0113
 2026-09-30T16:59:31.122877+07:00,Inbound Queue,PT2.06522S,True,Queue,1,Waiting,8196
+2026-10-01T09:53:11.546074+07:00,Inbound,PT3M19.853743S,True,Extension,1,Answered,0112
+2026-10-01T09:53:11.330365+07:00,Inbound Queue,PT2.40912S,True,Queue,1,Waiting,8196
+2026-10-01T09:30:22.403542+07:00,Internal,PT3.550562S,True,System,1,Answered,*31
+2026-10-01T09:29:56.402835+07:00,Internal,PT0.885403S,True,System,1,Answered,*31
+2026-10-01T09:29:53.493757+07:00,Internal,PT0S,False,System,1,Unanswered,EndCall
+2026-10-01T09:04:09.411408+07:00,Internal,PT3.41309S,True,System,1,Answered,*30
+2026-10-01T08:54:51.941546+07:00,Internal,PT3.313922S,True,System,1,Answered,*30
+2026-10-01T08:41:15.644432+07:00,Internal,PT0.745928S,True,System,1,Answered,*30
