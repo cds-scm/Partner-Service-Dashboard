@@ -19543,3 +19543,5 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-10-02T15:05:51.562524+07:00,Inbound Queue,PT2.237744S,True,Queue,1,Waiting,8196
 2026-10-02T15:00:41.570835+07:00,Inbound,PT12M42.631769S,True,Extension,1,Answered,0113
 2026-10-02T15:00:41.420837+07:00,Inbound Queue,PT2.325842S,True,Queue,1,Waiting,8196
+2026-10-02T17:52:59.748753+07:00,Internal,PT4.035211S,True,System,1,Answered,*33
+2026-10-02T17:09:42.789579+07:00,Internal,PT1.780863S,True,System,1,Answered,*31
