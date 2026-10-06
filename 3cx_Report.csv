@@ -19737,3 +19737,4 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-10-06T15:20:06.945887+07:00,Outbound,PT45.426176S,True,External,1,Answered,10009
 2026-10-06T15:17:00.650524+07:00,Internal,PT3.514526S,True,System,1,Answered,*31
 2026-10-06T15:12:09.528073+07:00,Outbound,PT54.633168S,True,External,1,Answered,10009
+2026-10-06T17:58:37.582932+07:00,Internal,PT3.532458S,True,System,1,Answered,*31
