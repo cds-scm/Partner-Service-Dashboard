@@ -19867,3 +19867,5 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-10-07T15:09:03.885977+07:00,Inbound Queue,PT4.64255S,True,Queue,1,Waiting,8196
 2026-10-07T15:06:29.317632+07:00,Inbound,PT1M39.559069S,True,Extension,1,Answered,0113
 2026-10-07T15:06:29.122218+07:00,Inbound Queue,PT2.018568S,True,Queue,1,Waiting,8196
+2026-10-07T17:05:09.571318+07:00,Internal,PT3.411718S,True,System,1,Answered,*31
+2026-10-07T17:05:06.637112+07:00,Internal,PT3.383473S,True,System,1,Answered,*31
