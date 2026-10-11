@@ -20084,3 +20084,5 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-10-09T15:01:12.189641+07:00,Outbound,PT4M39.817607S,True,External,1,Answered,10008
 2026-10-09T17:58:40.172312+07:00,Internal,PT4.11336S,True,System,1,Answered,*33
 2026-10-09T17:57:50.078767+07:00,Internal,PT3.513463S,True,System,1,Answered,*31
+2026-10-11T14:45:36.368802+07:00,Internal,PT1.442224S,True,System,1,Answered,0113
+2026-10-11T14:45:36.294967+07:00,Internal,PT0S,False,Extension,1,Unanswered,0113
