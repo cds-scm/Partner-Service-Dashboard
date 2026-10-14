@@ -20169,3 +20169,9 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-10-12T15:10:53.409164+07:00,Outbound,PT0S,False,External,1,Unanswered,10009
 2026-10-12T15:10:14.113256+07:00,Outbound,PT0S,False,External,1,Unanswered,10009
 2026-10-12T15:09:51.75057+07:00,Internal,PT0S,False,System,1,Unanswered,EndCall
+2026-10-14T09:51:23.073442+07:00,Inbound,PT1M24.608883S,True,Extension,1,Answered,0112
+2026-10-14T09:51:22.917674+07:00,Inbound Queue,PT1.80687S,True,Queue,1,Waiting,8196
+2026-10-14T09:14:55.327414+07:00,Internal,PT3.414454S,True,System,1,Answered,*30
+2026-10-14T08:48:23.733307+07:00,Internal,PT3.427406S,True,System,1,Answered,*30
+2026-10-14T08:05:19.026642+07:00,Internal,PT0.094976S,True,System,1,Answered,*31
+2026-10-14T08:05:15.813241+07:00,Internal,PT0S,False,System,1,Unanswered,EndCall
