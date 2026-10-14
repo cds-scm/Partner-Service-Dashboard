@@ -20264,3 +20264,7 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-10-14T15:21:30.193911+07:00,Inbound Queue,PT1.959102S,True,Queue,1,Waiting,8196
 2026-10-14T15:20:51.213324+07:00,Internal,PT3.49161S,True,System,1,Answered,*31
 2026-10-14T15:12:55.252265+07:00,Outbound,PT0S,False,External,1,Unanswered,10007
+2026-10-14T18:01:06.604995+07:00,Internal,PT4.122263S,True,System,1,Answered,*33
+2026-10-14T17:11:06.220638+07:00,Internal,PT3.402654S,True,System,1,Answered,*31
+2026-10-14T17:11:00.095172+07:00,Internal,PT3.513435S,True,System,1,Answered,*31
+2026-10-14T17:09:27.585502+07:00,Internal,PT3.514328S,True,System,1,Answered,*31
