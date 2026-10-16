@@ -20388,3 +20388,15 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-10-15T15:22:28.46506+07:00,Inbound Queue,PT4.109471S,True,Queue,1,Waiting,8196
 2026-10-15T15:14:25.691667+07:00,Inbound,PT1M25.378522S,True,Extension,1,Answered,0113
 2026-10-15T15:14:25.535932+07:00,Inbound Queue,PT2.042957S,True,Queue,1,Waiting,8196
+2026-10-16T10:03:50.649857+07:00,Outbound,PT0S,False,External,1,Unanswered,10008
+2026-10-16T10:02:51.879395+07:00,Inbound,PT40.579281S,True,Extension,1,Answered,0112
+2026-10-16T10:02:36.1539+07:00,Inbound Queue,PT20.03192S,True,Queue,1,Waiting,8196
+2026-10-16T09:55:34.126826+07:00,Inbound,PT8M40.444814S,True,Extension,1,Answered,0114
+2026-10-16T09:55:10.02132+07:00,Inbound,PT23.10962S,True,Extension,1,Answered,0113
+2026-10-16T09:55:09.792479+07:00,Inbound Queue,PT2.708749S,True,Queue,1,Waiting,8196
+2026-10-16T09:49:51.676352+07:00,Outbound,PT0S,False,External,1,Unanswered,10007
+2026-10-16T09:47:56.597708+07:00,Inbound,PT1M3.980949S,True,Extension,1,Answered,0112
+2026-10-16T09:47:56.357294+07:00,Inbound Queue,PT1.892339S,True,Queue,1,Waiting,8196
+2026-10-16T09:34:15.683452+07:00,Outbound,PT2M14.607498S,True,External,1,Answered,10009
+2026-10-16T08:52:56.974336+07:00,Internal,PT3.421258S,True,System,1,Answered,*30
+2026-10-16T08:52:22.230929+07:00,Internal,PT1.322814S,True,System,1,Answered,*30
