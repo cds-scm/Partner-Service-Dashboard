@@ -20929,3 +20929,10 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-10-21T15:21:03.871887+07:00,Inbound Queue,PT2.158956S,True,Queue,1,Waiting,8196
 2026-10-21T14:23:26.417214+07:00,Inbound,PT1H6.040193S,True,Extension,1,Answered,0113
 2026-10-21T14:23:26.211458+07:00,Inbound Queue,PT1.762853S,True,Queue,1,Waiting,8196
+2026-10-21T18:00:21.518309+07:00,Internal,PT3.503448S,True,System,1,Answered,*31
+2026-10-21T17:25:35.778745+07:00,Outbound,PT3.539198S,True,Queue,1,Waiting,8048
+2026-10-21T17:23:34.59944+07:00,Outbound,PT1M49.512954S,True,External,1,Answered,10009
+2026-10-21T17:23:18.069582+07:00,Internal,PT0S,False,System,1,Unanswered,EndCall
+2026-10-21T17:09:25.887032+07:00,Internal,PT3.513142S,True,System,1,Answered,*31
+2026-10-21T16:59:15.071515+07:00,Inbound,PT10M5.132187S,True,Extension,1,Answered,0113
+2026-10-21T16:59:14.877092+07:00,Inbound Queue,PT1.858841S,True,Queue,1,Waiting,8196
