@@ -21247,3 +21247,11 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-10-27T17:46:27.642745+07:00,Internal,PT3.517536S,True,System,1,Answered,*31
 2026-10-27T17:46:21.680136+07:00,Internal,PT3.434548S,True,System,1,Answered,*31
 2026-10-27T17:05:54.388355+07:00,Internal,PT3.421036S,True,System,1,Answered,*31
+2026-10-28T09:52:19.604698+07:00,Internal,PT0.841913S,True,System,1,Answered,*30
+2026-10-28T09:52:16.916234+07:00,Internal,PT0S,False,System,1,Unanswered,EndCall
+2026-10-28T09:52:10.502098+07:00,Inbound,PT3M52.74079S,True,Extension,1,Answered,0113
+2026-10-28T09:52:10.32915+07:00,Inbound Queue,PT1.979998S,True,Queue,1,Waiting,8196
+2026-10-28T09:06:37.791971+07:00,Inbound,PT46.163218S,True,Extension,1,Answered,0112
+2026-10-28T09:06:37.691984+07:00,Inbound Queue,PT2.098451S,True,Queue,1,Waiting,8196
+2026-10-28T09:02:22.773094+07:00,Internal,PT3.414069S,True,System,1,Answered,*30
+2026-10-28T08:48:31.447511+07:00,Internal,PT3.414117S,True,System,1,Answered,*30
