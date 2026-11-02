@@ -21649,3 +21649,4 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-11-02T15:24:36.304371+07:00,Inbound Queue,PT4.6326S,True,Queue,1,Waiting,8196
 2026-11-02T15:08:57.484563+07:00,Inbound,PT3M29.631228S,True,Extension,1,Answered,0113
 2026-11-02T15:08:57.354473+07:00,Inbound Queue,PT2.837245S,True,Queue,1,Waiting,8196
+2026-11-02T17:57:12.757468+07:00,Internal,PT3.514234S,True,System,1,Answered,*31
