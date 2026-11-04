@@ -21824,3 +21824,7 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-11-04T15:30:40.295054+07:00,Inbound Queue,PT2.826213S,True,Queue,1,Waiting,8196
 2026-11-04T15:02:10.560283+07:00,Inbound,PT4M39.802508S,True,Extension,1,Answered,0113
 2026-11-04T15:02:10.381832+07:00,Inbound Queue,PT1.915782S,True,Queue,1,Waiting,8196
+2026-11-04T17:51:23.376762+07:00,Internal,PT3.510347S,True,System,1,Answered,*31
+2026-11-04T17:21:55.883848+07:00,Internal,PT3.414551S,True,System,1,Answered,*31
+2026-11-04T17:12:36.84901+07:00,Internal,PT3.519921S,True,System,1,Answered,*31
+2026-11-04T17:05:04.367712+07:00,Internal,PT3.513721S,True,System,1,Answered,*31
