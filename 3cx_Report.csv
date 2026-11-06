@@ -22017,3 +22017,5 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-11-06T15:19:54.36019+07:00,Inbound,PT6M51.982962S,True,Extension,1,Answered,0113
 2026-11-06T15:19:54.195517+07:00,Inbound Queue,PT1.751096S,True,Queue,1,Waiting,8196
 2026-11-06T15:11:24.738356+07:00,Internal,PT3.413359S,True,System,1,Answered,*31
+2026-11-06T17:34:43.194091+07:00,Internal,PT3.503365S,True,System,1,Answered,*31
+2026-11-06T17:34:38.027647+07:00,Outbound,PT0S,False,External,1,Unanswered,10009
