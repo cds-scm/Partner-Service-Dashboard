@@ -22109,3 +22109,4 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-11-09T15:32:59.909738+07:00,Internal,PT3.511372S,True,System,1,Answered,*31
 2026-11-09T15:05:02.391929+07:00,Inbound,PT5M40.711674S,True,Extension,1,Answered,0113
 2026-11-09T15:05:02.230643+07:00,Inbound Queue,PT2.65284S,True,Queue,1,Waiting,8196
+2026-11-09T17:11:17.083619+07:00,Internal,PT3.513259S,True,System,1,Answered,*31
