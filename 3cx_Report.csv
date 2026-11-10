@@ -22198,3 +22198,4 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-11-10T15:24:37.704661+07:00,Inbound,PT1M13.317043S,True,Extension,1,Answered,0114
 2026-11-10T15:24:37.497643+07:00,Inbound Queue,PT1.94148S,True,Queue,1,Waiting,8196
 2026-11-10T15:08:44.402594+07:00,Internal,PT3.413628S,True,System,1,Answered,*30
+2026-11-10T17:58:37.586458+07:00,Internal,PT3.514228S,True,System,1,Answered,*31
