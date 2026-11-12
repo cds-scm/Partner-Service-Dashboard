@@ -22431,3 +22431,4 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-11-12T15:15:23.641113+07:00,Internal,PT3.391903S,True,System,1,Answered,*31
 2026-11-12T15:15:29.801593+07:00,Inbound,PT3M10.628224S,True,Extension,1,Answered,0113
 2026-11-12T15:15:29.588119+07:00,Inbound Queue,PT1.86055S,True,Queue,1,Waiting,8196
+2026-11-12T17:53:03.650663+07:00,Internal,PT3.512925S,True,System,1,Answered,*31
