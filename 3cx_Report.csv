@@ -22329,3 +22329,10 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-11-11T15:05:52.019382+07:00,Inbound Queue,PT3.56623S,True,Queue,1,Waiting,8048
 2026-11-11T15:00:18.411743+07:00,Inbound,PT5M31.596369S,True,Extension,1,Answered,0113
 2026-11-11T15:00:18.360737+07:00,Inbound Queue,PT2.10793S,True,Queue,1,Waiting,8196
+2026-11-12T09:42:34.559045+07:00,Inbound,PT7M56.854647S,True,Extension,1,Answered,0113
+2026-11-12T09:42:34.368334+07:00,Inbound Queue,PT3.402265S,True,Queue,1,Waiting,8196
+2026-11-12T09:37:58.147772+07:00,Inbound,PT4M11.01502S,True,Extension,1,Answered,0112
+2026-11-12T09:37:57.918398+07:00,Inbound Queue,PT2.087488S,True,Queue,1,Waiting,8196
+2026-11-12T08:59:25.183254+07:00,Internal,PT3.41308S,True,System,1,Answered,*30
+2026-11-12T08:56:22.297497+07:00,Internal,PT1.420245S,True,System,1,Answered,*30
+2026-11-12T08:52:43.166447+07:00,Internal,PT3.313817S,True,System,1,Answered,*30
