@@ -22432,3 +22432,22 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-11-12T15:15:29.801593+07:00,Inbound,PT3M10.628224S,True,Extension,1,Answered,0113
 2026-11-12T15:15:29.588119+07:00,Inbound Queue,PT1.86055S,True,Queue,1,Waiting,8196
 2026-11-12T17:53:03.650663+07:00,Internal,PT3.512925S,True,System,1,Answered,*31
+2026-11-13T09:49:46.985449+07:00,Inbound Queue,PT48.046683S,True,Queue,1,Waiting,8048
+2026-11-13T09:48:56.314022+07:00,Inbound,PT44.799608S,True,Extension,1,Answered,0114
+2026-11-13T09:48:56.038529+07:00,Inbound Queue,PT6.153629S,True,Queue,1,Waiting,8196
+2026-11-13T09:46:35.957287+07:00,Inbound,PT15M13.927462S,True,Extension,1,Answered,0113
+2026-11-13T09:46:35.82529+07:00,Inbound Queue,PT2.081304S,True,Queue,1,Waiting,8196
+2026-11-13T09:44:43.200208+07:00,Inbound,PT7M21.724684S,True,Extension,1,Answered,0112
+2026-11-13T09:44:42.972656+07:00,Inbound Queue,PT2.295114S,True,Queue,1,Waiting,8196
+2026-11-13T09:43:09.923735+07:00,Outbound,PT0S,False,External,1,Unanswered,10008
+2026-11-13T09:42:40.757996+07:00,Outbound,PT0S,False,External,1,Unanswered,10009
+2026-11-13T09:37:54.395587+07:00,Outbound,PT1M27.113239S,True,External,1,Answered,10009
+2026-11-13T09:35:10.983595+07:00,Outbound,PT0S,False,External,1,Unanswered,10007
+2026-11-13T09:34:16.994909+07:00,Outbound,PT0S,False,External,1,Unanswered,10009
+2026-11-13T09:33:04.770934+07:00,Internal,PT1.998502S,True,System,1,Answered,*30
+2026-11-13T09:31:10.471013+07:00,Outbound,PT0S,False,External,1,Unanswered,10009
+2026-11-13T09:30:32.225329+07:00,Outbound,PT0S,False,External,1,Unanswered,10009
+2026-11-13T09:25:24.136955+07:00,Outbound,PT1M24.776586S,True,External,1,Answered,10009
+2026-11-13T09:02:56.329612+07:00,Internal,PT3.405198S,True,System,1,Answered,*30
+2026-11-13T08:51:25.63817+07:00,Internal,PT3.382011S,True,System,1,Answered,*30
+2026-11-13T08:46:56.384897+07:00,Internal,PT3.412126S,True,System,1,Answered,*30
