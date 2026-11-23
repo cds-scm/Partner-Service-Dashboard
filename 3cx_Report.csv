@@ -23149,3 +23149,10 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-11-23T13:24:26.618181+07:00,Inbound Queue,PT3.610285S,True,Queue,1,Waiting,8196
 2026-11-23T13:00:05.995172+07:00,Internal,PT3.399239S,True,System,1,Answered,*30
 2026-11-23T12:57:06.080198+07:00,Internal,PT3.300955S,True,System,1,Answered,*30
+2026-11-23T17:00:07.329087+07:00,Internal,PT3.524858S,True,System,1,Answered,*31
+2026-11-23T16:37:28.838537+07:00,Internal,PT3.413762S,True,System,1,Answered,*30
+2026-11-23T16:08:00.172919+07:00,Internal,PT3.512712S,True,System,1,Answered,*31
+2026-11-23T16:00:45.154033+07:00,Inbound,PT6M15.857443S,True,Extension,1,Answered,0112
+2026-11-23T16:00:45.007081+07:00,Inbound Queue,PT2.229837S,True,Queue,1,Waiting,8196
+2026-11-23T15:39:00.83772+07:00,Inbound,PT5M46.973923S,True,Extension,1,Answered,0114
+2026-11-23T15:39:00.577856+07:00,Inbound Queue,PT2.925839S,True,Queue,1,Waiting,8196
