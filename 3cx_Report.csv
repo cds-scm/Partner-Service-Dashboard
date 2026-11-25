@@ -23610,3 +23610,6 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-11-25T08:08:09.194236Z,Inbound Queue,PT41.081026S,True,Queue,1,Waiting,8048
 2026-11-25T08:07:47.225344Z,Inbound,PT19.371547S,True,Extension,1,Answered,0112
 2026-11-25T08:07:47.149861Z,Inbound Queue,PT2.655091S,True,Queue,1,Waiting,8196
+2026-11-25T10:59:04.87409Z,Internal,PT1.03387S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-25T10:06:13.295004Z,Internal,PT3.51283S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-25T10:06:05.558756Z,Internal,PT3.524842S,True,Digital Receptionist,1,Answered,DialCode
