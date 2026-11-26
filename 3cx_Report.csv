@@ -23678,3 +23678,6 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-11-26T08:22:53.510024Z,Internal,PT3.412748S,True,Digital Receptionist,1,Answered,DialCode
 2026-11-26T08:23:05.549578Z,Inbound,PT10M56.591139S,True,Extension,1,Answered,0114
 2026-11-26T08:23:05.39827Z,Inbound Queue,PT2.392768S,True,Queue,1,Waiting,8196
+2026-11-26T10:59:24.525439Z,Internal,PT3.514472S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-26T10:46:56.392927Z,Internal,PT3.512781S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-26T10:46:46.619592Z,Internal,PT0S,False,System,1,Unanswered,3
