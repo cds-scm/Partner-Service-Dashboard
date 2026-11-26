@@ -23613,3 +23613,9 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-11-25T10:59:04.87409Z,Internal,PT1.03387S,True,Digital Receptionist,1,Answered,DialCode
 2026-11-25T10:06:13.295004Z,Internal,PT3.51283S,True,Digital Receptionist,1,Answered,DialCode
 2026-11-25T10:06:05.558756Z,Internal,PT3.524842S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-26T02:37:20.072031Z,Outbound,PT2M25.395161S,True,External,1,Answered,10009
+2026-11-26T02:36:35.983845Z,Outbound,PT34.39796S,True,External,1,Answered,10009
+2026-11-26T02:11:12.344387Z,Internal,PT1.736771S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-26T02:11:06.616252Z,Inbound,PT1M14.114411S,True,Extension,1,Answered,0113
+2026-11-26T02:11:06.417685Z,Inbound Queue,PT2.620517S,True,Queue,1,Waiting,8196
+2026-11-26T01:57:07.945321Z,Internal,PT3.412004S,True,Digital Receptionist,1,Answered,DialCode
