@@ -23660,3 +23660,21 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-11-26T05:27:01.901844Z,Internal,PT4.014394S,True,Digital Receptionist,1,Answered,DialCode
 2026-11-26T05:26:56.701824Z,Internal,PT4.104185S,True,Digital Receptionist,1,Answered,DialCode
 2026-11-26T05:26:35.171123Z,Internal,PT3.414081S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-26T10:00:25.193678Z,Internal,PT3.466212S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-26T10:00:18.786232Z,Internal,PT3.5048S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-26T09:57:22.178454Z,Internal,PT3.412466S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-26T09:56:34.365166Z,Internal,PT3.412307S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-26T09:51:32.270853Z,Inbound,PT2M26.345396S,True,Extension,1,Answered,0113
+2026-11-26T09:51:32.082667Z,Inbound Queue,PT1.973846S,True,Queue,1,Waiting,8196
+2026-11-26T09:46:54.062498Z,Inbound,PT52.905211S,True,Extension,1,Answered,0114
+2026-11-26T09:46:53.825705Z,Inbound Queue,PT2.093067S,True,Queue,1,Waiting,8196
+2026-11-26T09:46:41.859761Z,Inbound,PT4M44.351322S,True,Extension,1,Answered,0113
+2026-11-26T09:46:41.778181Z,Inbound Queue,PT2.059647S,True,Queue,1,Waiting,8196
+2026-11-26T08:56:28.060223Z,Inbound,PT5M13.763279S,True,Extension,1,Answered,0114
+2026-11-26T08:56:27.928787Z,Inbound Queue,PT2.287719S,True,Queue,1,Waiting,8196
+2026-11-26T08:51:12.865726Z,Inbound,PT4M35.180064S,True,Extension,1,Answered,0113
+2026-11-26T08:51:12.675531Z,Inbound Queue,PT3.05093S,True,Queue,1,Waiting,8196
+2026-11-26T08:29:54.141422Z,Internal,PT3.413026S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-26T08:22:53.510024Z,Internal,PT3.412748S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-26T08:23:05.549578Z,Inbound,PT10M56.591139S,True,Extension,1,Answered,0114
+2026-11-26T08:23:05.39827Z,Inbound Queue,PT2.392768S,True,Queue,1,Waiting,8196
