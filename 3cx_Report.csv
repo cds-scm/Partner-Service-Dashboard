@@ -23681,3 +23681,11 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-11-26T10:59:24.525439Z,Internal,PT3.514472S,True,Digital Receptionist,1,Answered,DialCode
 2026-11-26T10:46:56.392927Z,Internal,PT3.512781S,True,Digital Receptionist,1,Answered,DialCode
 2026-11-26T10:46:46.619592Z,Internal,PT0S,False,System,1,Unanswered,3
+2026-11-27T03:01:45.550607Z,Outbound,PT1M35.41851S,True,External,1,Answered,10009
+2026-11-27T02:49:46.513204Z,Outbound,PT1M6.350692S,True,External,1,Answered,10009
+2026-11-27T02:43:55.047731Z,Inbound Queue,PT2.530944S,True,Queue,1,Waiting,8048
+2026-11-27T02:43:11.465838Z,Inbound,PT41.606083S,True,Extension,1,Answered,0112
+2026-11-27T02:43:11.238655Z,Inbound Queue,PT2.201561S,True,Queue,1,Waiting,8196
+2026-11-27T02:12:20.1233Z,Internal,PT3.31414S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-27T02:08:08.193399Z,Internal,PT3.413977S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-27T01:53:44.518673Z,Internal,PT3.314165S,True,Digital Receptionist,1,Answered,DialCode
