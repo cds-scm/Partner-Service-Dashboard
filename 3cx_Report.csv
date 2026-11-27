@@ -23689,3 +23689,26 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-11-27T02:12:20.1233Z,Internal,PT3.31414S,True,Digital Receptionist,1,Answered,DialCode
 2026-11-27T02:08:08.193399Z,Internal,PT3.413977S,True,Digital Receptionist,1,Answered,DialCode
 2026-11-27T01:53:44.518673Z,Internal,PT3.314165S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-27T05:01:09.494075Z,Internal,PT3.525369S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-27T05:00:08.628775Z,Internal,PT3.50334S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-27T04:56:47.595404Z,Internal,PT3.514197S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-27T04:37:46.198081Z,Inbound,PT1M55.168894S,True,Extension,1,Answered,0114
+2026-11-27T04:37:46.020499Z,Inbound Queue,PT2.432366S,True,Queue,1,Waiting,8196
+2026-11-27T04:35:58.549664Z,Inbound,PT1M50.094945S,True,Extension,1,Answered,0113
+2026-11-27T04:35:58.395159Z,Inbound Queue,PT2.304713S,True,Queue,1,Waiting,8196
+2026-11-27T04:10:42.681567Z,Inbound,PT24.623934S,True,Extension,1,Answered,0112
+2026-11-27T04:10:42.475101Z,Inbound Queue,PT3.504962S,True,Queue,1,Waiting,8196
+2026-11-27T04:09:39.851898Z,Inbound,PT7M44.549535S,True,Extension,1,Answered,0114
+2026-11-27T04:09:39.687267Z,Inbound Queue,PT2.570704S,True,Queue,1,Waiting,8196
+2026-11-27T03:59:22.927174Z,Inbound,PT1M1.564629S,True,Extension,1,Answered,0113
+2026-11-27T03:59:22.699382Z,Inbound Queue,PT2.369981S,True,Queue,1,Waiting,8196
+2026-11-27T03:32:33.662404Z,Inbound Queue,PT6.253728S,True,Queue,1,Waiting,8048
+2026-11-27T03:31:39.736032Z,Inbound,PT51.16104S,True,Extension,1,Answered,0112
+2026-11-27T03:31:39.52862Z,Inbound Queue,PT3.007322S,True,Queue,1,Waiting,8196
+2026-11-27T03:24:41.811199Z,Inbound,PT12M16.528076S,True,Extension,1,Answered,0114
+2026-11-27T03:24:41.637782Z,Inbound Queue,PT4.297971S,True,Queue,1,Waiting,8196
+2026-11-27T03:14:28.7085Z,Outbound,PT2M52.885253S,True,External,1,Answered,10009
+2026-11-27T03:13:08.253807Z,Outbound,PT34.046142S,True,External,1,Answered,10009
+2026-11-27T03:04:06.253287Z,Outbound,PT49.859403S,True,External,1,Answered,10009
+2026-11-27T03:01:19.755558Z,Inbound,PT7M13.339259S,True,Extension,1,Answered,0113
+2026-11-27T03:01:19.623519Z,Inbound Queue,PT1.885772S,True,Queue,1,Waiting,8196
