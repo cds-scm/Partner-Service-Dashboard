@@ -23764,3 +23764,5 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-11-27T08:31:30.643394Z,Inbound Queue,PT2.591623S,True,Queue,1,Waiting,8196
 2026-11-27T08:16:51.23207Z,Inbound,PT6M10.208487S,True,Extension,1,Answered,0113
 2026-11-27T08:16:51.010949Z,Inbound Queue,PT3.986935S,True,Queue,1,Waiting,8196
+2026-11-27T11:06:38.539694Z,Internal,PT3.547738S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-27T11:00:09.144822Z,Internal,PT3.502877S,True,Digital Receptionist,1,Answered,DialCode
