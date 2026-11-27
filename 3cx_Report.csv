@@ -23712,3 +23712,26 @@ StartTime,Direction,TalkingDuration,Answered,CallType,CallID,Status,To
 2026-11-27T03:04:06.253287Z,Outbound,PT49.859403S,True,External,1,Answered,10009
 2026-11-27T03:01:19.755558Z,Inbound,PT7M13.339259S,True,Extension,1,Answered,0113
 2026-11-27T03:01:19.623519Z,Inbound Queue,PT1.885772S,True,Queue,1,Waiting,8196
+2026-11-27T07:52:41.392727Z,Inbound,PT10M11.295384S,True,Extension,1,Answered,0112
+2026-11-27T07:52:41.159705Z,Inbound Queue,PT4.063108S,True,Queue,1,Waiting,8196
+2026-11-27T07:41:26.418248Z,Inbound,PT1M21.309847S,True,Extension,1,Answered,0114
+2026-11-27T07:41:26.309006Z,Inbound Queue,PT2.490493S,True,Queue,1,Waiting,8196
+2026-11-27T07:35:15.096506Z,Internal,PT3.418257S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-27T07:23:00.022735Z,Internal,PT3.513783S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-27T07:22:39.607693Z,Inbound Queue,PT1M6.66985S,True,Queue,1,Waiting,8048
+2026-11-27T07:21:23.656715Z,Inbound,PT1M13.836196S,True,Extension,1,Answered,0113
+2026-11-27T07:21:23.500078Z,Inbound Queue,PT2.261873S,True,Queue,1,Waiting,8196
+2026-11-27T07:15:05.784245Z,Inbound,PT7M29.094867S,True,Extension,1,Answered,0112
+2026-11-27T07:15:05.595494Z,Inbound Queue,PT2.322839S,True,Queue,1,Waiting,8196
+2026-11-27T07:06:55.788596Z,Inbound,PT1M9.305293S,True,Extension,1,Answered,0114
+2026-11-27T07:06:55.564135Z,Inbound Queue,PT2.444394S,True,Queue,1,Waiting,8196
+2026-11-27T06:57:17.635863Z,Inbound,PT1M40.07725S,True,Extension,1,Answered,0113
+2026-11-27T06:57:17.543798Z,Inbound Queue,PT2.216046S,True,Queue,1,Waiting,8196
+2026-11-27T06:36:32.716977Z,Inbound,PT2M53.505584S,True,Extension,1,Answered,0112
+2026-11-27T06:36:32.588242Z,Inbound Queue,PT2.682847S,True,Queue,1,Waiting,8196
+2026-11-27T06:13:02.241688Z,Internal,PT3.414188S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-27T06:11:31.360533Z,Internal,PT3.51429S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-27T06:10:28.453762Z,Internal,PT3.413456S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-27T06:08:38.794215Z,Internal,PT3.512978S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-27T06:04:48.267694Z,Internal,PT3.413842S,True,Digital Receptionist,1,Answered,DialCode
+2026-11-27T06:04:26.52608Z,Internal,PT3.313974S,True,Digital Receptionist,1,Answered,DialCode
